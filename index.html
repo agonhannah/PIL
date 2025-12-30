@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>dhrma</title>
+  <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar__right">
+     
+     
+    </div>
+
+    <nav class="topbar__left">
+      <a class="navlink" href="#works">Works</a>
+      <a class="navlink" href="#shop">Shop</a>
+      <a class="navlink" href="#about">About</a>
+    </nav>
+  </header>
+
+  <main id="top" class="wrap">
+    <!-- HERO -->
+    <section class="hero">
+      <h1 class="hero__title">
+        PARAD<br />
+        ICE<br />
+        LONER.
+      </h1>
+
+      <p class="hero__lead">
+        ARCHIVE of WORKS by dhrma Kazuki Hanamoto
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn btn--solid" href="#works">View Works</a>
+        <a class="btn btn--ghost" href="#shop">Open Shop</a>
+      </div>
+
+      <div class="rule"></div>
+    </section>
+
+    <!-- WORKS -->
+    <section id="works" class="section">
+      <div class="section__head">
+        <h2 class="section__title">Works</h2>
+        <p class="section__sub">最新→過去。リンクは後で差し替え。</p>
+      </div>
+
+      <div class="grid">
+        <!-- CARD 01 -->
+        <article class="card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Work Title 01</h3>
+            <p class="card__meta">2025 · Audio/Visual</p>
+            <a class="pill" href="#" aria-label="Open Work Title 01">Open</a>
+          </div>
+        </article>
+
+        <!-- CARD 02 -->
+        <article class="card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Work Title 02</h3>
+            <p class="card__meta">2025 · Music</p>
+            <a class="pill" href="#" aria-label="Open Work Title 02">Open</a>
+          </div>
+        </article>
+
+        <!-- CARD 03 -->
+        <article class="card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Work Title 03</h3>
+            <p class="card__meta">2024 · Visual</p>
+            <a class="pill" href="#" aria-label="Open Work Title 03">Open</a>
+          </div>
+        </article>
+      </div>
+
+      <div class="rule"></div>
+    </section>
+
+    <!-- SHOP -->
+    <section id="shop" class="section">
+      <div class="section__head">
+        <h2 class="section__title">Shop</h2>
+        <p class="section__sub">
+          まずは外部販売リンクでOK（Gumroad / BOOTH / Shopify / Stripe）。
+        </p>
+      </div>
+
+      <div class="grid grid--shop">
+        <!-- ITEM 01 -->
+        <article class="card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Drum Kit Vol.1</h3>
+            <p class="card__meta">One-shot / Loop / FX</p>
+            <a class="pill" href="#" aria-label="Buy Drum Kit Vol.1">Buy</a>
+          </div>
+        </article>
+
+        <!-- ITEM 02 -->
+        <article class="card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Sample Pack 002</h3>
+            <p class="card__meta">Textures / Clicks</p>
+            <a class="pill" href="#" aria-label="Buy Sample Pack 002">Buy</a>
+          </div>
+        </article>
+      </div>
+
+      <div class="rule"></div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="section">
+      <div class="section__head">
+        <h2 class="section__title">About</h2>
+        <p class="section__sub">連絡先・リンクはここに集約。</p>
+      </div>
+
+      <div class="aboutbox">
+        <p class="aboutbox__text">
+          dhrma _Kazuki Hanamoto 
+          <br />
+          Contact:
+          <a class="inline" href="mailto:yourmail@example.com">kazukihanamoto.dhrma@gmail.com</a>
+        </p>
+
+        <div class="links">
+          <a class="inline" href="#" target="_blank" rel="noopener">Instagram</a>
+          <a class="inline" href="#" target="_blank" rel="noopener">Bandcamp</a>
+          <a class="inline" href="#" target="_blank" rel="noopener">YouTube</a>
+          <a class="inline" href="#" target="_blank" rel="noopener">SoundCloud</a>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <span>© <span id="year"></span> dhrma</span>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    // 年号だけ自動
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+<!-- Pointer blob -->
+<div id="pointer-blob" aria-hidden="true"></div>
+
+<script>
+  // 年号（既にあるなら二重にならないように片方だけにしてOK）
+  const yearEl = document.getElementById("year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  // Blob
+  const blob = document.getElementById("pointer-blob");
+  if (!blob) {
+    console.error("pointer-blob not found");
+  } else {
+    // 初期は非表示（見切れ対策）
+    blob.style.opacity = "0";
+
+    const moveTo = (x, y) => {
+      // left/top より transform の方が軽くて確実
+      blob.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+      blob.style.opacity = "0.9";
+    };
+
+    // Desktop: マウス / トラックパッド
+    window.addEventListener("pointermove", (e) => {
+      moveTo(e.clientX, e.clientY);
+    });
+
+    // Mobile: タッチ開始/移動
+    window.addEventListener("pointerdown", (e) => {
+      moveTo(e.clientX, e.clientY);
+    });
+
+    window.addEventListener("pointerup", () => {
+      blob.style.opacity = "0";
+    });
+
+    window.addEventListener("pointercancel", () => {
+      blob.style.opacity = "0";
+    });
+  }
+</script>
+</html>
