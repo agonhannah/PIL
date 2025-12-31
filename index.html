@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>dhrma</title>
+  <title>dhrma Kazuki Hanamoto </title> 
   <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -11,22 +11,24 @@
 <body>
   <!-- Topbar -->
   <header class="topbar">
-    <div class="topbar__right">
-     
-     
-    </div>
-
-    <nav class="topbar__left">
-      <a class="navlink" href="#works">Works</a>
-      <a class="navlink" href="#shop">Shop</a>
-      <a class="navlink" href="#about">About</a>
+    <nav class="topbar__left" aria-label="Primary">
+      <button
+        class="menuBtn"
+        id="menuBtn"
+        type="button"
+        aria-label="Open menu"
+        aria-controls="drawer"
+        aria-expanded="false"
+      >
+        Menu ✶
+      </button>
     </nav>
   </header>
 
-  <main id="top" class="wrap">
+  <main class="wrap">
     <!-- HERO -->
-    <section class="hero">
-      <h1 class="hero__title">
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 class="hero__title" id="hero-title">
         PARAD<br />
         ICE<br />
         LONER.
@@ -41,18 +43,17 @@
         <a class="btn btn--ghost" href="#shop">Open Shop</a>
       </div>
 
-      <div class="rule"></div>
+      <div class="rule" role="separator" aria-hidden="true"></div>
     </section>
 
     <!-- WORKS -->
-    <section id="works" class="section">
+    <section id="works" class="section" aria-labelledby="works-title">
       <div class="section__head">
-        <h2 class="section__title">Works</h2>
+        <h2 class="section__title" id="works-title">Works</h2>
         <p class="section__sub">最新→過去。リンクは後で差し替え。</p>
       </div>
 
       <div class="grid">
-        <!-- CARD 01 -->
         <article class="card">
           <div class="thumb" aria-hidden="true"></div>
           <div class="card__body">
@@ -62,7 +63,6 @@
           </div>
         </article>
 
-        <!-- CARD 02 -->
         <article class="card">
           <div class="thumb" aria-hidden="true"></div>
           <div class="card__body">
@@ -72,7 +72,6 @@
           </div>
         </article>
 
-        <!-- CARD 03 -->
         <article class="card">
           <div class="thumb" aria-hidden="true"></div>
           <div class="card__body">
@@ -83,20 +82,19 @@
         </article>
       </div>
 
-      <div class="rule"></div>
+      <div class="rule" role="separator" aria-hidden="true"></div>
     </section>
 
     <!-- SHOP -->
-    <section id="shop" class="section">
+    <section id="shop" class="section" aria-labelledby="shop-title">
       <div class="section__head">
-        <h2 class="section__title">Shop</h2>
+        <h2 class="section__title" id="shop-title">Shop</h2>
         <p class="section__sub">
           まずは外部販売リンクでOK（Gumroad / BOOTH / Shopify / Stripe）。
         </p>
       </div>
 
       <div class="grid grid--shop">
-        <!-- ITEM 01 -->
         <article class="card">
           <div class="thumb" aria-hidden="true"></div>
           <div class="card__body">
@@ -106,7 +104,6 @@
           </div>
         </article>
 
-        <!-- ITEM 02 -->
         <article class="card">
           <div class="thumb" aria-hidden="true"></div>
           <div class="card__body">
@@ -117,29 +114,29 @@
         </article>
       </div>
 
-      <div class="rule"></div>
+      <div class="rule" role="separator" aria-hidden="true"></div>
     </section>
 
     <!-- ABOUT -->
-    <section id="about" class="section">
+    <section id="about" class="section" aria-labelledby="about-title">
       <div class="section__head">
-        <h2 class="section__title">About</h2>
-        <p class="section__sub">連絡先・リンクはここに集約。</p>
+        <h2 class="section__title" id="about-title">About</h2>
+        <p class="section__sub"></p>
       </div>
 
       <div class="aboutbox">
         <p class="aboutbox__text">
-          dhrma _Kazuki Hanamoto 
+          dhrma Kazuki Hanamoto
           <br />
           Contact:
-          <a class="inline" href="mailto:yourmail@example.com">kazukihanamoto.dhrma@gmail.com</a>
+          <a class="inline" href="mailto:kazukihanamoto.dhrma@gmail.com">kazukihanamoto.dhrma@gmail.com</a>
         </p>
 
-        <div class="links">
-          <a class="inline" href="#" target="_blank" rel="noopener">Instagram</a>
-          <a class="inline" href="#" target="_blank" rel="noopener">Bandcamp</a>
-          <a class="inline" href="#" target="_blank" rel="noopener">YouTube</a>
-          <a class="inline" href="#" target="_blank" rel="noopener">SoundCloud</a>
+        <div class="links" aria-label="External links">
+          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">Bandcamp</a>
+          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">YouTube</a>
+          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">SoundCloud</a>
         </div>
       </div>
 
@@ -149,50 +146,254 @@
     </section>
   </main>
 
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" hidden></div>
+
+  <!-- Drawer -->
+  <aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="drawer__stack" id="drawerStack">
+
+      <!-- PANEL: MAIN -->
+      <section class="drawer__panel is-active" data-panel="main">
+        <div class="drawer__top">
+          <span class="drawer__brand">dhrma Kazuki Hanamoto</span>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+        </div>
+
+        <nav class="drawer__nav" aria-label="Menu">
+          <button class="drawer__item" type="button" data-open-panel="archive">
+            Archive <span class="plus" aria-hidden="true">+</span>
+          </button>
+          <button class="drawer__item" type="button" data-open-panel="shop">
+            Shop <span class="plus" aria-hidden="true">+</span>
+          </button>
+          <button class="drawer__item" type="button" data-open-panel="order">
+            Order <span class="plus" aria-hidden="true">+</span>
+          </button>
+        </nav>
+
+        <div class="drawer__foot">
+          <a class="drawer__small" href="#about">Contact</a>
+        </div>
+      </section>
+
+      <!-- PANEL: ARCHIVE -->
+      <section class="drawer__panel" data-panel="archive">
+        <div class="drawer__top">
+          <div class="drawer__backRow">
+            <button class="drawer__back" type="button" data-back>Back</button>
+          </div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+        </div>
+
+        <div class="drawer__listTitle">Archive</div>
+
+        <div class="drawer__preview" id="drawerPreview" aria-hidden="true"></div>
+
+        <nav class="drawer__list" aria-label="Archive list">
+          <a class="drawer__listItem" href="#" data-cover="images/test_01.jpg">Work Title 01</a>
+          <a class="drawer__listItem" href="#" data-cover="images/test_02.jpg">Work Title 02</a>
+          <a class="drawer__listItem" href="#" data-cover="images/test_03.jpg">Work Title 03</a>
+        </nav>
+      </section>
+
+      <!-- PANEL: SHOP -->
+      <section class="drawer__panel" data-panel="shop">
+        <div class="drawer__top">
+          <div class="drawer__backRow">
+            <button class="drawer__back" type="button" data-back>Back</button>
+          </div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+        </div>
+
+        <div class="drawer__listTitle">Shop</div>
+
+        <nav class="drawer__list" aria-label="Shop list">
+          <a class="drawer__listItem" href="#">Shop All</a>
+          <a class="drawer__listItem" href="#">Digital Goods</a>
+          <a class="drawer__listItem" href="#">Physical Goods</a>
+        </nav>
+      </section>
+
+      <!-- PANEL: ORDER -->
+      <section class="drawer__panel" data-panel="order">
+        <div class="drawer__top">
+          <div class="drawer__backRow">
+            <button class="drawer__back" type="button" data-back>Back</button>
+          </div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+        </div>
+
+        <div class="drawer__listTitle">Order</div>
+
+        <div class="drawer__note">
+          Order / Contact details will be placed here.
+        </div>
+      </section>
+
+    </div>
+  </aside>
+
+  <!-- Pointer FX (blob + rect lock) -->
+  <div id="pointer-fx" aria-hidden="true">
+    <div id="pointer-blob"></div>
+
+    <div id="lockbox" aria-hidden="true">
+      <div class="lockbox__rect">
+        <div class="lockbox__cross lockbox__cross--h"></div>
+        <div class="lockbox__cross lockbox__cross--v"></div>
+
+        <span class="lockbox__tick lockbox__tick--t"></span>
+        <span class="lockbox__tick lockbox__tick--r"></span>
+        <span class="lockbox__tick lockbox__tick--b"></span>
+        <span class="lockbox__tick lockbox__tick--l"></span>
+      </div>
+
+      <div class="lockbox__label">Point HERE</div>
+    </div>
+  </div>
+
   <script>
-    // 年号だけ自動
+    // year
     document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
-</body>
-<!-- Pointer blob -->
-<div id="pointer-blob" aria-hidden="true"></div>
 
-<script>
-  // 年号（既にあるなら二重にならないように片方だけにしてOK）
-  const yearEl = document.getElementById("year");
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
+    // ===== Drawer open / close =====
+    const menuBtn = document.getElementById("menuBtn");
+    const drawer  = document.getElementById("drawer");
+    const overlay = document.getElementById("overlay");
 
-  // Blob
-  const blob = document.getElementById("pointer-blob");
-  if (!blob) {
-    console.error("pointer-blob not found");
-  } else {
-    // 初期は非表示（見切れ対策）
-    blob.style.opacity = "0";
-
-    const moveTo = (x, y) => {
-      // left/top より transform の方が軽くて確実
-      blob.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-      blob.style.opacity = "0.9";
+    const setExpanded = (isOpen) => {
+      menuBtn?.setAttribute("aria-expanded", String(isOpen));
+      drawer?.setAttribute("aria-hidden", String(!isOpen));
     };
 
-    // Desktop: マウス / トラックパッド
-    window.addEventListener("pointermove", (e) => {
-      moveTo(e.clientX, e.clientY);
-    });
+    const openDrawer = () => {
+      if (!drawer || !overlay) return;
+      drawer.classList.add("is-open");
+      overlay.hidden = false;
+      document.body.classList.add("is-locked");
+      setPanel("main");
+      setExpanded(true);
+    };
 
-    // Mobile: タッチ開始/移動
-    window.addEventListener("pointerdown", (e) => {
-      moveTo(e.clientX, e.clientY);
-    });
+    const closeDrawer = () => {
+      if (!drawer || !overlay) return;
+      drawer.classList.remove("is-open");
+      overlay.hidden = true;
+      document.body.classList.remove("is-locked");
+      setExpanded(false);
+    };
 
-    window.addEventListener("pointerup", () => {
-      blob.style.opacity = "0";
-    });
+    menuBtn?.addEventListener("click", openDrawer);
+    overlay?.addEventListener("click", closeDrawer);
 
-    window.addEventListener("pointercancel", () => {
-      blob.style.opacity = "0";
-    });
-  }
-</script>
+    // ===== Drawer panel switching =====
+    const stack = document.getElementById("drawerStack");
+
+    const setPanel = (name) => {
+      if (!stack) return;
+      stack.querySelectorAll(".drawer__panel").forEach((panel) => {
+        panel.classList.toggle("is-active", panel.dataset.panel === name);
+      });
+    };
+
+    if (stack) {
+      stack.querySelectorAll("[data-open-panel]").forEach((btn) => {
+        btn.addEventListener("click", () => setPanel(btn.dataset.openPanel));
+      });
+
+      stack.querySelectorAll("[data-back]").forEach((btn) => {
+        btn.addEventListener("click", () => setPanel("main"));
+      });
+
+      stack.querySelectorAll("[data-close]").forEach((btn) => {
+        btn.addEventListener("click", closeDrawer);
+      });
+    }
+
+    // ===== Pointer FX =====
+    const fx      = document.getElementById("pointer-fx");
+    const blob    = document.getElementById("pointer-blob");
+    const lockbox = document.getElementById("lockbox");
+
+    const CLICKABLE_SELECTOR = [
+      "a[href]",
+      "button",
+      '[role="button"]',
+      "[data-open-panel]",
+      "[data-close]",
+      "[data-back]",
+      ".drawer__item",
+      ".drawer__listItem",
+      ".pill",
+      ".btn"
+    ].join(",");
+
+    const closestClickable = (el) =>
+      el && el.closest ? el.closest(CLICKABLE_SELECTOR) : null;
+
+    if (fx && blob && lockbox) {
+      const moveFx = (x, y) => {
+        fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      };
+
+      const hideFx = () => {
+        fx.style.transform = "translate3d(-9999px, -9999px, 0)";
+        lockbox.style.opacity = "0";
+      };
+
+      window.addEventListener("mousemove", (e) => {
+        moveFx(e.clientX, e.clientY);
+      }, { passive: true });
+
+      window.addEventListener("mouseout", (e) => {
+        if (!e.relatedTarget && !e.toElement) hideFx();
+      });
+
+      window.addEventListener("blur", hideFx);
+
+      const showLockbox = () => { lockbox.style.opacity = "1"; };
+      const hideLockbox = () => { lockbox.style.opacity = "0"; };
+
+      document.addEventListener("mouseover", (e) => {
+        if (closestClickable(e.target)) showLockbox();
+      });
+
+      document.addEventListener("mouseout", (e) => {
+        const from = closestClickable(e.target);
+        const to   = closestClickable(e.relatedTarget);
+        if (from && from !== to) hideLockbox();
+      });
+
+      document.addEventListener("focusin", (e) => {
+        if (closestClickable(e.target)) showLockbox();
+      });
+      document.addEventListener("focusout", hideLockbox);
+
+      window.addEventListener("scroll", hideLockbox, { passive: true });
+      window.addEventListener("resize", hideLockbox, { passive: true });
+
+      hideFx();
+    }
+
+    // ===== Archive hover preview =====
+    const preview = document.getElementById("drawerPreview");
+    if (preview) {
+      document
+        .querySelectorAll('[data-panel="archive"] .drawer__listItem[data-cover]')
+        .forEach((item) => {
+          const url = item.dataset.cover;
+
+          item.addEventListener("mouseenter", () => {
+            preview.style.backgroundImage = `url("${url}")`;
+            preview.style.opacity = "1";
+          });
+
+          item.addEventListener("mouseleave", () => {
+            preview.style.opacity = "0";
+          });
+        });
+    }
+  </script>
+</body>
 </html>
