@@ -12,15 +12,17 @@
   --panel: rgba(255,255,255,0.65);
   --panel2: rgba(255,255,255,0.5);
   --radius: 14px;
-  --pad: 28px;
+  /* --pad: 28px; */
 }
 
 * { box-sizing: border-box; }
 
 html, body { height: 100%; }
 
+
 body{
   margin: 0;
+  cursor: none;
   background: var(--bg);
   color: var(--ink);
   font-family: Helvetica, Arial, sans-serif;
@@ -65,7 +67,7 @@ a{ color: inherit; text-decoration: none; }
   z-index: 50;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start; /* ← ここが重要 */
   gap: 16px;
   padding: 16px 20px;
   border-bottom: 1px solid var(--line);
@@ -351,32 +353,346 @@ a{ color: inherit; text-decoration: none; }
 
   .hero__lead{ font-size: 14px; }
 }
-/* =========================================
-   Pointer / Touch Blob
-========================================= */
 
-#pointer-blob{
+/* =========================================
+   Top-left Menu button (Primary)
+========================================= */
+.menuBtn{
+  font-size: 17px;        /* 気持ち大きめ */
+  font-weight: 900;       /* しっかり太く */
+  letter-spacing: 0.08em; /* グラフィック感 */
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  padding: 4px 0;
+  cursor: pointer;
+  margin-left: 50px;
+}
+
+.menuBtn:hover{
+  transform: translateX(1px);
+  opacity: 0.85;
+}
+
+/* =========================================
+   Drawer (left)
+========================================= */
+.overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.12);
+  backdrop-filter: blur(2px);
+  z-index: 1200;
+}
+
+.drawer{
   position: fixed;
   top: 0;
   left: 0;
-  width: 48px;
-  height: 48px;
-  border-radius: 999px;
-  pointer-events: none;
-  z-index: 998;
+  height: 100vh;
+  width: min(78vw, 360px);
+  background: rgba(246,246,244,0.95);
+  border-right: 1px solid var(--line);
+  z-index: 1300;
 
-  background: rgba(0, 255, 80, 0.9);
-  filter: blur(18px);
-  opacity: 0;
-
-  transform: translate3d(0,0,0) translate(-50%, -50%);
-  will-change: transform, opacity;
+  transform: translateX(-105%);
+  transition: transform 260ms ease;
+  will-change: transform;
+  padding: 18px 16px;
 }
 
-@media (max-width: 640px){
-  #pointer-blob{
-    width: 32px;
-    height: 32px;
-    filter: blur(14px);
-  }
+.drawer.is-open{
+  transform: translateX(0);
+}
+
+.drawer__top{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.drawer__brand{
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.drawer__close{
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.drawer__close:hover{
+  transform: translate(1px,-1px);
+}
+
+.drawer__nav{
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.drawer__item{
+  display:flex;
+  align-items: baseline;
+  justify-content: space-between;
+
+  font-size: 42px;              /* ← スクショっぽいサイズ感 */
+  font-weight: 650;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  padding: 6px 2px;
+
+  border-bottom: 1px solid rgba(17,17,17,0.10);
+}
+
+.drawer__item:active{
+  transform: translateX(1px);
+}
+
+.plus{
+  font-size: 0.9em;
+  opacity: 0.75;
+}
+
+.drawer__foot{
+  margin-top: 28px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(17,17,17,0.10);
+}
+
+.drawer__small{
+  font-size: 13px;
+  color: var(--muted);
+  border-bottom: 1px solid rgba(17,17,17,0.25);
+}
+
+/* body scroll lock */
+body.is-locked{
+  overflow: hidden;
+}
+/* TopからWorks/Shopを非表示（後で戻せる） */
+#works, #shop {
+  display: none;
+}
+
+/* Drawer: 2-layer panels */
+.drawer__stack{
+  position: relative;
+  height: 100%;
+}
+
+.drawer__panel{
+  position: absolute;
+  inset: 0;
+  padding: 18px 16px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(12px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  background: transparent;
+}
+
+.drawer__panel.is-active{
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.drawer__backRow{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+
+.drawer__back{
+  background: transparent;
+  border: none;
+  padding: 6px 0;
+  font-size: 44px;
+  font-weight: 650;
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+  cursor: pointer;
+}
+
+.drawer__listTitle{
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.65;
+  letter-spacing: 0.02em;
+}
+
+.drawer__list{
+  margin-top: 14px;
+  display:flex;
+  flex-direction: column;
+}
+
+.drawer__listItem{
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  padding: 14px 2px;
+  border-bottom: 1px solid rgba(17,17,17,0.10);
+}
+
+.drawer__note{
+  margin-top: 18px;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+/* パネル内でプレビューを“背面レイヤー”にする */
+
+
+
+.drawer__preview{
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  pointer-events: none;
+
+  background-size: cover;
+  background-position: center;
+  filter: blur(12px);
+  transform: scale(1.08);
+}
+
+/* 白い膜（雰囲気用） */
+.drawer__preview::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: rgba(246,246,244,0.35);
+}
+
+/* タイトル/リストを前面へ */
+.drawer__top,
+.drawer__listTitle,
+.drawer__list{
+  position: relative;
+  z-index: 1;
+}
+
+
+
+/* =========================================
+   Pointer FX (FINAL / black lockbox + short cross)
+========================================= */
+
+#pointer-fx{
+  position: fixed;
+  top: 0 ;
+  left: 0 ;
+  width: 0 ;
+  height: 0 ;
+  pointer-events: none ;
+  z-index: 1400 ;
+  opacity: 1 ;
+  transform: translate3d(-9999px, -9999px, 0);
+  will-change: transform;
+}
+
+/* blur（緑） */
+#pointer-blob{
+  position: absolute ;
+  top: 0 ;
+  left: 0 ;
+  width: 92px ;
+  height: 92px ;
+  border-radius: 999px ;
+  background: rgba(0, 255, 90, 0.9) ;
+  filter: blur(15px) ;
+  transform: translate(-50%, -50%);
+  z-index: 1 ;
+}
+
+/* lockbox  */
+#lockbox{
+  position: absolute ;
+  top: 0 ;
+  left: 0 ;
+  transform: translate(-50%, -50%) ;
+  z-index: 2 ;
+  opacity: 0;
+  transition: opacity 120ms ease;
+  will-change: opacity;
+  color: #000 ;
+}
+
+/* 正方形（サイズここで調整） */
+#lockbox .lockbox__rect{
+  width: 100px;             
+  height: 60px;
+  border: 1px solid currentColor ;  
+  border-radius: 2px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* 中央の短い十字（追加） */
+#lockbox .lockbox__cross{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+#lockbox .lockbox__cross--h{ width: 17px; height: 1px; }
+#lockbox .lockbox__cross--v{ width: 1px; height: 10px; }
+
+
+/* 四辺tick */
+#lockbox .lockbox__tick{ position: absolute; background: currentColor; }
+#lockbox .lockbox__tick--t{ top: 0; left: 50%; width: 1px; height: 5px; transform: translateX(-50%); }
+#lockbox .lockbox__tick--b{ bottom: 0; left: 50%; width: 1px; height: 5px; transform: translateX(-50%); }
+#lockbox .lockbox__tick--l{ left: 0; top: 50%; width: 5px; height: 1px; transform: translateY(-50%); }
+#lockbox .lockbox__tick--r{ right: 0; top: 50%;  width: 5px;  height: 1px; transform: translateY(-50%); }
+
+#lockbox .lockbox__label{
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-left: 8px;
+  transform: translate(0, -50%) rotate(90deg);
+  transform-origin: left center;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  color: currentColor;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+
+/* =========================================
+   Kill all system cursors (hand / pointer)
+========================================= */
+
+/* クリック可能要素 */
+a,
+button,
+[role="button"],
+input,
+label,
+select,
+textarea,
+summary {
+  cursor: none !important;
+}
+
+/* 念のため hover / active も潰す */
+a:hover,
+button:hover,
+[role="button"]:hover {
+  cursor: none !important;
 }
