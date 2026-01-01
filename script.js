@@ -232,4 +232,5 @@ if (isCoarsePointer) {
       hideFx();
     }, { passive: true });
   }
+  
 }
