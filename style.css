@@ -614,16 +614,13 @@ body.is-locked{
   height: 0;
   pointer-events: none;
   z-index: 1400;
-
+  transition: opacity 1000ms ease;
   opacity: 0; /* ← 初期は消す（JSで表示） */
   transform: translate3d(-9999px, -9999px, 0);
   will-change: transform, opacity;
 }
 
-/* ✅ Mobileだけ：離した時に1秒でフェード */
-body.is-touch #pointer-fx{
-  transition: opacity 1000ms ease;
-}
+
 
 /* blur（緑） */
 #pointer-blob{
