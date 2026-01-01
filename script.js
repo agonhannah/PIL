@@ -143,3 +143,26 @@ if (fx && lockbox) {
   // 初期状態
   hideFx();
 }
+
+// ===== Archive "touch hold" preview =====
+const preview = document.getElementById("drawerPreview");
+if (preview && isTouch) {
+  document
+    .querySelectorAll('[data-panel="archive"] .drawer__listItem[data-cover]')
+    .forEach((item) => {
+      const url = item.dataset.cover;
+
+      item.addEventListener("pointerdown", () => {
+        preview.style.backgroundImage = `url("${url}")`;
+        preview.style.opacity = "1";
+      });
+
+      item.addEventListener("pointerup", () => {
+        preview.style.opacity = "0";
+      });
+
+      item.addEventListener("pointercancel", () => {
+        preview.style.opacity = "0";
+      });
+    });
+}
