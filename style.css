@@ -22,8 +22,6 @@ html, body { height: 100%; }
 
 body{
   margin: 0;
-  cursor: auto;
-  cursor: none;
   background: var(--bg);
   color: var(--ink);
   font-family: Helvetica, Arial, sans-serif;
@@ -610,16 +608,19 @@ body.is-locked{
   position: fixed;
   top: 0;
   left: 0;
-  width: 0;
-  height: 0;
   pointer-events: none;
   z-index: 1400;
-  transition: opacity 1000ms ease;
+
   opacity: 0; /* ← 初期は消す（JSで表示） */
   transform: translate3d(-9999px, -9999px, 0);
   will-change: transform, opacity;
 }
 
+@media (pointer: coarse) {
+  #pointer-fx{
+    transition: opacity 1000ms linear;
+  }
+}
 
 
 /* blur（緑） */
@@ -697,17 +698,6 @@ body.is-locked{
    Kill all system cursors (hand / pointer)
 ========================================= */
 
-/* クリック可能要素 */
-a,
-button,
-[role="button"],
-input,
-label,
-select,
-textarea,
-summary {
-  cursor: none !important;
-}
 
 /* 念のため hover / active も潰す */
 a:hover,
