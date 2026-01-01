@@ -1,243 +1,231 @@
 // ==============================
-
 // year
 // ==============================
 const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 // ==============================
-// Drawer
+// Drawer (safe)
 // ==============================
-const menuBtn = document.getElementById("menuBtn");
-const drawer  = document.getElementById("drawer");
-const overlay = document.getElementById("overlay");
-const stack   = document.getElementById("drawerStack");
+(() => {
+  const menuBtn = document.getElementById("menuBtn");
+  const drawer  = document.getElementById("drawer");
+  const overlay = document.getElementById("overlay");
+  const stack   = document.getElementById("drawerStack");
 
-const setExpanded = (isOpen) => {
-  if (menuBtn) menuBtn.setAttribute("aria-expanded", String(isOpen));
-  if (drawer)  drawer.setAttribute("aria-hidden", String(!isOpen));
-};
+  if (!menuBtn || !drawer || !overlay) return;
 
-const setPanel = (name) => {
-  if (!stack) return;
-  stack.querySelectorAll(".drawer__panel").forEach((panel) => {
-    panel.classList.toggle("is-active", panel.dataset.panel === name);
-  });
-};
+  const setExpanded = (isOpen) => {
+    menuBtn.setAttribute("aria-expanded", String(isOpen));
+    drawer.setAttribute("aria-hidden", String(!isOpen));
+  };
 
-const openDrawer = () => {
-  if (!drawer || !overlay) return;
-  drawer.classList.add("is-open");
-  overlay.hidden = false;
-  document.body.classList.add("is-locked");
-  setPanel("main");
-  setExpanded(true);
-};
+  const setPanel = (name) => {
+    if (!stack) return;
+    stack.querySelectorAll(".drawer__panel").forEach((panel) => {
+      panel.classList.toggle("is-active", panel.dataset.panel === name);
+    });
+  };
 
-const closeDrawer = () => {
-  if (!drawer || !overlay) return;
-  drawer.classList.remove("is-open");
-  overlay.hidden = true;
-  document.body.classList.remove("is-locked");
-  setExpanded(false);
-};
+  const openDrawer = () => {
+    drawer.classList.add("is-open");
+    overlay.hidden = false;
+    document.body.classList.add("is-locked");
+    setPanel("main");
+    setExpanded(true);
+  };
 
-if (menuBtn) menuBtn.addEventListener("click", openDrawer);
-if (overlay) overlay.addEventListener("click", closeDrawer);
+  const closeDrawer = () => {
+    drawer.classList.remove("is-open");
+    overlay.hidden = true;
+    document.body.classList.remove("is-locked");
+    setExpanded(false);
+  };
 
-if (stack) {
-  stack.querySelectorAll("[data-open-panel]").forEach((btn) => {
-    btn.addEventListener("click", () => setPanel(btn.dataset.openPanel));
-  });
+  menuBtn.addEventListener("click", openDrawer);
+  overlay.addEventListener("click", closeDrawer);
 
-  stack.querySelectorAll("[data-back]").forEach((btn) => {
-    btn.addEventListener("click", () => setPanel("main"));
-  });
-
-  stack.querySelectorAll("[data-close]").forEach((btn) => {
-    btn.addEventListener("click", closeDrawer);
-  });
-}
-
-// ==============================
-// Pointer type detection
-// ==============================
-const isFinePointer =
-  window.matchMedia && window.matchMedia("(pointer: fine)").matches;
-
-const isCoarsePointer =
-  window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  if (stack) {
+    stack.querySelectorAll("[data-open-panel]").forEach((btn) => {
+      btn.addEventListener("click", () => setPanel(btn.dataset.openPanel));
+    });
+    stack.querySelectorAll("[data-back]").forEach((btn) => {
+      btn.addEventListener("click", () => setPanel("main"));
+    });
+    stack.querySelectorAll("[data-close]").forEach((btn) => {
+      btn.addEventListener("click", closeDrawer);
+    });
+  }
+})();
 
 // ==============================
-// Pointer FX (PC only)
+// Pointer FX (PC + Mobile)
+// - PC: move follow + lockbox hover
+// - Mobile: press follow + "tapした瞬間から1秒でフェード"（ステイなし）
 // ==============================
-if (isFinePointer) {
+(() => {
   const fx      = document.getElementById("pointer-fx");
   const lockbox = document.getElementById("lockbox");
+  if (!fx) return;
 
-  const CLICKABLE_SELECTOR = [
-    "a[href]",
-    "button",
-    '[role="button"]',
-    "[data-open-panel]",
-    "[data-close]",
-    "[data-back]",
-    ".drawer__item",
-    ".drawer__listItem",
-    ".pill",
-    ".btn"
-  ].join(",");
+  const mmFine   = window.matchMedia ? window.matchMedia("(pointer: fine)") : null;
+  const mmCoarse = window.matchMedia ? window.matchMedia("(pointer: coarse)") : null;
+  const isFinePointer   = !!(mmFine && mmFine.matches);
+  const isCoarsePointer = !!(mmCoarse && mmCoarse.matches);
 
-  const closestClickable = (el) =>
-    el && el.closest ? el.closest(CLICKABLE_SELECTOR) : null;
-
-  if (fx) {
-    const moveFx = (x, y) => {
-      fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      fx.style.opacity = "1";
-    };
-
-    const hideFx = () => {
-  clearTimeout(hideTimer);
-
-  // ✅ 指を離した瞬間からフェード開始
-  fx.style.opacity = "0";
-
-  // ✅ フェード完了後に退避
-  hideTimer = setTimeout(() => {
-    targetX = targetY = curX = curY = -9999;
+  // common
+  const moveFx = (x, y) => {
+    fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  };
+  const hardHide = () => {
+    fx.style.opacity = "0";
     fx.style.transform = "translate3d(-9999px, -9999px, 0)";
-    stopRAF();
-  }, 1000); // ← CSSのtransition時間と合わせる
-};
+    if (lockbox) lockbox.style.opacity = "0";
+  };
 
-    window.addEventListener("blur", hideFx);
+  // -------- PC --------
+  if (isFinePointer) {
+    fx.style.opacity = "0";
 
-    // lockbox hover
+    const CLICKABLE_SELECTOR = [
+      "a[href]",
+      "button",
+      '[role="button"]',
+      "[data-open-panel]",
+      "[data-close]",
+      "[data-back]",
+      ".drawer__item",
+      ".drawer__listItem",
+      ".pill",
+      ".btn"
+    ].join(",");
+
+    const closestClickable = (el) =>
+      el && el.closest ? el.closest(CLICKABLE_SELECTOR) : null;
+
+    window.addEventListener(
+      "mousemove",
+      (e) => {
+        moveFx(e.clientX, e.clientY);
+        fx.style.opacity = "1";
+      },
+      { passive: true }
+    );
+
+    window.addEventListener("mouseout", (e) => {
+      if (!e.relatedTarget && !e.toElement) hardHide();
+    });
+
+    window.addEventListener("blur", hardHide);
+
     if (lockbox) {
-      const showLockbox = () => { lockbox.style.opacity = "1"; };
-      const hideLockbox = () => { lockbox.style.opacity = "0"; };
+      const showLockbox = () => (lockbox.style.opacity = "1");
+      const hideLockbox = () => (lockbox.style.opacity = "0");
 
       document.addEventListener("mouseover", (e) => {
         if (closestClickable(e.target)) showLockbox();
       });
-
       document.addEventListener("mouseout", (e) => {
         const from = closestClickable(e.target);
         const to   = closestClickable(e.relatedTarget);
         if (from && from !== to) hideLockbox();
       });
-
       document.addEventListener("focusin", (e) => {
         if (closestClickable(e.target)) showLockbox();
       });
-
       document.addEventListener("focusout", hideLockbox);
     }
 
-    hideFx();
+    hardHide();
+    return;
   }
-}
 
-// ==============================
-// Archive preview (PC hover only)
-// ==============================
-const preview = document.getElementById("drawerPreview");
-if (preview && isFinePointer) {
-  document
-    .querySelectorAll('[data-panel="archive"] .drawer__listItem[data-cover]')
-    .forEach((item) => {
-      const url = item.dataset.cover;
+  // -------- Mobile --------
+  if (isCoarsePointer) {
+    document.body.classList.add("is-touch"); // touch-action の制御に使うなら
 
-      item.addEventListener("mouseenter", () => {
-        preview.style.backgroundImage = `url("${url}")`;
-        preview.style.opacity = "1";
-      });
+    let targetX = -9999, targetY = -9999;
+    let curX = -9999, curY = -9999;
+    let rafId = null;
+    let isDown = false;
 
-      item.addEventListener("mouseleave", () => {
-        preview.style.opacity = "0";
-      });
-    });
-}
+    const lerp = (a, b, t) => a + (b - a) * t;
 
-// ==============================
-// Pointer FX (Mobile: press → stay → fade)
-// ==============================
-if (isCoarsePointer) {
-  const fx = document.getElementById("pointer-fx");
-  if (!fx) return;
+    const render = () => {
+      const t = 0.18; // ヌル度
+      curX = lerp(curX, targetX, t);
+      curY = lerp(curY, targetY, t);
+      moveFx(curX, curY);
+      rafId = requestAnimationFrame(render);
+    };
 
-  let targetX = -9999, targetY = -9999;
-  let curX = -9999, curY = -9999;
-  let rafId = null;
-  let hideTimer = null;
-  let isDown = false;
+    const startRAF = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(render);
+    };
 
-  const HOLD_TIME = 1000; // ← 指を離してから保持
-  const FADE_TIME = 1000; // ← フェード時間
-  const LERP = 0.18;
+    const stopRAF = () => {
+      if (!rafId) return;
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    };
 
-  const lerp = (a, b, t) => a + (b - a) * t;
+    const showFx = () => {
+      fx.style.opacity = "1";
+      startRAF();
+    };
 
-  const render = () => {
-    curX = lerp(curX, targetX, LERP);
-    curY = lerp(curY, targetY, LERP);
-    fx.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
-    rafId = requestAnimationFrame(render);
-  };
-
-  const startRAF = () => {
-    if (!rafId) rafId = requestAnimationFrame(render);
-  };
-
-  const stopRAF = () => {
-    cancelAnimationFrame(rafId);
-    rafId = null;
-  };
-
-  const showFx = () => {
-    clearTimeout(hideTimer);
-    fx.style.opacity = "1";
-    startRAF();
-  };
-
-  const hideFx = () => {
-    clearTimeout(hideTimer);
-
-    // 🔹 まず「止まったまま保持」
-    hideTimer = setTimeout(() => {
-      // 🔹 そこからフェード
+    // ★「タップした瞬間から1秒で薄く消える」
+    const fadeOutNow = () => {
+      // CSS側で transition: opacity 1000ms linear; が効く想定
       fx.style.opacity = "0";
-
-      hideTimer = setTimeout(() => {
+      // 1秒後に完全退避して止める
+      setTimeout(() => {
         targetX = targetY = curX = curY = -9999;
         fx.style.transform = "translate3d(-9999px, -9999px, 0)";
         stopRAF();
-      }, FADE_TIME);
+      }, 1000);
+    };
 
-    }, HOLD_TIME);
-  };
+    window.addEventListener(
+      "pointerdown",
+      (e) => {
+        isDown = true;
+        showFx();
+        targetX = e.clientX;
+        targetY = e.clientY;
+      },
+      { passive: true }
+    );
 
-  window.addEventListener("pointerdown", (e) => {
-    isDown = true;
-    showFx();
-    targetX = e.clientX;
-    targetY = e.clientY;
-  }, { passive: true });
+    window.addEventListener(
+      "pointermove",
+      (e) => {
+        if (!isDown) return;
+        targetX = e.clientX;
+        targetY = e.clientY;
+      },
+      { passive: true }
+    );
 
-  window.addEventListener("pointermove", (e) => {
-    if (!isDown) return;
-    targetX = e.clientX;
-    targetY = e.clientY;
-  }, { passive: true });
+    window.addEventListener(
+      "pointerup",
+      () => {
+        isDown = false;
+        fadeOutNow();
+      },
+      { passive: true }
+    );
 
-  window.addEventListener("pointerup", () => {
-    isDown = false;
-    hideFx(); // ← ここで「即消えない」
-  }, { passive: true });
+    window.addEventListener(
+      "pointercancel",
+      () => {
+        isDown = false;
+        fadeOutNow();
+      },
+      { passive: true }
+    );
 
-  window.addEventListener("pointercancel", () => {
-    isDown = false;
-    hideFx();
-  }, { passive: true });
-}
+    hardHide();
+  }
+})();
