@@ -1,5 +1,4 @@
 // ==============================
-
 // year
 // ==============================
 const yearEl = document.getElementById("year");
@@ -161,84 +160,83 @@ if (preview && isFinePointer) {
 }
 
 // ==============================
-// Pointer FX (Mobile: press-follow + fade)
+// Pointer FX (Mobile: press → stay → fade)
 // ==============================
 if (isCoarsePointer) {
   const fx = document.getElementById("pointer-fx");
+  if (!fx) return;
 
-  if (fx) {
-    let targetX = -9999, targetY = -9999;
-    let curX = -9999, curY = -9999;
-    let rafId = null;
-    let hideTimer = null;
-    let isDown = false;
+  let targetX = -9999, targetY = -9999;
+  let curX = -9999, curY = -9999;
+  let rafId = null;
+  let hideTimer = null;
+  let isDown = false;
 
-    const lerp = (a, b, t) => a + (b - a) * t;
+  const HOLD_TIME = 1000; // ← 指を離してから保持
+  const FADE_TIME = 1000; // ← フェード時間
+  const LERP = 0.18;
 
-    const render = () => {
-      const t = 0.18; // ヌルッ度：0.12〜0.22
-      curX = lerp(curX, targetX, t);
-      curY = lerp(curY, targetY, t);
-      fx.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
-      rafId = requestAnimationFrame(render);
-    };
+  const lerp = (a, b, t) => a + (b - a) * t;
 
-    const startRAF = () => {
-      if (rafId) return;
-      rafId = requestAnimationFrame(render);
-    };
+  const render = () => {
+    curX = lerp(curX, targetX, LERP);
+    curY = lerp(curY, targetY, LERP);
+    fx.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
+    rafId = requestAnimationFrame(render);
+  };
 
-    const stopRAF = () => {
-      if (!rafId) return;
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    };
+  const startRAF = () => {
+    if (!rafId) rafId = requestAnimationFrame(render);
+  };
 
-    const showFx = () => {
-      clearTimeout(hideTimer);
-      fx.style.opacity = "1";
-      startRAF();
-    };
+  const stopRAF = () => {
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  };
 
-    const hideFx = () => {
-  clearTimeout(hideTimer);
+  const showFx = () => {
+    clearTimeout(hideTimer);
+    fx.style.opacity = "1";
+    startRAF();
+  };
 
-  // ① まず 1秒そのまま表示
-  hideTimer = setTimeout(() => {
-    // ② そこからフェード開始
-    fx.style.opacity = "0";
+  const hideFx = () => {
+    clearTimeout(hideTimer);
 
-    // ③ フェード完了後に完全退避
+    // 🔹 まず「止まったまま保持」
     hideTimer = setTimeout(() => {
-      targetX = targetY = curX = curY = -9999;
-      fx.style.transform = "translate3d(-9999px, -9999px, 0)";
-      stopRAF();
-    }, 1000);
+      // 🔹 そこからフェード
+      fx.style.opacity = "0";
 
-  }, 1000);
-};
+      hideTimer = setTimeout(() => {
+        targetX = targetY = curX = curY = -9999;
+        fx.style.transform = "translate3d(-9999px, -9999px, 0)";
+        stopRAF();
+      }, FADE_TIME);
 
-    window.addEventListener("pointerdown", (e) => {
-      isDown = true;
-      showFx();
-      targetX = e.clientX;
-      targetY = e.clientY;
-    }, { passive: true });
+    }, HOLD_TIME);
+  };
 
-    window.addEventListener("pointermove", (e) => {
-      if (!isDown) return; // 押してる間だけ追従
-      targetX = e.clientX;
-      targetY = e.clientY;
-    }, { passive: true });
+  window.addEventListener("pointerdown", (e) => {
+    isDown = true;
+    showFx();
+    targetX = e.clientX;
+    targetY = e.clientY;
+  }, { passive: true });
 
-    window.addEventListener("pointerup", () => {
-      isDown = false;
-      hideFx();
-    }, { passive: true });
+  window.addEventListener("pointermove", (e) => {
+    if (!isDown) return;
+    targetX = e.clientX;
+    targetY = e.clientY;
+  }, { passive: true });
 
-    window.addEventListener("pointercancel", () => {
-      isDown = false;
-      hideFx();
-    }, { passive: true });
-  }
+  window.addEventListener("pointerup", () => {
+    isDown = false;
+    hideFx(); // ← ここで「即消えない」
+  }, { passive: true });
+
+  window.addEventListener("pointercancel", () => {
+    isDown = false;
+    hideFx();
+  }, { passive: true });
 }
