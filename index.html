@@ -234,7 +234,7 @@
     </div>
   </aside>
 
-  <!-- Pointer FX (blob + rect lock) -->
+    <!-- Pointer FX (DOM only) -->
   <div id="pointer-fx" aria-hidden="true">
     <div id="pointer-blob"></div>
 
@@ -253,148 +253,8 @@
     </div>
   </div>
 
-  <script>
-    // year
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // ===== Drawer open / close =====
-    const menuBtn = document.getElementById("menuBtn");
-    const drawer  = document.getElementById("drawer");
-    const overlay = document.getElementById("overlay");
-
-    const setExpanded = (isOpen) => {
-      menuBtn?.setAttribute("aria-expanded", String(isOpen));
-      drawer?.setAttribute("aria-hidden", String(!isOpen));
-    };
-
-    const openDrawer = () => {
-      if (!drawer || !overlay) return;
-      drawer.classList.add("is-open");
-      overlay.hidden = false;
-      document.body.classList.add("is-locked");
-      setPanel("main");
-      setExpanded(true);
-    };
-
-    const closeDrawer = () => {
-      if (!drawer || !overlay) return;
-      drawer.classList.remove("is-open");
-      overlay.hidden = true;
-      document.body.classList.remove("is-locked");
-      setExpanded(false);
-    };
-
-    menuBtn?.addEventListener("click", openDrawer);
-    overlay?.addEventListener("click", closeDrawer);
-
-    // ===== Drawer panel switching =====
-    const stack = document.getElementById("drawerStack");
-
-    const setPanel = (name) => {
-      if (!stack) return;
-      stack.querySelectorAll(".drawer__panel").forEach((panel) => {
-        panel.classList.toggle("is-active", panel.dataset.panel === name);
-      });
-    };
-
-    if (stack) {
-      stack.querySelectorAll("[data-open-panel]").forEach((btn) => {
-        btn.addEventListener("click", () => setPanel(btn.dataset.openPanel));
-      });
-
-      stack.querySelectorAll("[data-back]").forEach((btn) => {
-        btn.addEventListener("click", () => setPanel("main"));
-      });
-
-      stack.querySelectorAll("[data-close]").forEach((btn) => {
-        btn.addEventListener("click", closeDrawer);
-      });
-    }
-
-    // ===== Pointer FX =====
-    const fx      = document.getElementById("pointer-fx");
-    const blob    = document.getElementById("pointer-blob");
-    const lockbox = document.getElementById("lockbox");
-
-    const CLICKABLE_SELECTOR = [
-      "a[href]",
-      "button",
-      '[role="button"]',
-      "[data-open-panel]",
-      "[data-close]",
-      "[data-back]",
-      ".drawer__item",
-      ".drawer__listItem",
-      ".pill",
-      ".btn"
-    ].join(",");
-
-    const closestClickable = (el) =>
-      el && el.closest ? el.closest(CLICKABLE_SELECTOR) : null;
-
-    if (fx && blob && lockbox) {
-      const moveFx = (x, y) => {
-        fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      };
-
-      const hideFx = () => {
-        fx.style.transform = "translate3d(-9999px, -9999px, 0)";
-        lockbox.style.opacity = "0";
-      };
-
-      window.addEventListener("mousemove", (e) => {
-        moveFx(e.clientX, e.clientY);
-      }, { passive: true });
-
-      window.addEventListener("mouseout", (e) => {
-        if (!e.relatedTarget && !e.toElement) hideFx();
-      });
-
-      window.addEventListener("blur", hideFx);
-
-      const showLockbox = () => { lockbox.style.opacity = "1"; };
-      const hideLockbox = () => { lockbox.style.opacity = "0"; };
-
-      document.addEventListener("mouseover", (e) => {
-        if (closestClickable(e.target)) showLockbox();
-      });
-
-      document.addEventListener("mouseout", (e) => {
-        const from = closestClickable(e.target);
-        const to   = closestClickable(e.relatedTarget);
-        if (from && from !== to) hideLockbox();
-      });
-
-      document.addEventListener("focusin", (e) => {
-        if (closestClickable(e.target)) showLockbox();
-      });
-      document.addEventListener("focusout", hideLockbox);
-
-      window.addEventListener("scroll", hideLockbox, { passive: true });
-      window.addEventListener("resize", hideLockbox, { passive: true });
-
-      hideFx();
-    }
-
-    // ===== Archive hover preview =====
-    const preview = document.getElementById("drawerPreview");
-    if (preview) {
-      document
-        .querySelectorAll('[data-panel="archive"] .drawer__listItem[data-cover]')
-        .forEach((item) => {
-          const url = item.dataset.cover;
-
-          item.addEventListener("mouseenter", () => {
-            preview.style.backgroundImage = `url("${url}")`;
-            preview.style.opacity = "1";
-          });
-
-          item.addEventListener("mouseleave", () => {
-            preview.style.opacity = "0";
-          });
-        });
-    }
-  </script>
-  <script src="script.js?v=20260101-1" defer></script>
+  <!-- JS -->
+  <script src="script.js" defer></script>
+  <script src="cursor.js" defer></script>
 </body>
 </html>
