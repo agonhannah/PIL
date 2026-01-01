@@ -200,14 +200,22 @@ if (isCoarsePointer) {
     };
 
     const hideFx = () => {
-      fx.style.opacity = "0"; // 1秒フェード（CSS側）
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(() => {
-        targetX = targetY = curX = curY = -9999;
-        fx.style.transform = "translate3d(-9999px, -9999px, 0)";
-        stopRAF();
-      }, 1000);
-    };
+  clearTimeout(hideTimer);
+
+  // ① まず 1秒そのまま表示
+  hideTimer = setTimeout(() => {
+    // ② そこからフェード開始
+    fx.style.opacity = "0";
+
+    // ③ フェード完了後に完全退避
+    hideTimer = setTimeout(() => {
+      targetX = targetY = curX = curY = -9999;
+      fx.style.transform = "translate3d(-9999px, -9999px, 0)";
+      stopRAF();
+    }, 1000);
+
+  }, 1000);
+};
 
     window.addEventListener("pointerdown", (e) => {
       isDown = true;
@@ -232,5 +240,4 @@ if (isCoarsePointer) {
       hideFx();
     }, { passive: true });
   }
-  
 }
