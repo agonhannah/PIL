@@ -97,18 +97,18 @@ if (isFinePointer) {
     };
 
     const hideFx = () => {
-      fx.style.opacity = "0";
-      fx.style.transform = "translate3d(-9999px, -9999px, 0)";
-      if (lockbox) lockbox.style.opacity = "0";
-    };
+  clearTimeout(hideTimer);
 
-    window.addEventListener("mousemove", (e) => {
-      moveFx(e.clientX, e.clientY);
-    }, { passive: true });
+  // ✅ 指を離した瞬間からフェード開始
+  fx.style.opacity = "0";
 
-    window.addEventListener("mouseout", (e) => {
-      if (!e.relatedTarget && !e.toElement) hideFx();
-    });
+  // ✅ フェード完了後に退避
+  hideTimer = setTimeout(() => {
+    targetX = targetY = curX = curY = -9999;
+    fx.style.transform = "translate3d(-9999px, -9999px, 0)";
+    stopRAF();
+  }, 1000); // ← CSSのtransition時間と合わせる
+};
 
     window.addEventListener("blur", hideFx);
 
