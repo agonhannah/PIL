@@ -22,6 +22,7 @@ html, body { height: 100%; }
 
 body{
   margin: 0;
+  cursor: auto;
   cursor: none;
   background: var(--bg);
   color: var(--ink);
@@ -30,7 +31,16 @@ body{
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   overflow-x: hidden;
+/* PCだけカーソル消す */
+  @media (pointer: fine) {
+  body {
+    cursor: none;
+  }
 }
+}
+
+
+
 
 /* Noise overlay (重要) */
 body::after{
