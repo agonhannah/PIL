@@ -13,12 +13,11 @@ const isTouch =
 if (isTouch) document.body.classList.add("is-touch");
 
 // ==============================
-// Pointer FX (mouse + touch)
+// Pointer FX (Pointer Events + rAF smoothing)
 // ==============================
 const fx      = document.getElementById("pointer-fx");
 const lockbox = document.getElementById("lockbox");
 
-// lockbox を出す対象
 const CLICKABLE_SELECTOR = [
   "a[href]",
   "button",
@@ -36,82 +35,117 @@ const closestClickable = (el) =>
   el && el.closest ? el.closest(CLICKABLE_SELECTOR) : null;
 
 if (fx && lockbox) {
-  // 位置更新
-  const moveFx = (x, y) => {
-    fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  let targetX = -9999, targetY = -9999;
+  let curX    = -9999, curY    = -9999;
+
+  let rafId = null;
+  let hideTimer = null;
+  let isDown = false;
+
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  const render = () => {
+    // 追従の“ヌルヌル度”
+    const t = isTouch ? 0.18 : 0.35;
+
+    curX = lerp(curX, targetX, t);
+    curY = lerp(curY, targetY, t);
+
+    fx.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
+    rafId = requestAnimationFrame(render);
   };
 
-  // 消す（PCは座標退避、スマホはフェード→退避）
-  let hideTimer = null;
+  const ensureRAF = () => {
+    if (rafId) return;
+    rafId = requestAnimationFrame(render);
+  };
 
-  const hideFx = () => {
-    if (isTouch) {
-      fx.style.opacity = "0";                 // ← 1秒フェード（CSS側でtransition）
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(() => {
-        fx.style.transform = "translate3d(-9999px, -9999px, 0)";
-      }, 1000);
-    } else {
-      fx.style.transform = "translate3d(-9999px, -9999px, 0)";
-    }
-    lockbox.style.opacity = "0";
+  const stopRAF = () => {
+    if (!rafId) return;
+    cancelAnimationFrame(rafId);
+    rafId = null;
   };
 
   const showFx = () => {
-    fx.style.opacity = "1";
     clearTimeout(hideTimer);
+    fx.style.opacity = "1";
+    ensureRAF();
   };
 
-  // ------------------------------
-  // PC: mousemove
-  // ------------------------------
-  window.addEventListener("mousemove", (e) => {
-    if (isTouch) return;
-    showFx();
-    moveFx(e.clientX, e.clientY);
-  }, { passive: true });
+  const hideFx = () => {
+    lockbox.style.opacity = "0";
+    isDown = false;
 
-  window.addEventListener("mouseout", (e) => {
-    if (isTouch) return;
-    if (!e.relatedTarget && !e.toElement) hideFx();
-  });
+    if (isTouch) {
+      // 1秒フェード → 退避（CSS transition）
+      fx.style.opacity = "0";
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        targetX = -9999;
+        targetY = -9999;
+        curX = -9999;
+        curY = -9999;
+        fx.style.transform = "translate3d(-9999px, -9999px, 0)";
+        stopRAF();
+      }, 1000);
+    } else {
+      // PCは即退避
+      targetX = -9999;
+      targetY = -9999;
+      curX = -9999;
+      curY = -9999;
+      fx.style.opacity = "0";
+      fx.style.transform = "translate3d(-9999px, -9999px, 0)";
+      stopRAF();
+    }
+  };
 
-  window.addEventListener("blur", hideFx);
-
-  // ------------------------------
-  // Mobile/Tablet: Pointer Events (stable)
-  // ------------------------------
-  window.addEventListener("pointerdown", (e) => {
-    if (!isTouch) return;
-    showFx();
-    moveFx(e.clientX, e.clientY);
-  }, { passive: true });
-
-  window.addEventListener("pointermove", (e) => {
-    if (!isTouch) return;
-    showFx();
-    moveFx(e.clientX, e.clientY);
-  }, { passive: true });
-
-  window.addEventListener("pointerup", (e) => {
-    if (!isTouch) return;
-    hideFx(); // 指を離したら1秒でじんわり消える（hideFx内のfade）
-  }, { passive: true });
-
-  window.addEventListener("pointercancel", (e) => {
-    if (!isTouch) return;
-    hideFx();
-  }, { passive: true });
-  
-
-  // ------------------------------
-  // lockbox show/hide
-  // PC: hover/focus
-  // Touch: touchstart で出す
-  // ------------------------------
   const showLockbox = () => { lockbox.style.opacity = "1"; };
   const hideLockbox = () => { lockbox.style.opacity = "0"; };
 
+  const updateLockboxByPoint = (x, y) => {
+    const el = document.elementFromPoint(x, y);
+    if (closestClickable(el)) showLockbox();
+    else hideLockbox();
+  };
+
+  // ------------------------------
+  // Pointer Events (mouse + touch)
+  // ------------------------------
+  window.addEventListener("pointerdown", (e) => {
+    // 指を置いた瞬間に追従開始
+    isDown = true;
+    showFx();
+    targetX = e.clientX;
+    targetY = e.clientY;
+
+    if (isTouch) updateLockboxByPoint(e.clientX, e.clientY);
+  }, { passive: true });
+
+  window.addEventListener("pointermove", (e) => {
+    // PCは常時、スマホは押下中だけ追従（誤作動防止）
+    if (isTouch && !isDown) return;
+
+    showFx();
+    targetX = e.clientX;
+    targetY = e.clientY;
+
+    if (isTouch) updateLockboxByPoint(e.clientX, e.clientY);
+  }, { passive: true });
+
+  window.addEventListener("pointerup", () => {
+    if (!isTouch) return;
+    hideFx(); // 指を離したら1秒フェード
+  }, { passive: true });
+
+  window.addEventListener("pointercancel", () => {
+    if (!isTouch) return;
+    hideFx();
+  }, { passive: true });
+
+  // ------------------------------
+  // PCだけ：hover/focusでlockbox
+  // ------------------------------
   document.addEventListener("mouseover", (e) => {
     if (isTouch) return;
     if (closestClickable(e.target)) showLockbox();
@@ -128,17 +162,21 @@ if (fx && lockbox) {
     if (isTouch) return;
     if (closestClickable(e.target)) showLockbox();
   });
+
   document.addEventListener("focusout", () => {
     if (isTouch) return;
     hideLockbox();
   });
 
-  // ✅スマホ：指を置いた瞬間に lockbox 表示
-  document.addEventListener("touchstart", (e) => {
-    if (!isTouch) return;
-    if (closestClickable(e.target)) showLockbox();
-    else hideLockbox();
-  }, { passive: true });
+  // ------------------------------
+  // PCだけ：画面外に出たら消す
+  // ------------------------------
+  window.addEventListener("mouseout", (e) => {
+    if (isTouch) return;
+    if (!e.relatedTarget && !e.toElement) hideFx();
+  });
+
+  window.addEventListener("blur", hideFx);
 
   // 初期状態
   hideFx();
