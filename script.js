@@ -79,28 +79,30 @@ if (fx && lockbox) {
   window.addEventListener("blur", hideFx);
 
   // ------------------------------
-  // Touch: finger follow + fade
+  // Mobile/Tablet: Pointer Events (stable)
   // ------------------------------
-  window.addEventListener("touchstart", (e) => {
+  window.addEventListener("pointerdown", (e) => {
     if (!isTouch) return;
-    const t = e.touches[0];
-    if (!t) return;
     showFx();
-    moveFx(t.clientX, t.clientY);
+    moveFx(e.clientX, e.clientY);
   }, { passive: true });
 
-  window.addEventListener("touchmove", (e) => {
+  window.addEventListener("pointermove", (e) => {
     if (!isTouch) return;
-    const t = e.touches[0];
-    if (!t) return;
     showFx();
-    moveFx(t.clientX, t.clientY);
+    moveFx(e.clientX, e.clientY);
   }, { passive: true });
 
-  window.addEventListener("touchend", () => {
+  window.addEventListener("pointerup", (e) => {
     if (!isTouch) return;
-    hideFx(); // ← 指を離したら1秒でじんわり消える
+    hideFx(); // 指を離したら1秒でじんわり消える（hideFx内のfade）
   }, { passive: true });
+
+  window.addEventListener("pointercancel", (e) => {
+    if (!isTouch) return;
+    hideFx();
+  }, { passive: true });
+  
 
   // ------------------------------
   // lockbox show/hide
