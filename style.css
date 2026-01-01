@@ -29,12 +29,11 @@ body{
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   overflow-x: hidden;
-/* PCだけカーソル消す */
-  @media (pointer: fine) {
-  body {
-    cursor: none;
-  }
+
 }
+/* PCだけカーソル消す（正しい書き方） */
+@media (pointer: fine) {
+  body { cursor: none; }
 }
 
 
@@ -699,10 +698,10 @@ body.is-locked{
 ========================================= */
 
 
-/* 念のため hover / active も潰す */
-a:hover,
-button:hover,
-[role="button"]:hover {
-  cursor: none !important;
+@media (pointer: fine) {
+  a:hover,
+  button:hover,
+  [role="button"]:hover {
+    cursor: none !important;
+  }
 }
-
