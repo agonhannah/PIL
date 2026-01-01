@@ -188,15 +188,26 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     };
 
     window.addEventListener(
-      "pointerdown",
-      (e) => {
-        isDown = true;
-        showFx();
-        targetX = e.clientX;
-        targetY = e.clientY;
-      },
-      { passive: true }
-    );
+  "pointerdown",
+  (e) => {
+    isDown = true;
+
+    // ★端から追いかけるのを殺す：初回はその場にワープ
+    targetX = e.clientX;
+    targetY = e.clientY;
+    curX = targetX;
+    curY = targetY;
+    fx.style.transition = "none"; // 初回のopacity/transform遅延を防ぐ
+    moveFx(curX, curY);
+
+    // すぐ表示（次フレームでtransitionを戻す）
+    showFx();
+    requestAnimationFrame(() => {
+      fx.style.transition = ""; // CSSの opacity 1000ms を復帰
+    });
+  },
+  { passive: true }
+);
 
     window.addEventListener(
       "pointermove",
