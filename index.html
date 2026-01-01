@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>dhrma Kazuki Hanamoto </title> 
+  <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
+ <link rel="stylesheet" href="style.css?v=20260101-1" />
+</head>
+
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <nav class="topbar__left" aria-label="Primary">
+      <button
+        class="menuBtn"
+        id="menuBtn"
+        type="button"
+        aria-label="Open menu"
+        aria-controls="drawer"
+        aria-expanded="false"
+      >
+        Menu ✶
+      </button>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 class="hero__title" id="hero-title">
+        PARAD<br />
+        ICE<br />
+        LONER.
+      </h1>
+
+      <p class="hero__lead">
+        ARCHIVE of WORKS by dhrma Kazuki Hanamoto
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn btn--solid" href="#works">View Works</a>
+        <a class="btn btn--ghost" href="#shop">Open Shop</a>
+      </div>
+
+      <div class="rule" role="separator" aria-hidden="true"></div>
+    </section>
+
+    <!-- WORKS -->
+    <section id="works" class="section" aria-labelledby="works-title">
+      <div class="section__head">
+        <h2 class="section__title" id="works-title">Works</h2>
+        <p class="section__sub">最新→過去。リンクは後で差し替え。</p>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Work Title 01</h3>
+            <p class="card__meta">2025 · Audio/Visual</p>
+            <a class="pill" href="#" aria-label="Open Work Title 01">Open</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Work Title 02</h3>
+            <p class="card__meta">2025 · Music</p>
+            <a class="pill" href="#" aria-label="Open Work Title 02">Open</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Work Title 03</h3>
+            <p class="card__meta">2024 · Visual</p>
+            <a class="pill" href="#" aria-label="Open Work Title 03">Open</a>
+          </div>
+        </article>
+      </div>
+
+      <div class="rule" role="separator" aria-hidden="true"></div>
+    </section>
+
+    <!-- SHOP -->
+    <section id="shop" class="section" aria-labelledby="shop-title">
+      <div class="section__head">
+        <h2 class="section__title" id="shop-title">Shop</h2>
+        <p class="section__sub">
+          まずは外部販売リンクでOK（Gumroad / BOOTH / Shopify / Stripe）。
+        </p>
+      </div>
+
+      <div class="grid grid--shop">
+        <article class="card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Drum Kit Vol.1</h3>
+            <p class="card__meta">One-shot / Loop / FX</p>
+            <a class="pill" href="#" aria-label="Buy Drum Kit Vol.1">Buy</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Sample Pack 002</h3>
+            <p class="card__meta">Textures / Clicks</p>
+            <a class="pill" href="#" aria-label="Buy Sample Pack 002">Buy</a>
+          </div>
+        </article>
+      </div>
+
+      <div class="rule" role="separator" aria-hidden="true"></div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="section" aria-labelledby="about-title">
+      <div class="section__head">
+        <h2 class="section__title" id="about-title">About</h2>
+        <p class="section__sub"></p>
+      </div>
+
+      <div class="aboutbox">
+        <p class="aboutbox__text">
+          dhrma Kazuki Hanamoto
+          <br />
+          Contact:
+          <a class="inline" href="mailto:kazukihanamoto.dhrma@gmail.com">kazukihanamoto.dhrma@gmail.com</a>
+        </p>
+
+        <div class="links" aria-label="External links">
+          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">Bandcamp</a>
+          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">YouTube</a>
+          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">SoundCloud</a>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <span>© <span id="year"></span> dhrma</span>
+      </footer>
+    </section>
+  </main>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" hidden></div>
+
+  <!-- Drawer -->
+  <aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="drawer__stack" id="drawerStack">
+
+      <!-- PANEL: MAIN -->
+      <section class="drawer__panel is-active" data-panel="main">
+        <div class="drawer__top">
+          <span class="drawer__brand">dhrma Kazuki Hanamoto</span>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+        </div>
+
+        <nav class="drawer__nav" aria-label="Menu">
+          <button class="drawer__item" type="button" data-open-panel="archive">
+            Archive <span class="plus" aria-hidden="true">+</span>
+          </button>
+          <button class="drawer__item" type="button" data-open-panel="shop">
+            Shop <span class="plus" aria-hidden="true">+</span>
+          </button>
+          <button class="drawer__item" type="button" data-open-panel="order">
+            Order <span class="plus" aria-hidden="true">+</span>
+          </button>
+        </nav>
+
+        <div class="drawer__foot">
+          <a class="drawer__small" href="#about">Contact</a>
+        </div>
+      </section>
+
+      <!-- PANEL: ARCHIVE -->
+      <section class="drawer__panel" data-panel="archive">
+        <div class="drawer__top">
+          <div class="drawer__backRow">
+            <button class="drawer__back" type="button" data-back>Back</button>
+          </div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+        </div>
+
+        <div class="drawer__listTitle">Archive</div>
+
+        <div class="drawer__preview" id="drawerPreview" aria-hidden="true"></div>
+
+        <nav class="drawer__list" aria-label="Archive list">
+          <a class="drawer__listItem" href="#" data-cover="images/test_01.jpg">Work Title 01</a>
+          <a class="drawer__listItem" href="#" data-cover="images/test_02.jpg">Work Title 02</a>
+          <a class="drawer__listItem" href="#" data-cover="images/test_03.jpg">Work Title 03</a>
+        </nav>
+      </section>
+
+      <!-- PANEL: SHOP -->
+      <section class="drawer__panel" data-panel="shop">
+        <div class="drawer__top">
+          <div class="drawer__backRow">
+            <button class="drawer__back" type="button" data-back>Back</button>
+          </div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+        </div>
+
+        <div class="drawer__listTitle">Shop</div>
+
+        <nav class="drawer__list" aria-label="Shop list">
+          <a class="drawer__listItem" href="#">Shop All</a>
+          <a class="drawer__listItem" href="#">Digital Goods</a>
+          <a class="drawer__listItem" href="#">Physical Goods</a>
+        </nav>
+      </section>
+
+      <!-- PANEL: ORDER -->
+      <section class="drawer__panel" data-panel="order">
+        <div class="drawer__top">
+          <div class="drawer__backRow">
+            <button class="drawer__back" type="button" data-back>Back</button>
+          </div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+        </div>
+
+        <div class="drawer__listTitle">Order</div>
+
+        <div class="drawer__note">
+          Order / Contact details will be placed here.
+        </div>
+      </section>
+
+    </div>
+  </aside>
+
+    <!-- Pointer FX (DOM only) -->
+  <div id="pointer-fx" aria-hidden="true">
+    <div id="pointer-blob"></div>
+
+    <div id="lockbox" aria-hidden="true">
+      <div class="lockbox__rect">
+        <div class="lockbox__cross lockbox__cross--h"></div>
+        <div class="lockbox__cross lockbox__cross--v"></div>
+
+        <span class="lockbox__tick lockbox__tick--t"></span>
+        <span class="lockbox__tick lockbox__tick--r"></span>
+        <span class="lockbox__tick lockbox__tick--b"></span>
+        <span class="lockbox__tick lockbox__tick--l"></span>
+      </div>
+
+      <div class="lockbox__label">Point HERE</div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="script.js" defer></script>
+  <script src="cursor.js" defer></script>
+</body>
+</html>
