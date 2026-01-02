@@ -28,8 +28,39 @@ body{
   overflow-x: hidden;
 }
 
-/* ✅ PC/ブラウザ版も含め、全て通常ポインターにする
-   （以前ここに cursor:none が入っていたので完全撤去） */
+a{ color: inherit; text-decoration: none; }
+
+/* =========================================================
+   Cursor policy (IMPORTANT)
+   - PC( pointer:fine ): OSカーソルをサイト全域で消す（drawer含む）
+   - Mobile( pointer:coarse ): OSカーソルはそもそも出ないので触らない
+========================================================= */
+@media (pointer: fine){
+  html, body{ cursor: none !important; }
+
+  /* “どこでも”確実に消す（a/button/role/button/Drawer内含む） */
+  a,
+  button,
+  [role="button"],
+  .drawer,
+  .drawer *{
+    cursor: none !important;
+  }
+
+  /* テキストIビームが出るのも消す（自作カーソル優先） */
+  input,
+  textarea,
+  select,
+  [contenteditable="true"]{
+    cursor: none !important;
+  }
+}
+
+/* ここ重要：touch-action:none は「スクロールもタップも不安定」になることがある
+   → pointer FXのために入れてたけど、Drawer操作を優先して安全側にする */
+body.is-touch{
+  touch-action: pan-y;
+}
 
 /* Noise overlay */
 body::after{
@@ -52,14 +83,6 @@ body::before{
   background: radial-gradient(1200px 700px at 30% 0%, rgba(0,0,0,0.06), transparent 55%);
   pointer-events: none;
   z-index: 0;
-}
-
-a{ color: inherit; text-decoration: none; }
-
-/* ここ重要：touch-action:none は「スクロールもタップも不安定」になることがある
-   → pointer FXのために入れてたけど、Drawer操作を優先して安全側にする */
-body.is-touch{
-  touch-action: pan-y;
 }
 
 /* =========================================================
@@ -137,7 +160,6 @@ body.is-touch{
   border: 1px solid var(--line);
   background: transparent;
   color: var(--ink);
-  cursor: pointer;
 }
 
 .btn--solid{
@@ -250,7 +272,6 @@ body.is-touch{
   font-size: 12px;
   color: var(--ink);
   background: rgba(255,255,255,0.55);
-  cursor: pointer;
 }
 
 .pill:hover{
@@ -386,7 +407,6 @@ body.is-touch{
   cursor: pointer;
   position: relative;
 
-  /* “−”は擬似要素で描くので、ボタン内テキストは見せない */
   font-size: 0;
   line-height: 1;
   color: var(--ink);
@@ -592,32 +612,20 @@ body.is-locked{ overflow: hidden; }
    Pointer FX (PC + Mobile)
 ========================================= */
 
-/* ✅ 合成/重なり安定化（iOSで“出てるのに見えない”系を潰す） */
-body{
-  isolation: isolate;
-}
-
 #pointer-fx{
   position: fixed;
   top: 0;
   left: 0;
   pointer-events: none;
-
-  /* ✅ 常に最前面（drawer/overlayより上） */
-  z-index: 5000;
+  z-index: 1400;
 
   opacity: 0;
   transform: translate3d(-9999px, -9999px, 0);
   will-change: transform, opacity;
-
-  /* 合成安定化 */
-  -webkit-transform: translate3d(-9999px, -9999px, 0);
-  transform: translate3d(-9999px, -9999px, 0);
 }
 
 @media (pointer: coarse){
-  /* フェードはJSで制御するので、CSS側は重くしない */
-  #pointer-fx{ transition: opacity 220ms ease; }
+  #pointer-fx{ transition: opacity 1000ms linear; }
 }
 
 /* blob */
@@ -723,7 +731,6 @@ body{
 /* ================================
    iOS Safari: link/button blue kill
 ================================ */
-
 .drawer,
 .drawer *{
   -webkit-tap-highlight-color: transparent;
@@ -745,7 +752,7 @@ body{
   color: var(--ink) !important;
 }
 
-/* テキストを黒固定（iOSの謎上書き対策） */
+/* テキストを黒固定 */
 .drawer__item,
 .drawer__listItem,
 .drawer__back,
@@ -757,9 +764,6 @@ body{
 
 /* =========================================================
    Product block inside drawer (FINAL)
-   - Buy: 枠付き固定（PC/モバイル共通）
-   - Buy: ¥ と同じ左端に揃える
-   - 価格とBuyは縦並びで間を空ける
 ========================================================= */
 
 .prod__format{
@@ -776,10 +780,8 @@ body{
   color: rgba(17,17,17,0.70);
 }
 
-/* 旧: 横並びrowは無効化 */
 .prod__row{ display: none; }
 
-/* 価格：ブロック + Buyとの間を空ける */
 .prod__price{
   display: block;
   margin-top: 16px;
@@ -790,44 +792,34 @@ body{
   text-align: left;
 }
 
-/* 商品ブロックの左端基準を固定 */
-.drawer .drawer__note.prod{
-  margin-top: 18px;
-  padding-left: 0 !important;
-  text-align: left !important;
-}
-
-/* Buy：左詰め + 枠付き + 全状態で固定 */
-.drawer .drawer__note.prod .prod__buy,
-.drawer .drawer__note.prod .prod__buy:link,
-.drawer .drawer__note.prod .prod__buy:visited,
-.drawer .drawer__note.prod .prod__buy:hover,
-.drawer .drawer__note.prod .prod__buy:active{
+.drawer .prod__buy,
+.drawer .prod__buy:link,
+.drawer .prod__buy:visited,
+.drawer .prod__buy:hover,
+.drawer .prod__buy:active{
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
 
-  margin: 0 !important;
-  padding: 0 14px !important;
-  height: 34px;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  text-indent: 0 !important;
+  text-align: left !important;
 
   border: 1px solid rgba(17,17,17,0.18) !important;
   background: rgba(255,255,255,0.55) !important;
+
+  height: 34px;
+  padding: 0 14px;
   border-radius: 999px;
 
+  font-size: 12px;
   color: var(--ink) !important;
   -webkit-text-fill-color: var(--ink);
-
-  text-indent: 0 !important;
-  text-decoration: none;
-  -webkit-appearance: none;
-  appearance: none;
 }
 
-/* 押した時 */
-.drawer .drawer__note.prod .prod__buy:active{
+.drawer .prod__buy:active{
   transform: translateX(1px);
 }
 
-/* detailは非表示 */
 .prod__detail{ display: none; }
