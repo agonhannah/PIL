@@ -429,18 +429,35 @@ body.is-touch{
   letter-spacing: -0.02em;
 }
 
+/* ✅ close button: circle removed + show minus instead of X */
 .drawer__close{
   width: 40px;
   height: 40px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
+  border-radius: 0;              /* ← 丸枠消す */
+  border: none;                  /* ← 枠消す */
   background: transparent;
-  font-size: 22px;
-  line-height: 1;
+  padding: 0;
   cursor: pointer;
+
+  position: relative;
+  font-size: 0;                  /* ← 元の × を見せない */
+  line-height: 1;
 }
+
+.drawer__close::before{
+  content: "−";                  /* ← マイナス表示 */
+  font-size: 22px;
+  font-weight: 300;
+  color: #111;
+  opacity: 0.65;
+}
+
 .drawer__close:hover{
   transform: translate(1px,-1px);
+}
+
+.drawer__close:hover::before{
+  opacity: 1;
 }
 
 .drawer__nav{
@@ -449,29 +466,40 @@ body.is-touch{
   gap: 10px;
 }
 
+/* ✅ main menu items (Archive/Shop/Order) */
 .drawer__item{
   display:flex;
   align-items: baseline;
   justify-content: space-between;
 
-  font-size: 42px;              /* ← スクショっぽいサイズ感 */
-  font-weight: 650;
+  font-size: 42px;
+  font-weight: 700;              /* ← 普通の太字寄りに固定 */
   letter-spacing: -0.04em;
   line-height: 0.95;
   padding: 6px 2px;
 
   border-bottom: 1px solid rgba(17,17,17,0.10);
+  background: transparent;       /* buttonでも背景出ないように */
+  border-left: none;
+  border-right: none;
+  border-top: none;
+
+  text-align: left;              /* 念のため */
 }
 
 .drawer__item:active{
   transform: translateX(1px);
 }
 
+/* ✅ plus: small + thin + near text */
 .plus{
-  font-size: 0.9em;
-  opacity: 0.75;
+  font-size: 14px;               /* 小さく */
+  font-weight: 300;              /* 細字 */
+  opacity: 0.65;
+  margin-left: 10px;
 }
 
+/* footer */
 .drawer__foot{
   margin-top: 28px;
   padding-top: 12px;
@@ -488,6 +516,7 @@ body.is-touch{
 body.is-locked{
   overflow: hidden;
 }
+
 /* TopからWorks/Shopを非表示（後で戻せる） */
 #works, #shop {
   display: none;
@@ -522,37 +551,67 @@ body.is-locked{
   gap: 10px;
 }
 
+/* ✅ Back: small + thin */
 .drawer__back{
   background: transparent;
   border: none;
   padding: 6px 0;
-  font-size: 44px;
-  font-weight: 650;
-  letter-spacing: -0.06em;
-  line-height: 0.95;
+
+  font-size: 14px;               /* 小さく */
+  font-weight: 300;              /* 細字 */
+  letter-spacing: 0.06em;
+  line-height: 1.2;
   cursor: pointer;
+
+  opacity: 0.75;
 }
 
+.drawer__back:hover{
+  opacity: 1;
+  transform: translateX(1px);
+}
+
+/* ✅ panel title: bold */
 .drawer__listTitle{
   margin-top: 10px;
   font-size: 14px;
-  opacity: 0.65;
+  opacity: 1;
   letter-spacing: 0.02em;
+  font-weight: 700;              /* 太字 */
 }
 
+/* list */
 .drawer__list{
   margin-top: 14px;
   display:flex;
   flex-direction: column;
 }
 
+/* ✅ IMPORTANT: Shop All / Digital / Physical が中央になるのを完全に潰す */
 .drawer__listItem{
+  display: block;                /* buttonでも幅100%で扱う */
+  width: 100%;
+  text-align: left !important;   /* ← 左詰め強制 */
+  justify-content: flex-start;   /* 念のため */
+
   font-size: 28px;
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.05;
   padding: 14px 2px;
+
   border-bottom: 1px solid rgba(17,17,17,0.10);
+
+  background: transparent;       /* button背景OFF */
+  border-left: none;
+  border-right: none;
+  border-top: none;
+
+  cursor: pointer;
+}
+
+.drawer__listItem:active{
+  transform: translateX(1px);
 }
 
 .drawer__note{
@@ -561,10 +620,7 @@ body.is-locked{
   opacity: 0.75;
 }
 
-/* パネル内でプレビューを“背面レイヤー”にする */
-
-
-
+/* Preview layer */
 .drawer__preview{
   position: absolute;
   inset: 0;
@@ -575,11 +631,11 @@ body.is-locked{
 
   background-size: cover;
   background-position: center;
-  filter: blur(12px);
+  filter: blur(3px);
   transform: scale(1.08);
 }
 
-/* 白い膜（雰囲気用） */
+/* White veil */
 .drawer__preview::after{
   content:"";
   position:absolute;
@@ -587,15 +643,13 @@ body.is-locked{
   background: rgba(246,246,244,0.35);
 }
 
-/* タイトル/リストを前面へ */
+/* bring text front */
 .drawer__top,
 .drawer__listTitle,
 .drawer__list{
   position: relative;
   z-index: 1;
 }
-
-
 
 /* =========================================
    Pointer FX (PC + Mobile)
@@ -704,4 +758,74 @@ body.is-locked{
   [role="button"]:hover {
     cursor: none !important;
   }
+}
+
+/* =========================
+   Drawer Shop: products grid
+========================= */
+.shopGrid{
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.shopCard{
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 12px;
+  align-items: center;
+
+  border: 1px solid rgba(17,17,17,0.12);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.55);
+  overflow: hidden;
+}
+
+.shopCard:active{ transform: translateX(1px); }
+
+.shopCard__thumb{
+  width: 84px;
+  height: 84px;
+  background-size: cover;
+  background-position: center;
+  border-right: 1px solid rgba(17,17,17,0.10);
+}
+
+.shopCard__body{ padding: 10px 10px 10px 0; }
+.shopCard__title{
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.shopCard__meta{
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* filter */
+.shopCard.is-hidden{ display:none; }
+
+/* ===============================
+   Drawer close icon → minus
+=============================== */
+.drawer__close{
+  position: relative;
+  font-size: 0;        /* 元の × を消す */
+}
+
+/* 横線（−）を描画 */
+.drawer__close::before{
+  content: "−";
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1;
+  color: #111;
+  opacity: 0.65;
+}
+
+.drawer__close:hover::before{
+  opacity: 1;
 }
