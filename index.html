@@ -53,16 +53,16 @@
 
       <div class="grid">
         <article class="card">
-          <div class="thumb"></div>
+          <div class="thumb" aria-hidden="true"></div>
           <div class="card__body">
             <h3 class="card__title">Work Title 01</h3>
             <p class="card__meta">2025 · Audio/Visual</p>
-            <a class="pill" href="#">Open</a>
+            <a class="pill" href="#" aria-label="Open Work Title 01">Open</a>
           </div>
         </article>
       </div>
 
-      <div class="rule"></div>
+      <div class="rule" role="separator" aria-hidden="true"></div>
     </section>
 
     <!-- ABOUT -->
@@ -87,25 +87,25 @@
   <div class="overlay" id="overlay" hidden></div>
 
   <!-- Drawer -->
-  <aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true">
+  <aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
     <div class="drawer__stack" id="drawerStack">
 
       <!-- PANEL: MAIN -->
       <section class="drawer__panel is-active" data-panel="main">
         <div class="drawer__top">
           <span class="drawer__brand">dhrma Kazuki Hanamoto</span>
-          <button class="drawer__close" data-close>−</button>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
         </div>
 
-        <nav class="drawer__nav">
-          <button class="drawer__item" data-open-panel="archive">
-            Archive <span class="plus">+</span>
+        <nav class="drawer__nav" aria-label="Menu">
+          <button class="drawer__item" type="button" data-open-panel="archive">
+            Archive <span class="plus" aria-hidden="true">+</span>
           </button>
-          <button class="drawer__item" data-open-panel="shop">
-            Shop <span class="plus">+</span>
+          <button class="drawer__item" type="button" data-open-panel="shop">
+            Shop <span class="plus" aria-hidden="true">+</span>
           </button>
-          <button class="drawer__item" data-open-panel="order">
-            Order <span class="plus">+</span>
+          <button class="drawer__item" type="button" data-open-panel="order">
+            Order <span class="plus" aria-hidden="true">+</span>
           </button>
         </nav>
       </section>
@@ -113,29 +113,29 @@
       <!-- PANEL: ARCHIVE -->
       <section class="drawer__panel" data-panel="archive">
         <div class="drawer__top">
-          <button class="drawer__back" data-back>Back</button>
-          <button class="drawer__close" data-close>−</button>
+          <button class="drawer__back" type="button" data-back>Back</button>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
         </div>
 
         <div class="drawer__listTitle">Archive</div>
-        <div class="drawer__preview" id="drawerPreview"></div>
+        <div class="drawer__preview" id="drawerPreview" aria-hidden="true"></div>
 
-        <nav class="drawer__list">
-          <a class="drawer__listItem" data-cover="images/test_01.jpg">Work Title 01</a>
+        <nav class="drawer__list" aria-label="Archive list">
+          <a class="drawer__listItem" href="#" data-cover="images/test_01.jpg">Work Title 01</a>
         </nav>
       </section>
 
       <!-- PANEL: SHOP -->
       <section class="drawer__panel" data-panel="shop">
         <div class="drawer__top">
-          <button class="drawer__back" data-back>Back</button>
-          <button class="drawer__close" data-close>−</button>
+          <button class="drawer__back" type="button" data-back>Back</button>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
         </div>
 
         <div class="drawer__listTitle">Shop</div>
 
-        <nav class="drawer__list">
-          <button class="drawer__listItem" data-open-panel="shopPhysical">
+        <nav class="drawer__list" aria-label="Shop list">
+          <button class="drawer__listItem" type="button" data-open-panel="shopPhysical">
             Physical Goods
           </button>
         </nav>
@@ -144,18 +144,19 @@
       <!-- PANEL: SHOP PHYSICAL -->
       <section class="drawer__panel" data-panel="shopPhysical">
         <div class="drawer__top">
-          <button class="drawer__back" data-back>Back</button>
-          <button class="drawer__close" data-close>−</button>
+          <button class="drawer__back" type="button" data-back>Back</button>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
         </div>
 
         <div class="drawer__listTitle">Physical Goods</div>
-        <div class="drawer__preview" id="drawerPreviewPhysical"></div>
+        <div class="drawer__preview" id="drawerPreviewPhysical" aria-hidden="true"></div>
 
-        <nav class="drawer__list">
+        <nav class="drawer__list" aria-label="Physical goods list">
           <button
             class="drawer__listItem"
+            type="button"
             data-open-panel="prodSessionCollection"
-            data-cover="images/SessionCollection.JPG"
+            data-cover="images/SessionCollection.jpg"
           >
             Session Collection [2022-24 Bootlegs]
           </button>
@@ -165,30 +166,34 @@
       <!-- PANEL: PRODUCT - Session Collection -->
       <section class="drawer__panel" data-panel="prodSessionCollection">
         <div class="drawer__top">
-          <button class="drawer__back" data-back>Back</button>
-          <button class="drawer__close" data-close>−</button>
+          <button class="drawer__back" type="button" data-back>Back</button>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
         </div>
 
-        <div class="drawer__listTitle">
-          Session Collection [2022-24 Bootlegs]
-        </div>
+        <div class="drawer__listTitle">Session Collection [2022-24 Bootlegs]</div>
 
-        <div class="drawer__preview" id="drawerPreviewProduct"></div>
+        <!-- 商品ページ側に「プレビュー面」を置く（モバイルはここで確実に見える） -->
+        <div
+          class="drawer__preview"
+          id="drawerPreviewProduct"
+          aria-hidden="true"
+          style="opacity:1; background-image:url('images/SessionCollection.jpg');"
+        ></div>
 
         <div class="drawer__note">
           ここに画像 / 説明 / 価格 / 購入ボタンを置く
         </div>
 
         <div class="drawer__foot">
-          <a class="drawer__small" href="#" target="_blank">Buy ↗</a>
+          <a class="drawer__small" href="#" target="_blank" rel="noopener noreferrer">Buy ↗</a>
         </div>
       </section>
 
       <!-- PANEL: ORDER -->
       <section class="drawer__panel" data-panel="order">
         <div class="drawer__top">
-          <button class="drawer__back" data-back>Back</button>
-          <button class="drawer__close" data-close>−</button>
+          <button class="drawer__back" type="button" data-back>Back</button>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
         </div>
 
         <div class="drawer__listTitle">Order</div>
@@ -200,19 +205,25 @@
 
   <!-- Pointer FX -->
   <div id="pointer-fx" aria-hidden="true">
-  <div id="pointer-blob"></div>
+    <div id="pointer-blob"></div>
 
-  <div id="lockbox" aria-hidden="true">
-    <div class="lockbox__rect">
-      <div class="lockbox__cross lockbox__cross--h"></div>
-      <div class="lockbox__cross lockbox__cross--v"></div>
+    <div id="lockbox" aria-hidden="true">
+      <div class="lockbox__rect">
+        <div class="lockbox__cross lockbox__cross--h"></div>
+        <div class="lockbox__cross lockbox__cross--v"></div>
 
-      <span class="lockbox__tick lockbox__tick--t"></span>
-      <span class="lockbox__tick lockbox__tick--r"></span>
-      <span class="lockbox__tick lockbox__tick--b"></span>
-      <span class="lockbox__tick lockbox__tick--l"></span>
+        <span class="lockbox__tick lockbox__tick--t"></span>
+        <span class="lockbox__tick lockbox__tick--r"></span>
+        <span class="lockbox__tick lockbox__tick--b"></span>
+        <span class="lockbox__tick lockbox__tick--l"></span>
+      </div>
+
+      <div class="lockbox__label">Point HERE</div>
     </div>
-
-    <div class="lockbox__label">Point HERE</div>
   </div>
-</div>
+
+  <!-- JS -->
+  <script src="script.js" defer></script>
+  <script src="cursor.js" defer></script>
+</body>
+</html>
