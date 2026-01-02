@@ -157,7 +157,7 @@
       <section class="drawer__panel is-active" data-panel="main">
         <div class="drawer__top">
           <span class="drawer__brand">dhrma Kazuki Hanamoto</span>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
         </div>
 
         <nav class="drawer__nav" aria-label="Menu">
@@ -208,11 +208,85 @@
 
         <div class="drawer__listTitle">Shop</div>
 
-        <nav class="drawer__list" aria-label="Shop list">
-          <a class="drawer__listItem" href="#">Shop All</a>
-          <a class="drawer__listItem" href="#">Digital Goods</a>
-          <a class="drawer__listItem" href="#">Physical Goods</a>
+          <nav class="drawer__list" aria-label="Shop list">
+          <button class="drawer__listItem" type="button" data-open-panel="shopAll">Shop All</button>
+          <button class="drawer__listItem" type="button" data-open-panel="shopDigital">Digital Goods</button>
+          <button class="drawer__listItem" type="button" data-open-panel="shopPhysical">Physical Goods</button>
         </nav>
+      </section>
+
+      <!-- PANEL: SHOP PHYSICAL (2nd level) -->
+      <section class="drawer__panel" data-panel="shopPhysical">
+        <div class="drawer__top">
+          <div class="drawer__backRow">
+            <button class="drawer__back" type="button" data-back>Back</button>
+          </div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+        </div>
+
+        <div class="drawer__listTitle">Physical Goods</div>
+
+      <!-- ✅ Preview (Archiveと同じ) -->
+      <div class="drawer__preview" id="drawerPreviewPhysical" aria-hidden="true"></div>
+
+      <nav class="drawer__list" aria-label="Physical goods list">
+        <button
+          class="drawer__listItem"
+          type="button"
+          data-open-panel="prodSessionCollection"
+          data-cover="images/SessionCollection.jpg"
+        >
+          Session Collection [2022-24 Bootlegs]
+        </button>
+
+        <button class="drawer__listItem" type="button" data-open-panel="prodZine001" data-cover="images/zine001.jpg">
+          ZINE 001
+        </button>
+
+        <button class="drawer__listItem" type="button" data-open-panel="prodPosterA1" data-cover="images/poster_a1.jpg">
+          Poster A1
+        </button>
+      </nav>
+     </section>
+      
+      <!-- PANEL: PRODUCT (3rd level) -->
+      <section class="drawer__panel" data-panel="prodZine001">
+        
+        <!-- PANEL: PRODUCT (3rd level) - Session Collection -->
+<section class="drawer__panel" data-panel="prodSessionCollection">
+  <div class="drawer__top">
+    <div class="drawer__backRow">
+      <button class="drawer__back" type="button" data-back>Back</button>
+    </div>
+    <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+  </div>
+
+  <div class="drawer__listTitle">Session Collection [2022-24 Bootlegs]</div>
+
+  <div class="drawer__note">
+    ここに画像 / 説明 / 価格 / 購入ボタンを置く
+  </div>
+
+  <div class="drawer__foot">
+    <a class="drawer__small" href="#" target="_blank" rel="noopener noreferrer">Buy ↗</a>
+  </div>
+</section>
+        <div class="drawer__top">
+          <div class="drawer__backRow">
+            <button class="drawer__back" type="button" data-back>Back</button>
+         </div>
+         <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+        </div>
+
+        <div class="drawer__listTitle">ZINE 001</div>
+
+        <div class="drawer__note">
+          ここに画像 / 説明 / 価格 / 購入ボタンを置く
+        </div>
+
+        <div class="drawer__foot">
+          <a class="drawer__small" href="#" target="_blank" rel="noopener noreferrer">Buy ↗</a>
+        </div>
       </section>
 
       <!-- PANEL: ORDER -->
