@@ -274,8 +274,10 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 (function () {
   var fx      = document.getElementById("pointer-fx");
   var lockbox = document.getElementById("lockbox");
-  var drawer  = document.getElementById("drawer");
   if (!fx) return;
+
+  var drawer  = document.getElementById("drawer");
+  var overlay = document.getElementById("overlay");
 
   var mmFine   = (typeof window.matchMedia === "function") ? window.matchMedia("(pointer: fine)") : null;
   var mmCoarse = (typeof window.matchMedia === "function") ? window.matchMedia("(pointer: coarse)") : null;
@@ -292,12 +294,9 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     if (lockbox) lockbox.style.opacity = "0";
   }
 
-  // Drawer open中は常に消す（操作優先）
-  function drawerIsOpen() {
-    return drawer && drawer.classList.contains("is-open");
-  }
-
-  // PC
+  // ============================
+  // PC (fine pointer)
+  // ============================
   if (isFinePointer) {
     fx.style.opacity = "0";
 
@@ -319,15 +318,19 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       return el.closest(CLICKABLE_SELECTOR);
     }
 
-    window.addEventListener("mousemove", function (e) {
-      if (drawerIsOpen()) { hardHide(); return; }
+    function showFxAtEvent(e) {
       moveFx(e.clientX, e.clientY);
       fx.style.opacity = "1";
-    }, { passive: true });
+    }
 
-    window.addEventListener("mouseout", function (e) {
-      if (!e.relatedTarget && !e.toElement) hardHide();
-    });
+    // ★ window だけだと drawer/overlay 上で拾えない環境があるので増やす
+    document.addEventListener("mousemove", showFxAtEvent, { passive: true });
+    if (drawer)  drawer.addEventListener("mousemove", showFxAtEvent, { passive: true });
+    if (overlay) overlay.addEventListener("mousemove", showFxAtEvent, { passive: true });
+
+    // ★ 強すぎる window mouseout は切る（これが drawer 周りで誤発火することがある）
+    // 代わりに「ドキュメント外に出た」だけで消す
+    document.addEventListener("mouseleave", hardHide);
 
     window.addEventListener("blur", hardHide);
 
@@ -336,33 +339,29 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       function hideLockbox() { lockbox.style.opacity = "0"; }
 
       document.addEventListener("mouseover", function (e) {
-        if (drawerIsOpen()) return;
         if (closestClickable(e.target)) showLockbox();
       });
 
       document.addEventListener("mouseout", function (e) {
-        if (drawerIsOpen()) return;
         var from = closestClickable(e.target);
         var to   = closestClickable(e.relatedTarget);
         if (from && from !== to) hideLockbox();
       });
 
       document.addEventListener("focusin", function (e) {
-        if (drawerIsOpen()) return;
         if (closestClickable(e.target)) showLockbox();
       });
 
-      document.addEventListener("focusout", function () {
-        if (drawerIsOpen()) return;
-        hideLockbox();
-      });
+      document.addEventListener("focusout", hideLockbox);
     }
 
     hardHide();
     return;
   }
 
-  // Mobile
+  // ============================
+  // Mobile (coarse pointer)
+  // ============================
   if (isCoarsePointer) {
     document.body.classList.add("is-touch");
 
@@ -406,9 +405,8 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       }, 1000);
     }
 
-    window.addEventListener("pointerdown", function (e) {
-      if (drawerIsOpen()) { hardHide(); return; } // ← Drawer中は出さない
-
+    // ★ iOSでdrawer内タップが取りこぼされる場合があるので document で拾う
+    document.addEventListener("pointerdown", function (e) {
       isDown = true;
 
       targetX = e.clientX;
@@ -425,19 +423,18 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       });
     }, { passive: true });
 
-    window.addEventListener("pointermove", function (e) {
+    document.addEventListener("pointermove", function (e) {
       if (!isDown) return;
-      if (drawerIsOpen()) { hardHide(); return; }
       targetX = e.clientX;
       targetY = e.clientY;
     }, { passive: true });
 
-    window.addEventListener("pointerup", function () {
+    document.addEventListener("pointerup", function () {
       isDown = false;
       fadeOutNow();
     }, { passive: true });
 
-    window.addEventListener("pointercancel", function () {
+    document.addEventListener("pointercancel", function () {
       isDown = false;
       fadeOutNow();
     }, { passive: true });
@@ -445,3 +442,5 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     hardHide();
   }
 })();
+
+  
