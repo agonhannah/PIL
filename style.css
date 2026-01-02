@@ -753,7 +753,10 @@ body.is-locked{ overflow: hidden; }
   -webkit-text-fill-color: var(--ink);
 }
 
-/* Product block inside drawer */
+/* =========================================================
+   Product block inside drawer
+========================================================= */
+
 .prod__format{
   margin: 0 0 10px 0;
   font-size: 12px;
@@ -768,21 +771,21 @@ body.is-locked{ overflow: hidden; }
   color: rgba(17,17,17,0.70);
 }
 
-.prod__row{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(17,17,17,0.10);
-}
+/* ✅ “row”は使わない（縦並びで、価格とBuyを1行ずつ空ける） */
+.prod__row{ display: none; }
 
+/* ✅ 価格はブロック化して下に余白 */
 .prod__price{
+  display: block;
+  margin-top: 16px;
+  margin-bottom: 18px; /* ← Buyとの間を確実に空ける */
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 
+/* ✅ Buyは次行に固定（pillの見た目は維持） */
+.pill.prod__buy,
 .prod__buy{
   display: inline-flex;
   align-items: center;
@@ -793,28 +796,12 @@ body.is-locked{ overflow: hidden; }
   border: 1px solid rgba(17,17,17,0.18);
   background: rgba(255,255,255,0.55);
   font-size: 12px;
+  margin-top: 0;
 }
 
 .prod__buy:active{ transform: translateX(1px); }
 
+/* （今は消す指定。将来復活しても崩れないように残してOK） */
 .prod__detail{
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 12px;
-  color: var(--muted);
-  border-bottom: 1px solid rgba(17,17,17,0.25);
-}
-
-.prod__price{
-  display: block;
-  margin-top: 14px;
-  margin-bottom: 12px;  /* ← Buyとの間を空ける本体 */
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.prod__buy{
-  display: inline-block; /* ← 次の行に行かせる */
-  margin-top: 0;
+  display: none;
 }
