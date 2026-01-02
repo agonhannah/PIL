@@ -831,3 +831,59 @@ body.is-locked{ overflow: hidden; }
 
 /* detailは非表示のまま */
 .prod__detail{ display: none; }
+
+
+/* =========================================
+   Product alignment hard-fix (PC/iOS)
+   - 価格とBuyの左端を完全一致
+========================================= */
+
+/* 商品ブロックの左端基準を固定 */
+.drawer .drawer__note.prod{
+  margin-top: 18px;      /* 既存と同じでOK */
+  padding-left: 0 !important;
+  text-align: left !important;
+}
+
+/* 価格は左端固定 */
+.drawer .drawer__note.prod .prod__price{
+  display: block;
+  margin: 16px 0 18px;
+  padding-left: 0 !important;
+}
+
+/* Buyは“必ず枠付き”＋“必ず左詰め”＋“全状態で同じ見た目” */
+.drawer .drawer__note.prod .prod__buy,
+.drawer .drawer__note.prod .prod__buy:link,
+.drawer .drawer__note.prod .prod__buy:visited,
+.drawer .drawer__note.prod .prod__buy:hover,
+.drawer .drawer__note.prod .prod__buy:active{
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 !important;          /* 変なインデントを殺す */
+  padding: 0 14px !important;
+  height: 34px;
+
+  border: 1px solid rgba(17,17,17,0.18) !important;
+  background: rgba(255,255,255,0.55) !important;
+  border-radius: 999px;
+
+  color: var(--ink) !important;
+  -webkit-text-fill-color: var(--ink);
+
+  text-indent: 0 !important;
+}
+
+/* iOS Safariのリンク装飾を念のため */
+.drawer .drawer__note.prod .prod__buy{
+  -webkit-appearance: none;
+  appearance: none;
+  text-decoration: none;
+}
+
+/* 押した時 */
+.drawer .drawer__note.prod .prod__buy:active{
+  transform: translateX(1px);
+}
