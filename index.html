@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>dhrma Kazuki Hanamoto </title> 
+  <title>dhrma Kazuki Hanamoto</title>
   <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
- <link rel="stylesheet" href="style.css?v=20260101-1" />
+  <link rel="stylesheet" href="style.css?v=20260101-1" />
 </head>
 
 <body>
@@ -29,9 +29,7 @@
     <!-- HERO -->
     <section class="hero" aria-labelledby="hero-title">
       <h1 class="hero__title" id="hero-title">
-        PARAD<br />
-        ICE<br />
-        LONER.
+        PARAD<br />ICE<br />LONER.
       </h1>
 
       <p class="hero__lead">
@@ -55,89 +53,28 @@
 
       <div class="grid">
         <article class="card">
-          <div class="thumb" aria-hidden="true"></div>
+          <div class="thumb"></div>
           <div class="card__body">
             <h3 class="card__title">Work Title 01</h3>
             <p class="card__meta">2025 · Audio/Visual</p>
-            <a class="pill" href="#" aria-label="Open Work Title 01">Open</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="thumb" aria-hidden="true"></div>
-          <div class="card__body">
-            <h3 class="card__title">Work Title 02</h3>
-            <p class="card__meta">2025 · Music</p>
-            <a class="pill" href="#" aria-label="Open Work Title 02">Open</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="thumb" aria-hidden="true"></div>
-          <div class="card__body">
-            <h3 class="card__title">Work Title 03</h3>
-            <p class="card__meta">2024 · Visual</p>
-            <a class="pill" href="#" aria-label="Open Work Title 03">Open</a>
+            <a class="pill" href="#">Open</a>
           </div>
         </article>
       </div>
 
-      <div class="rule" role="separator" aria-hidden="true"></div>
-    </section>
-
-    <!-- SHOP -->
-    <section id="shop" class="section" aria-labelledby="shop-title">
-      <div class="section__head">
-        <h2 class="section__title" id="shop-title">Shop</h2>
-        <p class="section__sub">
-          まずは外部販売リンクでOK（Gumroad / BOOTH / Shopify / Stripe）。
-        </p>
-      </div>
-
-      <div class="grid grid--shop">
-        <article class="card">
-          <div class="thumb" aria-hidden="true"></div>
-          <div class="card__body">
-            <h3 class="card__title">Drum Kit Vol.1</h3>
-            <p class="card__meta">One-shot / Loop / FX</p>
-            <a class="pill" href="#" aria-label="Buy Drum Kit Vol.1">Buy</a>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="thumb" aria-hidden="true"></div>
-          <div class="card__body">
-            <h3 class="card__title">Sample Pack 002</h3>
-            <p class="card__meta">Textures / Clicks</p>
-            <a class="pill" href="#" aria-label="Buy Sample Pack 002">Buy</a>
-          </div>
-        </article>
-      </div>
-
-      <div class="rule" role="separator" aria-hidden="true"></div>
+      <div class="rule"></div>
     </section>
 
     <!-- ABOUT -->
-    <section id="about" class="section" aria-labelledby="about-title">
-      <div class="section__head">
-        <h2 class="section__title" id="about-title">About</h2>
-        <p class="section__sub"></p>
-      </div>
-
+    <section id="about" class="section">
       <div class="aboutbox">
         <p class="aboutbox__text">
-          dhrma Kazuki Hanamoto
-          <br />
+          dhrma Kazuki Hanamoto<br />
           Contact:
-          <a class="inline" href="mailto:kazukihanamoto.dhrma@gmail.com">kazukihanamoto.dhrma@gmail.com</a>
+          <a class="inline" href="mailto:kazukihanamoto.dhrma@gmail.com">
+            kazukihanamoto.dhrma@gmail.com
+          </a>
         </p>
-
-        <div class="links" aria-label="External links">
-          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
-          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">Bandcamp</a>
-          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">YouTube</a>
-          <a class="inline" href="#" target="_blank" rel="noopener noreferrer">SoundCloud</a>
-        </div>
       </div>
 
       <footer class="footer">
@@ -150,185 +87,126 @@
   <div class="overlay" id="overlay" hidden></div>
 
   <!-- Drawer -->
-  <aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+  <aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="drawer__stack" id="drawerStack">
 
       <!-- PANEL: MAIN -->
       <section class="drawer__panel is-active" data-panel="main">
         <div class="drawer__top">
           <span class="drawer__brand">dhrma Kazuki Hanamoto</span>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
+          <button class="drawer__close" data-close>−</button>
         </div>
 
-        <nav class="drawer__nav" aria-label="Menu">
-          <button class="drawer__item" type="button" data-open-panel="archive">
-            Archive <span class="plus" aria-hidden="true">+</span>
+        <nav class="drawer__nav">
+          <button class="drawer__item" data-open-panel="archive">
+            Archive <span class="plus">+</span>
           </button>
-          <button class="drawer__item" type="button" data-open-panel="shop">
-            Shop <span class="plus" aria-hidden="true">+</span>
+          <button class="drawer__item" data-open-panel="shop">
+            Shop <span class="plus">+</span>
           </button>
-          <button class="drawer__item" type="button" data-open-panel="order">
-            Order <span class="plus" aria-hidden="true">+</span>
+          <button class="drawer__item" data-open-panel="order">
+            Order <span class="plus">+</span>
           </button>
         </nav>
-
-        <div class="drawer__foot">
-          <a class="drawer__small" href="#about">Contact</a>
-        </div>
       </section>
 
       <!-- PANEL: ARCHIVE -->
       <section class="drawer__panel" data-panel="archive">
         <div class="drawer__top">
-          <div class="drawer__backRow">
-            <button class="drawer__back" type="button" data-back>Back</button>
-          </div>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+          <button class="drawer__back" data-back>Back</button>
+          <button class="drawer__close" data-close>−</button>
         </div>
 
         <div class="drawer__listTitle">Archive</div>
+        <div class="drawer__preview" id="drawerPreview"></div>
 
-        <div class="drawer__preview" id="drawerPreview" aria-hidden="true"></div>
-
-        <nav class="drawer__list" aria-label="Archive list">
-          <a class="drawer__listItem" href="#" data-cover="images/test_01.jpg">Work Title 01</a>
-          <a class="drawer__listItem" href="#" data-cover="images/test_02.jpg">Work Title 02</a>
-          <a class="drawer__listItem" href="#" data-cover="images/test_03.jpg">Work Title 03</a>
+        <nav class="drawer__list">
+          <a class="drawer__listItem" data-cover="images/test_01.jpg">Work Title 01</a>
         </nav>
       </section>
 
       <!-- PANEL: SHOP -->
       <section class="drawer__panel" data-panel="shop">
         <div class="drawer__top">
-          <div class="drawer__backRow">
-            <button class="drawer__back" type="button" data-back>Back</button>
-          </div>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+          <button class="drawer__back" data-back>Back</button>
+          <button class="drawer__close" data-close>−</button>
         </div>
 
         <div class="drawer__listTitle">Shop</div>
 
-          <nav class="drawer__list" aria-label="Shop list">
-          <button class="drawer__listItem" type="button" data-open-panel="shopAll">Shop All</button>
-          <button class="drawer__listItem" type="button" data-open-panel="shopDigital">Digital Goods</button>
-          <button class="drawer__listItem" type="button" data-open-panel="shopPhysical">Physical Goods</button>
+        <nav class="drawer__list">
+          <button class="drawer__listItem" data-open-panel="shopPhysical">
+            Physical Goods
+          </button>
         </nav>
       </section>
 
-      <!-- PANEL: SHOP PHYSICAL (2nd level) -->
+      <!-- PANEL: SHOP PHYSICAL -->
       <section class="drawer__panel" data-panel="shopPhysical">
         <div class="drawer__top">
-          <div class="drawer__backRow">
-            <button class="drawer__back" type="button" data-back>Back</button>
-          </div>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+          <button class="drawer__back" data-back>Back</button>
+          <button class="drawer__close" data-close>−</button>
         </div>
 
         <div class="drawer__listTitle">Physical Goods</div>
+        <div class="drawer__preview" id="drawerPreviewPhysical"></div>
 
-      <!-- ✅ Preview (Archiveと同じ) -->
-      <div class="drawer__preview" id="drawerPreviewPhysical" aria-hidden="true"></div>
+        <nav class="drawer__list">
+          <button
+            class="drawer__listItem"
+            data-open-panel="prodSessionCollection"
+            data-cover="images/SessionCollection.jpg"
+          >
+            Session Collection [2022-24 Bootlegs]
+          </button>
+        </nav>
+      </section>
 
-      <nav class="drawer__list" aria-label="Physical goods list">
-        <button
-          class="drawer__listItem"
-          type="button"
-          data-open-panel="prodSessionCollection"
-          data-cover="images/SessionCollection.jpg"
-        >
-          Session Collection [2022-24 Bootlegs]
-        </button>
-
-        <button class="drawer__listItem" type="button" data-open-panel="prodZine001" data-cover="images/zine001.jpg">
-          ZINE 001
-        </button>
-
-        <button class="drawer__listItem" type="button" data-open-panel="prodPosterA1" data-cover="images/poster_a1.jpg">
-          Poster A1
-        </button>
-      </nav>
-     </section>
-      
-      <!-- PANEL: PRODUCT (3rd level) -->
-      <section class="drawer__panel" data-panel="prodZine001">
-        
-        <!-- PANEL: PRODUCT (3rd level) - Session Collection -->
-<section class="drawer__panel" data-panel="prodSessionCollection">
-  <div class="drawer__top">
-    <div class="drawer__backRow">
-      <button class="drawer__back" type="button" data-back>Back</button>
-    </div>
-    <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
-  </div>
-
-  <div class="drawer__listTitle">Session Collection [2022-24 Bootlegs]</div>
-
-  <div class="drawer__preview" id="drawerPreviewProduct" aria-hidden="true"></div>
-  <div class="drawer__note">
-    ここに画像 / 説明 / 価格 / 購入ボタンを置く
-  </div>
-
-  <div class="drawer__foot">
-    <a class="drawer__small" href="#" target="_blank" rel="noopener noreferrer">Buy ↗</a>
-  </div>
-</section>
+      <!-- PANEL: PRODUCT - Session Collection -->
+      <section class="drawer__panel" data-panel="prodSessionCollection">
         <div class="drawer__top">
-          <div class="drawer__backRow">
-            <button class="drawer__back" type="button" data-back>Back</button>
-         </div>
-         <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+          <button class="drawer__back" data-back>Back</button>
+          <button class="drawer__close" data-close>−</button>
         </div>
 
-        <div class="drawer__listTitle">ZINE 001</div>
+        <div class="drawer__listTitle">
+          Session Collection [2022-24 Bootlegs]
+        </div>
+
+        <div class="drawer__preview" id="drawerPreviewProduct"></div>
 
         <div class="drawer__note">
           ここに画像 / 説明 / 価格 / 購入ボタンを置く
         </div>
 
         <div class="drawer__foot">
-          <a class="drawer__small" href="#" target="_blank" rel="noopener noreferrer">Buy ↗</a>
+          <a class="drawer__small" href="#" target="_blank">Buy ↗</a>
         </div>
       </section>
 
       <!-- PANEL: ORDER -->
       <section class="drawer__panel" data-panel="order">
         <div class="drawer__top">
-          <div class="drawer__backRow">
-            <button class="drawer__back" type="button" data-back>Back</button>
-          </div>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+          <button class="drawer__back" data-back>Back</button>
+          <button class="drawer__close" data-close>−</button>
         </div>
 
         <div class="drawer__listTitle">Order</div>
-
-        <div class="drawer__note">
-          Order / Contact details will be placed here.
-        </div>
+        <div class="drawer__note">Order / Contact details</div>
       </section>
 
     </div>
   </aside>
 
-    <!-- Pointer FX (DOM only) -->
-  <div id="pointer-fx" aria-hidden="true">
+  <!-- Pointer FX -->
+  <div id="pointer-fx">
     <div id="pointer-blob"></div>
-
-    <div id="lockbox" aria-hidden="true">
-      <div class="lockbox__rect">
-        <div class="lockbox__cross lockbox__cross--h"></div>
-        <div class="lockbox__cross lockbox__cross--v"></div>
-
-        <span class="lockbox__tick lockbox__tick--t"></span>
-        <span class="lockbox__tick lockbox__tick--r"></span>
-        <span class="lockbox__tick lockbox__tick--b"></span>
-        <span class="lockbox__tick lockbox__tick--l"></span>
-      </div>
-
+    <div id="lockbox">
+      <div class="lockbox__rect"></div>
       <div class="lockbox__label">Point HERE</div>
     </div>
   </div>
 
-  <!-- JS -->
   <script src="script.js" defer></script>
   <script src="cursor.js" defer></script>
 </body>
