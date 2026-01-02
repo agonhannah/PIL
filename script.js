@@ -425,3 +425,65 @@ if (shopGrid) {
     }
   });
 })();
+
+
+// ==============================
+// Drawer Preview (works on PC hover + mobile tap)
+// - data-cover を持つ要素に反応
+// - その要素がいる panel 内の .drawer__preview に画像を出す
+// - data-open-panel のときは「遷移先 panel」の preview にも出す
+// ==============================
+(() => {
+  const stack = document.getElementById("drawerStack");
+  if (!stack) return;
+
+  const mmFine   = window.matchMedia?.("(pointer: fine)");
+  const mmCoarse = window.matchMedia?.("(pointer: coarse)");
+
+  const setPreview = (panelEl, url) => {
+    if (!panelEl) return;
+    const pv = panelEl.querySelector(".drawer__preview");
+    if (!pv) return;
+
+    if (!url) {
+      pv.style.opacity = "0";
+      pv.style.backgroundImage = "";
+      return;
+    }
+    pv.style.backgroundImage = `url("${url}")`;
+    pv.style.opacity = "1";
+  };
+
+  // 1) パネル内の listItem hover/tap で出す
+  stack.querySelectorAll("[data-cover]").forEach((el) => {
+    const url = el.dataset.cover;
+    if (!url) return;
+
+    const panel = el.closest(".drawer__panel");
+    if (!panel) return;
+
+    if (mmFine?.matches) {
+      el.addEventListener("mouseenter", () => setPreview(panel, url));
+      el.addEventListener("mouseleave", () => setPreview(panel, null));
+      el.addEventListener("focus", () => setPreview(panel, url));
+      el.addEventListener("blur",  () => setPreview(panel, null));
+    } else if (mmCoarse?.matches) {
+      // モバイルは hover がないので「タップした瞬間に出す」
+      el.addEventListener("click", () => setPreview(panel, url), { passive: true });
+    }
+  });
+
+  // 2) data-open-panel で次の drawer に行くとき、「遷移先 panel」側にも出す
+  stack.querySelectorAll("[data-open-panel][data-cover]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const url  = btn.dataset.cover;
+      const next = btn.dataset.openPanel;
+      if (!url || !next) return;
+
+      requestAnimationFrame(() => {
+        const nextPanel = stack.querySelector(`.drawer__panel[data-panel="${next}"]`);
+        setPreview(nextPanel, url);
+      });
+    });
+  });
+})();
