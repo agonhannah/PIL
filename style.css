@@ -804,3 +804,17 @@ body.is-locked{ overflow: hidden; }
   color: var(--muted);
   border-bottom: 1px solid rgba(17,17,17,0.25);
 }
+
+.prod__price{
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 12px;  /* ← Buyとの間を空ける本体 */
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.prod__buy{
+  display: inline-block; /* ← 次の行に行かせる */
+  margin-top: 0;
+}
