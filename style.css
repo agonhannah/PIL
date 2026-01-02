@@ -784,27 +784,22 @@ body.is-locked{ overflow: hidden; }
   letter-spacing: 0.02em;
 }
 
-/* ✅ Buy：ブロック化して確実に左へ吸着（¥と左端を揃える） */
-.pill.prod__buy,
-.prod__buy{
-  display: block;               /* ← ここが効く：親の整列に影響されない */
-  width: -moz-fit-content;
-  width: fit-content;           /* iOS Safari OK（古い場合も block で左に落ちる） */
+/* ===== FIX: Buyを¥と同じ左端に揃える（最優先で上書き） ===== */
+.drawer .prod__buy,
+.drawer .pill.prod__buy{
+  display: block !important;              /* インライン化を潰す */
+  width: -moz-fit-content !important;
+  width: fit-content !important;          /* 中身幅にする */
   margin-left: 0 !important;
-  margin-right: auto;           /* ← 左寄せ固定 */
+  margin-right: auto !important;          /* 左寄せ固定 */
+  text-align: left !important;            /* 念のため */
+}
 
-  /* 見た目はpill維持 */
-  height: 34px;
+/* 中のテキストを中央寄せしたい場合（ボタン内だけ） */
+.drawer .prod__buy{
   padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(17,17,17,0.18);
-  background: rgba(255,255,255,0.55);
-  font-size: 12px;
-
-  /* block にしたので中身の整列はこれでOK */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  height: 34px;
+  line-height: 34px;                      /* blockでも中央っぽく見せる */
 }
 
 .prod__buy:active{ transform: translateX(1px); }
