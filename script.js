@@ -15,22 +15,14 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   if (!menuBtn || !drawer || !overlay || !stack) return;
 
-  // ------------------------------
-  // state
-  // ------------------------------
   let panelHistory = [];
 
-  // ------------------------------
-  // helpers
-  // ------------------------------
   const setExpanded = (isOpen) => {
     menuBtn.setAttribute("aria-expanded", String(isOpen));
     drawer.setAttribute("aria-hidden", String(!isOpen));
   };
 
-  const getActivePanel = () => {
-    return stack.querySelector(".drawer__panel.is-active");
-  };
+  const getActivePanel = () => stack.querySelector(".drawer__panel.is-active");
 
   const getActivePanelName = () => {
     const p = getActivePanel();
@@ -43,9 +35,6 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     });
   };
 
-  // ------------------------------
-  // navigation with history
-  // ------------------------------
   const goPanel = (next) => {
     const current = getActivePanelName();
     if (current !== next) panelHistory.push(current);
@@ -57,11 +46,8 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     setPanel(prev);
   };
 
-  // ------------------------------
-  // open / close
-  // ------------------------------
   const openDrawer = () => {
-    panelHistory = [];              // ← 毎回リセット
+    panelHistory = [];
     drawer.classList.add("is-open");
     overlay.hidden = false;
     document.body.classList.add("is-locked");
@@ -77,25 +63,17 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     setExpanded(false);
   };
 
-  // ------------------------------
-  // events
-  // ------------------------------
   menuBtn.addEventListener("click", openDrawer);
   overlay.addEventListener("click", closeDrawer);
 
-  // open next panel
   stack.querySelectorAll("[data-open-panel]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      goPanel(btn.dataset.openPanel);
-    });
+    btn.addEventListener("click", () => goPanel(btn.dataset.openPanel));
   });
 
-  // back (1階層戻る)
   stack.querySelectorAll("[data-back]").forEach((btn) => {
     btn.addEventListener("click", goBack);
   });
 
-  // close drawer
   stack.querySelectorAll("[data-close]").forEach((btn) => {
     btn.addEventListener("click", closeDrawer);
   });
@@ -103,23 +81,21 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 // ==============================
 // Pointer FX (PC + Mobile)
-// - PC: move follow + lockbox hover
-// - Mobile: press follow + "tapした瞬間から1秒でフェード"（ステイなし）
 // ==============================
 (() => {
   const fx      = document.getElementById("pointer-fx");
   const lockbox = document.getElementById("lockbox");
   if (!fx) return;
 
-  const mmFine   = window.matchMedia ? window.matchMedia("(pointer: fine)") : null;
-  const mmCoarse = window.matchMedia ? window.matchMedia("(pointer: coarse)") : null;
+  const mmFine   = typeof window.matchMedia === "function" ? window.matchMedia("(pointer: fine)") : null;
+  const mmCoarse = typeof window.matchMedia === "function" ? window.matchMedia("(pointer: coarse)") : null;
   const isFinePointer   = !!(mmFine && mmFine.matches);
   const isCoarsePointer = !!(mmCoarse && mmCoarse.matches);
 
-  // common
   const moveFx = (x, y) => {
     fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
   };
+
   const hardHide = () => {
     fx.style.opacity = "0";
     fx.style.transform = "translate3d(-9999px, -9999px, 0)";
@@ -146,14 +122,10 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     const closestClickable = (el) =>
       el && el.closest ? el.closest(CLICKABLE_SELECTOR) : null;
 
-    window.addEventListener(
-      "mousemove",
-      (e) => {
-        moveFx(e.clientX, e.clientY);
-        fx.style.opacity = "1";
-      },
-      { passive: true }
-    );
+    window.addEventListener("mousemove", (e) => {
+      moveFx(e.clientX, e.clientY);
+      fx.style.opacity = "1";
+    }, { passive: true });
 
     window.addEventListener("mouseout", (e) => {
       if (!e.relatedTarget && !e.toElement) hardHide();
@@ -168,14 +140,17 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       document.addEventListener("mouseover", (e) => {
         if (closestClickable(e.target)) showLockbox();
       });
+
       document.addEventListener("mouseout", (e) => {
         const from = closestClickable(e.target);
         const to   = closestClickable(e.relatedTarget);
         if (from && from !== to) hideLockbox();
       });
+
       document.addEventListener("focusin", (e) => {
         if (closestClickable(e.target)) showLockbox();
       });
+
       document.addEventListener("focusout", hideLockbox);
     }
 
@@ -185,7 +160,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   // -------- Mobile --------
   if (isCoarsePointer) {
-    document.body.classList.add("is-touch"); // touch-action の制御に使うなら
+    document.body.classList.add("is-touch");
 
     let targetX = -9999, targetY = -9999;
     let curX = -9999, curY = -9999;
@@ -195,7 +170,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     const lerp = (a, b, t) => a + (b - a) * t;
 
     const render = () => {
-      const t = 0.18; // ヌル度
+      const t = 0.18;
       curX = lerp(curX, targetX, t);
       curY = lerp(curY, targetY, t);
       moveFx(curX, curY);
@@ -218,11 +193,8 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       startRAF();
     };
 
-    // ★「タップした瞬間から1秒で薄く消える」
     const fadeOutNow = () => {
-      // CSS側で transition: opacity 1000ms linear; が効く想定
       fx.style.opacity = "0";
-      // 1秒後に完全退避して止める
       setTimeout(() => {
         targetX = targetY = curX = curY = -9999;
         fx.style.transform = "translate3d(-9999px, -9999px, 0)";
@@ -230,260 +202,131 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       }, 1000);
     };
 
-    window.addEventListener(
-  "pointerdown",
-  (e) => {
-    isDown = true;
+    window.addEventListener("pointerdown", (e) => {
+      isDown = true;
 
-    // ★端から追いかけるのを殺す：初回はその場にワープ
-    targetX = e.clientX;
-    targetY = e.clientY;
-    curX = targetX;
-    curY = targetY;
-    fx.style.transition = "none"; // 初回のopacity/transform遅延を防ぐ
-    moveFx(curX, curY);
+      targetX = e.clientX;
+      targetY = e.clientY;
+      curX = targetX;
+      curY = targetY;
 
-    // すぐ表示（次フレームでtransitionを戻す）
-    showFx();
-    requestAnimationFrame(() => {
-      fx.style.transition = ""; // CSSの opacity 1000ms を復帰
-    });
-  },
-  { passive: true }
-);
+      fx.style.transition = "none";
+      moveFx(curX, curY);
 
-    window.addEventListener(
-      "pointermove",
-      (e) => {
-        if (!isDown) return;
-        targetX = e.clientX;
-        targetY = e.clientY;
-      },
-      { passive: true }
-    );
+      showFx();
+      requestAnimationFrame(() => {
+        fx.style.transition = "";
+      });
+    }, { passive: true });
 
-    window.addEventListener(
-      "pointerup",
-      () => {
-        isDown = false;
-        fadeOutNow();
-      },
-      { passive: true }
-    );
+    window.addEventListener("pointermove", (e) => {
+      if (!isDown) return;
+      targetX = e.clientX;
+      targetY = e.clientY;
+    }, { passive: true });
 
-    window.addEventListener(
-      "pointercancel",
-      () => {
-        isDown = false;
-        fadeOutNow();
-      },
-      { passive: true }
-    );
+    window.addEventListener("pointerup", () => {
+      isDown = false;
+      fadeOutNow();
+    }, { passive: true });
+
+    window.addEventListener("pointercancel", () => {
+      isDown = false;
+      fadeOutNow();
+    }, { passive: true });
 
     hardHide();
   }
 })();
 
 // ==============================
-// Drawer Shop filter (All / Digital / Physical)
-// ==============================
-const shopGrid = document.getElementById("shopGrid");
-if (shopGrid) {
-  const setShopTab = (tab) => {
-    shopGrid.querySelectorAll(".shopCard").forEach((card) => {
-      const isDigital  = card.classList.contains("is-digital");
-      const isPhysical = card.classList.contains("is-physical");
-
-      const show =
-        tab === "all" ||
-        (tab === "digital" && isDigital) ||
-        (tab === "physical" && isPhysical);
-
-      card.classList.toggle("is-hidden", !show);
-    });
-  };
-
-  // default: Physical を開いた時に物理だけ見せたいならここを physical に
-  setShopTab("all");
-
-  document.querySelectorAll('[data-panel="shop"] [data-shop-tab]').forEach((a) => {
-    a.addEventListener("click", (e) => {
-      e.preventDefault();
-      setShopTab(a.dataset.shopTab);
-    });
-  });
-}
-
-// ==============================
-// Drawer preview (PC hover only)
-// - Archive panel + Physical panel
+// Drawer Preview (single / safe)
+// - data-cover を持つ要素で preview を表示
+// - PC: hover/focus
+// - Mobile: pointerdown（タップした瞬間）
+// - data-open-panel の場合：遷移先panelにも即表示
 // ==============================
 (() => {
-  const isFinePointer =
-    window.matchMedia && window.matchMedia("(pointer: fine)").matches;
-  if (!isFinePointer) return;
+  try {
+    const stack = document.getElementById("drawerStack");
+    if (!stack) return;
 
-  const bindPreview = (panelName, previewElId) => {
-    const preview = document.getElementById(previewElId);
-    if (!preview) return;
+    const hasMM = typeof window.matchMedia === "function";
+    const isFine   = hasMM ? window.matchMedia("(pointer: fine)").matches : false;
+    const isCoarse = hasMM ? window.matchMedia("(pointer: coarse)").matches : false;
 
-    document
-      .querySelectorAll(
-        `.drawer__panel[data-panel="${panelName}"] .drawer__listItem[data-cover]`
-      )
-      .forEach((item) => {
-        const url = item.dataset.cover;
+    const getPanelByName = (name) =>
+      stack.querySelector(`.drawer__panel[data-panel="${name}"]`);
 
-        item.addEventListener("mouseenter", () => {
-          preview.style.backgroundImage = `url("${url}")`;
-          preview.style.opacity = "1";
-        });
+    const getPreviewEl = (panelEl) => panelEl?.querySelector(".drawer__preview");
 
-        item.addEventListener("mouseleave", () => {
-          preview.style.opacity = "0";
-        });
+    const setPreview = (panelEl, url) => {
+      const pv = getPreviewEl(panelEl);
+      if (!pv) return;
+
+      if (!url) {
+        pv.style.opacity = "0";
+        pv.style.backgroundImage = "";
+        return;
+      }
+      pv.style.backgroundImage = `url("${url}")`;
+      pv.style.opacity = "1";
+    };
+
+    const clearAllPreviews = () => {
+      stack.querySelectorAll(".drawer__panel .drawer__preview").forEach((pv) => {
+        pv.style.opacity = "0";
+        pv.style.backgroundImage = "";
       });
-  };
+    };
 
-  // Archive用（既存の #drawerPreview を使う）
-  bindPreview("archive", "drawerPreview");
-
-  // Physical Goods用（新規の #drawerPreviewPhysical を使う）
-  bindPreview("shopPhysical", "drawerPreviewPhysical");
-})();
-
-// ==============================
-// Drawer Preview (Archive / Physical) - Desktop hover + Mobile tap
-// ==============================
-(() => {
-  const stack = document.getElementById("drawerStack");
-  if (!stack) return;
-
-  // panel名 → preview要素ID
-  const PREVIEW_MAP = {
-    archive: "drawerPreview",
-    shopPhysical: "drawerPreviewPhysical",
-  };
-
-  const setPreview = (panelName, url) => {
-    const id = PREVIEW_MAP[panelName];
-    if (!id) return;
-
-    const previewEl = document.getElementById(id);
-    if (!previewEl) return;
-
-    if (!url) {
-      previewEl.style.opacity = "0";
-      previewEl.style.backgroundImage = "";
-      return;
-    }
-
-    previewEl.style.backgroundImage = `url("${url}")`;
-    previewEl.style.opacity = "1";
-  };
-
-  // 対象パネル内だけで反応させる
-  const bindPanel = (panelName) => {
-    const panel = stack.querySelector(`.drawer__panel[data-panel="${panelName}"]`);
-    if (!panel) return;
-
-    const items = panel.querySelectorAll("[data-cover]");
+    // data-cover を持つ要素
+    const items = stack.querySelectorAll("[data-cover]");
     if (!items.length) return;
 
-    // PC: hover/focusで出す
     items.forEach((el) => {
-      el.addEventListener("mouseenter", () => setPreview(panelName, el.dataset.cover));
-      el.addEventListener("focusin", () => setPreview(panelName, el.dataset.cover));
-      el.addEventListener("mouseleave", () => setPreview(panelName, ""));
-      el.addEventListener("focusout", () => setPreview(panelName, ""));
+      const url = el.dataset.cover;
+      if (!url) return;
+
+      const panel = el.closest(".drawer__panel");
+      if (!panel) return;
+
+      if (isFine) {
+        el.addEventListener("mouseenter", () => setPreview(panel, url));
+        el.addEventListener("mouseleave", () => setPreview(panel, ""));
+        el.addEventListener("focusin",    () => setPreview(panel, url));
+        el.addEventListener("focusout",   () => setPreview(panel, ""));
+      }
+
+      if (isCoarse) {
+        // タップ“した瞬間”に出す（clickだと遅い）
+        el.addEventListener("pointerdown", () => setPreview(panel, url), { passive: true });
+      }
     });
 
-    // Mobile: タップした瞬間に出す（pointerdown / touchstart）
-    items.forEach((el) => {
-      el.addEventListener(
-        "pointerdown",
-        () => setPreview(panelName, el.dataset.cover),
-        { passive: true }
-      );
-      el.addEventListener(
-        "touchstart",
-        () => setPreview(panelName, el.dataset.cover),
-        { passive: true }
-      );
-    });
-  };
+    // data-open-panel で遷移する場合：遷移先panelにも即表示
+    stack.querySelectorAll("[data-open-panel][data-cover]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const url  = btn.dataset.cover;
+        const next = btn.dataset.openPanel;
+        if (!url || !next) return;
 
-  // 必要なパネルだけバインド
-  Object.keys(PREVIEW_MAP).forEach(bindPanel);
-
-  // パネルを閉じた時に消す（安全策）
-  document.addEventListener("click", (e) => {
-    const closeBtn = e.target.closest("[data-close]");
-    const backBtn  = e.target.closest("[data-back]");
-    if (closeBtn || backBtn) {
-      Object.keys(PREVIEW_MAP).forEach((p) => setPreview(p, ""));
-    }
-  });
-})();
-
-
-// ==============================
-// Drawer Preview (works on PC hover + mobile tap)
-// - data-cover を持つ要素に反応
-// - その要素がいる panel 内の .drawer__preview に画像を出す
-// - data-open-panel のときは「遷移先 panel」の preview にも出す
-// ==============================
-(() => {
-  const stack = document.getElementById("drawerStack");
-  if (!stack) return;
-
-  const mmFine   = window.matchMedia?.("(pointer: fine)");
-  const mmCoarse = window.matchMedia?.("(pointer: coarse)");
-
-  const setPreview = (panelEl, url) => {
-    if (!panelEl) return;
-    const pv = panelEl.querySelector(".drawer__preview");
-    if (!pv) return;
-
-    if (!url) {
-      pv.style.opacity = "0";
-      pv.style.backgroundImage = "";
-      return;
-    }
-    pv.style.backgroundImage = `url("${url}")`;
-    pv.style.opacity = "1";
-  };
-
-  // 1) パネル内の listItem hover/tap で出す
-  stack.querySelectorAll("[data-cover]").forEach((el) => {
-    const url = el.dataset.cover;
-    if (!url) return;
-
-    const panel = el.closest(".drawer__panel");
-    if (!panel) return;
-
-    if (mmFine?.matches) {
-      el.addEventListener("mouseenter", () => setPreview(panel, url));
-      el.addEventListener("mouseleave", () => setPreview(panel, null));
-      el.addEventListener("focus", () => setPreview(panel, url));
-      el.addEventListener("blur",  () => setPreview(panel, null));
-    } else if (mmCoarse?.matches) {
-      // モバイルは hover がないので「タップした瞬間に出す」
-      el.addEventListener("click", () => setPreview(panel, url), { passive: true });
-    }
-  });
-
-  // 2) data-open-panel で次の drawer に行くとき、「遷移先 panel」側にも出す
-  stack.querySelectorAll("[data-open-panel][data-cover]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const url  = btn.dataset.cover;
-      const next = btn.dataset.openPanel;
-      if (!url || !next) return;
-
-      requestAnimationFrame(() => {
-        const nextPanel = stack.querySelector(`.drawer__panel[data-panel="${next}"]`);
-        setPreview(nextPanel, url);
+        requestAnimationFrame(() => {
+          const nextPanel = getPanelByName(next);
+          setPreview(nextPanel, url);
+        });
       });
     });
-  });
+
+    // close/back したら全部消す
+    document.addEventListener("click", (e) => {
+      const closeBtn = e.target.closest?.("[data-close]");
+      const backBtn  = e.target.closest?.("[data-back]");
+      if (closeBtn || backBtn) clearAllPreviews();
+    });
+
+  } catch (err) {
+    // ここで落ちても drawer/pointer を殺さない
+    console.warn("Drawer preview init failed:", err);
+  }
 })();
