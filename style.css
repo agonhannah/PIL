@@ -774,17 +774,17 @@ body.is-locked{ overflow: hidden; }
 /* ✅ “row”は使わない（縦並びで、価格とBuyを1行ずつ空ける） */
 .prod__row{ display: none; }
 
-/* ✅ 価格はブロック化して下に余白 */
+/* ✅ 価格：ブロック + 下に余白（Buyと1行空け） */
 .prod__price{
   display: block;
   margin-top: 16px;
-  margin-bottom: 18px; /* ← Buyとの間を確実に空ける */
+  margin-bottom: 18px;
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 
-/* ✅ Buyは次行に固定（pillの見た目は維持） */
+/* ✅ Buy：左寄せ固定（¥と左端を揃える） */
 .pill.prod__buy,
 .prod__buy{
   display: inline-flex;
@@ -796,7 +796,9 @@ body.is-locked{ overflow: hidden; }
   border: 1px solid rgba(17,17,17,0.18);
   background: rgba(255,255,255,0.55);
   font-size: 12px;
+
   margin-top: 0;
+  margin-left: 0; /* ← 念押し：左寄せ */
 }
 
 .prod__buy:active{ transform: translateX(1px); }
