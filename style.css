@@ -754,7 +754,10 @@ body.is-locked{ overflow: hidden; }
 }
 
 /* =========================================================
-   Product block inside drawer
+   Product block inside drawer  (REWRITE)
+   - price と buy を縦並び
+   - buy を ¥ と同じ左端に揃える
+   - iOS Safari 互換性重視（fit-content 使わない）
 ========================================================= */
 
 .prod__format{
@@ -771,40 +774,59 @@ body.is-locked{ overflow: hidden; }
   color: rgba(17,17,17,0.70);
 }
 
-/* “row”は使わない（縦並びで、価格とBuyを1行ずつ空ける） */
+/* “row”は使わない（横並びブロックが残ってるなら消す） */
 .prod__row{ display: none; }
 
-/* 価格：ブロック + 下に余白（Buyと1行空け） */
+/* 価格：ブロック + Buyとの間を1行空ける */
 .prod__price{
   display: block;
   margin-top: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 18px;   /* ← 空け幅 */
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 
-/* ===== FIX: Buyを¥と同じ左端に揃える（最優先で上書き） ===== */
+/* ★重要：Buyがどんなタグでも左寄せ＆次行固定にする
+   - .prod__buy が付いていればもちろん当たる
+   - 付いてなくても「商品エリアの Buy リンク」に当たる保険を入れる */
+.drawer a.prod__buy,
+.drawer button.prod__buy,
 .drawer .prod__buy,
-.drawer .pill.prod__buy{
-  display: block !important;              /* インライン化を潰す */
-  width: -moz-fit-content !important;
-  width: fit-content !important;          /* 中身幅にする */
-  margin-left: 0 !important;
-  margin-right: auto !important;          /* 左寄せ固定 */
-  text-align: left !important;            /* 念のため */
-}
-
-/* 中のテキストを中央寄せしたい場合（ボタン内だけ） */
-.drawer .prod__buy{
+.drawer .prod__buy.pill{
+  display: inline-block !important;  /* blockだと中身中央寄せ崩れるケースがあるので inline-block */
+  margin: 0 !important;
   padding: 0 14px;
   height: 34px;
-  line-height: 34px;                      /* blockでも中央っぽく見せる */
+  line-height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(17,17,17,0.18);
+  background: rgba(255,255,255,0.55);
+  font-size: 12px;
+  vertical-align: top;
+  text-align: center;
 }
 
-.prod__buy:active{ transform: translateX(1px); }
-
-/* （今は消す指定。将来復活しても崩れないように残してOK） */
-.prod__detail{
-  display: none;
+/* ★次行に落とす：これで¥の左端と揃う（左から開始する） */
+.drawer a.prod__buy,
+.drawer button.prod__buy,
+.drawer .prod__buy{
+  clear: both;
 }
+
+/* もしBuyが「pタグ内」「インライン文中」に入っててズレてる場合の最終保険 */
+.drawer .prod__price + a,
+.drawer .prod__price + .pill,
+.drawer .prod__price + button{
+  display: inline-block !important;
+  margin-left: 0 !important;
+}
+
+/* 押したとき */
+.drawer .prod__buy:active{
+  transform: translateX(1px);
+}
+
+/* detailは今は非表示 */
+.prod__detail{ display: none; }
+
