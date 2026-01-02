@@ -351,3 +351,77 @@ if (shopGrid) {
   // Physical Goods用（新規の #drawerPreviewPhysical を使う）
   bindPreview("shopPhysical", "drawerPreviewPhysical");
 })();
+
+// ==============================
+// Drawer Preview (Archive / Physical) - Desktop hover + Mobile tap
+// ==============================
+(() => {
+  const stack = document.getElementById("drawerStack");
+  if (!stack) return;
+
+  // panel名 → preview要素ID
+  const PREVIEW_MAP = {
+    archive: "drawerPreview",
+    shopPhysical: "drawerPreviewPhysical",
+  };
+
+  const setPreview = (panelName, url) => {
+    const id = PREVIEW_MAP[panelName];
+    if (!id) return;
+
+    const previewEl = document.getElementById(id);
+    if (!previewEl) return;
+
+    if (!url) {
+      previewEl.style.opacity = "0";
+      previewEl.style.backgroundImage = "";
+      return;
+    }
+
+    previewEl.style.backgroundImage = `url("${url}")`;
+    previewEl.style.opacity = "1";
+  };
+
+  // 対象パネル内だけで反応させる
+  const bindPanel = (panelName) => {
+    const panel = stack.querySelector(`.drawer__panel[data-panel="${panelName}"]`);
+    if (!panel) return;
+
+    const items = panel.querySelectorAll("[data-cover]");
+    if (!items.length) return;
+
+    // PC: hover/focusで出す
+    items.forEach((el) => {
+      el.addEventListener("mouseenter", () => setPreview(panelName, el.dataset.cover));
+      el.addEventListener("focusin", () => setPreview(panelName, el.dataset.cover));
+      el.addEventListener("mouseleave", () => setPreview(panelName, ""));
+      el.addEventListener("focusout", () => setPreview(panelName, ""));
+    });
+
+    // Mobile: タップした瞬間に出す（pointerdown / touchstart）
+    items.forEach((el) => {
+      el.addEventListener(
+        "pointerdown",
+        () => setPreview(panelName, el.dataset.cover),
+        { passive: true }
+      );
+      el.addEventListener(
+        "touchstart",
+        () => setPreview(panelName, el.dataset.cover),
+        { passive: true }
+      );
+    });
+  };
+
+  // 必要なパネルだけバインド
+  Object.keys(PREVIEW_MAP).forEach(bindPanel);
+
+  // パネルを閉じた時に消す（安全策）
+  document.addEventListener("click", (e) => {
+    const closeBtn = e.target.closest("[data-close]");
+    const backBtn  = e.target.closest("[data-back]");
+    if (closeBtn || backBtn) {
+      Object.keys(PREVIEW_MAP).forEach((p) => setPreview(p, ""));
+    }
+  });
+})();
