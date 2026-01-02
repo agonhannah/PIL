@@ -199,15 +199,20 @@
   </aside>
 
   <!-- Pointer FX -->
-  <div id="pointer-fx">
-    <div id="pointer-blob"></div>
-    <div id="lockbox">
-      <div class="lockbox__rect"></div>
-      <div class="lockbox__label">Point HERE</div>
-    </div>
-  </div>
+  <div id="pointer-fx" aria-hidden="true">
+  <div id="pointer-blob"></div>
 
-  <script src="script.js" defer></script>
-  <script src="cursor.js" defer></script>
-</body>
-</html>
+  <div id="lockbox" aria-hidden="true">
+    <div class="lockbox__rect">
+      <div class="lockbox__cross lockbox__cross--h"></div>
+      <div class="lockbox__cross lockbox__cross--v"></div>
+
+      <span class="lockbox__tick lockbox__tick--t"></span>
+      <span class="lockbox__tick lockbox__tick--r"></span>
+      <span class="lockbox__tick lockbox__tick--b"></span>
+      <span class="lockbox__tick lockbox__tick--l"></span>
+    </div>
+
+    <div class="lockbox__label">Point HERE</div>
+  </div>
+</div>
