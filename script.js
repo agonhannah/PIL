@@ -93,7 +93,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
   const isCoarsePointer = !!(mmCoarse && mmCoarse.matches);
 
   const moveFx = (x, y) => {
-    fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    fx.style.transform = "translate3d(" + x + "px, " + y + "px, 0)";
   };
 
   const hardHide = () => {
@@ -245,6 +245,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 // - PC: hover/focus
 // - Mobile: pointerdown（タップした瞬間）
 // - data-open-panel の場合：遷移先panelにも即表示
+// - さらに「購入drawer(prodSessionCollection)」は入った瞬間に常時表示
 // ==============================
 (() => {
   try {
@@ -255,10 +256,16 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     const isFine   = hasMM ? window.matchMedia("(pointer: fine)").matches : false;
     const isCoarse = hasMM ? window.matchMedia("(pointer: coarse)").matches : false;
 
-    const getPanelByName = (name) =>
-      stack.querySelector(`.drawer__panel[data-panel="${name}"]`);
+    // 遷移先panelに渡したcoverを覚えておく（購入drawerで使う）
+    const coverForPanel = Object.create(null);
 
-    const getPreviewEl = (panelEl) => panelEl?.querySelector(".drawer__preview");
+    const getPanelByName = (name) =>
+      stack.querySelector('.drawer__panel[data-panel="' + name + '"]');
+
+    const getPreviewEl = (panelEl) => {
+      if (!panelEl) return null;
+      return panelEl.querySelector(".drawer__preview");
+    };
 
     const setPreview = (panelEl, url) => {
       const pv = getPreviewEl(panelEl);
@@ -269,7 +276,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
         pv.style.backgroundImage = "";
         return;
       }
-      pv.style.backgroundImage = `url("${url}")`;
+      pv.style.backgroundImage = 'url("' + url + '")';
       pv.style.opacity = "1";
     };
 
@@ -280,53 +287,82 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       });
     };
 
-    // data-cover を持つ要素
+    // 1) パネル内のdata-cover要素：PC hover / Mobile pointerdown
     const items = stack.querySelectorAll("[data-cover]");
     if (!items.length) return;
 
     items.forEach((el) => {
-      const url = el.dataset.cover;
+      const url = el.dataset ? el.dataset.cover : null;
       if (!url) return;
 
-      const panel = el.closest(".drawer__panel");
+      const panel = el.closest ? el.closest(".drawer__panel") : null;
       if (!panel) return;
 
       if (isFine) {
         el.addEventListener("mouseenter", () => setPreview(panel, url));
         el.addEventListener("mouseleave", () => setPreview(panel, ""));
-        el.addEventListener("focusin",    () => setPreview(panel, url));
-        el.addEventListener("focusout",   () => setPreview(panel, ""));
+        el.addEventListener("focusin",  () => setPreview(panel, url));
+        el.addEventListener("focusout", () => setPreview(panel, ""));
       }
 
       if (isCoarse) {
-        // タップ“した瞬間”に出す（clickだと遅い）
         el.addEventListener("pointerdown", () => setPreview(panel, url), { passive: true });
       }
     });
 
-    // data-open-panel で遷移する場合：遷移先panelにも即表示
+    // 2) data-open-panelで遷移する時：遷移先panelにも即表示 + coverを記憶
+    const raf = typeof window.requestAnimationFrame === "function"
+      ? window.requestAnimationFrame
+      : (fn) => setTimeout(fn, 0);
+
     stack.querySelectorAll("[data-open-panel][data-cover]").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const url  = btn.dataset.cover;
-        const next = btn.dataset.openPanel;
+        const url  = btn.dataset ? btn.dataset.cover : null;
+        const next = btn.dataset ? btn.dataset.openPanel : null;
         if (!url || !next) return;
 
-        requestAnimationFrame(() => {
+        coverForPanel[next] = url;
+
+        raf(() => {
           const nextPanel = getPanelByName(next);
           setPreview(nextPanel, url);
+
+          // ✅ 購入drawerは「入った瞬間から常時表示」にしたいので強制ON
+          if (next === "prodSessionCollection") {
+            setPreview(nextPanel, url);
+          }
         });
       });
     });
 
-    // close/back したら全部消す
+    // 3) 「Backで戻って再度入る」など、activeになった瞬間にも購入drawerは表示
+    if (typeof MutationObserver === "function") {
+      const obs = new MutationObserver(() => {
+        const active = stack.querySelector(".drawer__panel.is-active");
+        if (!active) return;
+
+        const name = active.dataset ? active.dataset.panel : "";
+        if (name === "prodSessionCollection") {
+          const url = coverForPanel[name];
+          if (url) setPreview(active, url);
+        }
+      });
+
+      obs.observe(stack, { subtree: true, attributes: true, attributeFilter: ["class"] });
+    }
+
+    // 4) close/back したら消す（安全）
     document.addEventListener("click", (e) => {
-      const closeBtn = e.target.closest?.("[data-close]");
-      const backBtn  = e.target.closest?.("[data-back]");
+      const t = e && e.target ? e.target : null;
+      const closeBtn = t && t.closest ? t.closest("[data-close]") : null;
+      const backBtn  = t && t.closest ? t.closest("[data-back]")  : null;
       if (closeBtn || backBtn) clearAllPreviews();
     });
 
   } catch (err) {
     // ここで落ちても drawer/pointer を殺さない
-    console.warn("Drawer preview init failed:", err);
+    if (typeof console !== "undefined" && console.warn) {
+      console.warn("Drawer preview init failed:", err);
+    }
   }
 })();
