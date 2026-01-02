@@ -771,10 +771,10 @@ body.is-locked{ overflow: hidden; }
   color: rgba(17,17,17,0.70);
 }
 
-/* ✅ “row”は使わない（縦並びで、価格とBuyを1行ずつ空ける） */
+/* “row”は使わない（縦並びで、価格とBuyを1行ずつ空ける） */
 .prod__row{ display: none; }
 
-/* ✅ 価格：ブロック + 下に余白（Buyと1行空け） */
+/* 価格：ブロック + 下に余白（Buyと1行空け） */
 .prod__price{
   display: block;
   margin-top: 16px;
@@ -784,12 +784,16 @@ body.is-locked{ overflow: hidden; }
   letter-spacing: 0.02em;
 }
 
-/* ✅ Buy：左寄せ固定（¥と左端を揃える） */
+/* ✅ Buy：ブロック化して確実に左へ吸着（¥と左端を揃える） */
 .pill.prod__buy,
 .prod__buy{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;               /* ← ここが効く：親の整列に影響されない */
+  width: -moz-fit-content;
+  width: fit-content;           /* iOS Safari OK（古い場合も block で左に落ちる） */
+  margin-left: 0 !important;
+  margin-right: auto;           /* ← 左寄せ固定 */
+
+  /* 見た目はpill維持 */
   height: 34px;
   padding: 0 14px;
   border-radius: 999px;
@@ -797,8 +801,10 @@ body.is-locked{ overflow: hidden; }
   background: rgba(255,255,255,0.55);
   font-size: 12px;
 
-  margin-top: 0;
-  margin-left: 0; /* ← 念押し：左寄せ */
+  /* block にしたので中身の整列はこれでOK */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .prod__buy:active{ transform: translateX(1px); }
