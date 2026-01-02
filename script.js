@@ -5,7 +5,7 @@ const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 // ==============================
-// Drawer (safe)
+// Drawer (history-safe / multi-level)
 // ==============================
 (() => {
   const menuBtn = document.getElementById("menuBtn");
@@ -13,21 +13,55 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
   const overlay = document.getElementById("overlay");
   const stack   = document.getElementById("drawerStack");
 
-  if (!menuBtn || !drawer || !overlay) return;
+  if (!menuBtn || !drawer || !overlay || !stack) return;
 
+  // ------------------------------
+  // state
+  // ------------------------------
+  let panelHistory = [];
+
+  // ------------------------------
+  // helpers
+  // ------------------------------
   const setExpanded = (isOpen) => {
     menuBtn.setAttribute("aria-expanded", String(isOpen));
     drawer.setAttribute("aria-hidden", String(!isOpen));
   };
 
+  const getActivePanel = () => {
+    return stack.querySelector(".drawer__panel.is-active");
+  };
+
+  const getActivePanelName = () => {
+    const p = getActivePanel();
+    return p ? p.dataset.panel : "main";
+  };
+
   const setPanel = (name) => {
-    if (!stack) return;
     stack.querySelectorAll(".drawer__panel").forEach((panel) => {
       panel.classList.toggle("is-active", panel.dataset.panel === name);
     });
   };
 
+  // ------------------------------
+  // navigation with history
+  // ------------------------------
+  const goPanel = (next) => {
+    const current = getActivePanelName();
+    if (current !== next) panelHistory.push(current);
+    setPanel(next);
+  };
+
+  const goBack = () => {
+    const prev = panelHistory.pop() || "main";
+    setPanel(prev);
+  };
+
+  // ------------------------------
+  // open / close
+  // ------------------------------
   const openDrawer = () => {
+    panelHistory = [];              // ← 毎回リセット
     drawer.classList.add("is-open");
     overlay.hidden = false;
     document.body.classList.add("is-locked");
@@ -36,26 +70,35 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
   };
 
   const closeDrawer = () => {
+    panelHistory = [];
     drawer.classList.remove("is-open");
     overlay.hidden = true;
     document.body.classList.remove("is-locked");
     setExpanded(false);
   };
 
+  // ------------------------------
+  // events
+  // ------------------------------
   menuBtn.addEventListener("click", openDrawer);
   overlay.addEventListener("click", closeDrawer);
 
-  if (stack) {
-    stack.querySelectorAll("[data-open-panel]").forEach((btn) => {
-      btn.addEventListener("click", () => setPanel(btn.dataset.openPanel));
+  // open next panel
+  stack.querySelectorAll("[data-open-panel]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      goPanel(btn.dataset.openPanel);
     });
-    stack.querySelectorAll("[data-back]").forEach((btn) => {
-      btn.addEventListener("click", () => setPanel("main"));
-    });
-    stack.querySelectorAll("[data-close]").forEach((btn) => {
-      btn.addEventListener("click", closeDrawer);
-    });
-  }
+  });
+
+  // back (1階層戻る)
+  stack.querySelectorAll("[data-back]").forEach((btn) => {
+    btn.addEventListener("click", goBack);
+  });
+
+  // close drawer
+  stack.querySelectorAll("[data-close]").forEach((btn) => {
+    btn.addEventListener("click", closeDrawer);
+  });
 })();
 
 // ==============================
@@ -239,4 +282,72 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     hardHide();
   }
+})();
+
+// ==============================
+// Drawer Shop filter (All / Digital / Physical)
+// ==============================
+const shopGrid = document.getElementById("shopGrid");
+if (shopGrid) {
+  const setShopTab = (tab) => {
+    shopGrid.querySelectorAll(".shopCard").forEach((card) => {
+      const isDigital  = card.classList.contains("is-digital");
+      const isPhysical = card.classList.contains("is-physical");
+
+      const show =
+        tab === "all" ||
+        (tab === "digital" && isDigital) ||
+        (tab === "physical" && isPhysical);
+
+      card.classList.toggle("is-hidden", !show);
+    });
+  };
+
+  // default: Physical を開いた時に物理だけ見せたいならここを physical に
+  setShopTab("all");
+
+  document.querySelectorAll('[data-panel="shop"] [data-shop-tab]').forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      setShopTab(a.dataset.shopTab);
+    });
+  });
+}
+
+// ==============================
+// Drawer preview (PC hover only)
+// - Archive panel + Physical panel
+// ==============================
+(() => {
+  const isFinePointer =
+    window.matchMedia && window.matchMedia("(pointer: fine)").matches;
+  if (!isFinePointer) return;
+
+  const bindPreview = (panelName, previewElId) => {
+    const preview = document.getElementById(previewElId);
+    if (!preview) return;
+
+    document
+      .querySelectorAll(
+        `.drawer__panel[data-panel="${panelName}"] .drawer__listItem[data-cover]`
+      )
+      .forEach((item) => {
+        const url = item.dataset.cover;
+
+        item.addEventListener("mouseenter", () => {
+          preview.style.backgroundImage = `url("${url}")`;
+          preview.style.opacity = "1";
+        });
+
+        item.addEventListener("mouseleave", () => {
+          preview.style.opacity = "0";
+        });
+      });
+  };
+
+  // Archive用（既存の #drawerPreview を使う）
+  bindPreview("archive", "drawerPreview");
+
+  // Physical Goods用（新規の #drawerPreviewPhysical を使う）
+  bindPreview("shopPhysical", "drawerPreviewPhysical");
 })();
