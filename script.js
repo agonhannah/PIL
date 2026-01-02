@@ -7,6 +7,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 // ==============================
 // Drawer (history-safe / multi-level)
 // + Preview injection on panel transition
+// + ESC close + focus restore + basic focus trap
 // ==============================
 (function () {
   var menuBtn = document.getElementById("menuBtn");
@@ -17,7 +18,8 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
   if (!menuBtn || !drawer || !overlay || !stack) return;
 
   var panelHistory = [];
-  var lastCoverByPanel = {}; // panelName -> url（購入drawer到達時に使う）
+  var lastCoverByPanel = {}; // panelName -> url
+  var lastFocusEl = null;
 
   function setExpanded(isOpen) {
     menuBtn.setAttribute("aria-expanded", String(isOpen));
@@ -71,7 +73,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       panel.classList.toggle("is-active", isActive);
     }
 
-    // ★ panelが切り替わった直後：そのpanelに「最後に覚えているcover」があれば出す
+    // panel切替後：そのpanelに「最後に覚えているcover」があれば出す
     var panelEl = getPanelByName(name);
     if (panelEl && lastCoverByPanel[name]) {
       setPreview(panelEl, lastCoverByPanel[name]);
@@ -82,12 +84,11 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     var current = getActivePanelName();
     if (current !== next) panelHistory.push(current);
 
-    // coverを「遷移先panel用」に保存してから移動
     if (coverUrl) lastCoverByPanel[next] = coverUrl;
 
     setPanel(next);
 
-    // 念押し：次フレームでもう一回（iOSの描画遅延対策）
+    // 念押し：次フレームでもう一回（iOS描画遅延対策）
     if (coverUrl) {
       requestAnimationFrame(function () {
         var nextPanel = getPanelByName(next);
@@ -101,28 +102,99 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     setPanel(prev);
   }
 
+  function focusFirstFocusable() {
+    // 「閉じる」ボタン優先
+    var active = getActivePanel();
+    if (!active) return;
+
+    var closeBtn = active.querySelector("[data-close]");
+    if (closeBtn) { closeBtn.focus(); return; }
+
+    // 次点
+    var focusable = active.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (focusable) focusable.focus();
+  }
+
   function openDrawer() {
     panelHistory = [];
+    lastFocusEl = document.activeElement || menuBtn;
+
+    clearAllPreviews();         // ← 残像防止
+    setPanel("main");
+
     drawer.classList.add("is-open");
     overlay.hidden = false;
     document.body.classList.add("is-locked");
-    setPanel("main");
     setExpanded(true);
+
+    // フォーカスをdrawerへ
+    requestAnimationFrame(function () {
+      focusFirstFocusable();
+    });
+
+    // pointer-fx を強制的に消す（drawer操作優先）
+    var fx = document.getElementById("pointer-fx");
+    if (fx) fx.style.opacity = "0";
   }
 
   function closeDrawer() {
     panelHistory = [];
+
     drawer.classList.remove("is-open");
     overlay.hidden = true;
     document.body.classList.remove("is-locked");
     setExpanded(false);
+
     clearAllPreviews();
+
+    // フォーカスを戻す
+    requestAnimationFrame(function () {
+      if (lastFocusEl && typeof lastFocusEl.focus === "function") {
+        lastFocusEl.focus();
+      } else {
+        menuBtn.focus();
+      }
+    });
   }
 
+  // open / close
   menuBtn.addEventListener("click", openDrawer);
   overlay.addEventListener("click", closeDrawer);
 
-  // open next panel（★coverも一緒に渡す）
+  // ESC to close
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && drawer.classList.contains("is-open")) {
+      e.preventDefault();
+      closeDrawer();
+    }
+  });
+
+  // basic focus trap (Tab が背景に抜けない)
+  window.addEventListener("keydown", function (e) {
+    if (e.key !== "Tab") return;
+    if (!drawer.classList.contains("is-open")) return;
+
+    var activePanel = getActivePanel();
+    if (!activePanel) return;
+
+    var focusables = activePanel.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusables.length) return;
+
+    var first = focusables[0];
+    var last = focusables[focusables.length - 1];
+
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+
+  // open next panel（coverも一緒に渡す）
   var openBtns = stack.querySelectorAll("[data-open-panel]");
   for (var i = 0; i < openBtns.length; i++) {
     (function (btn) {
@@ -148,7 +220,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     closeBtns[k].addEventListener("click", closeDrawer);
   }
 
-  // ★PC hover / focus で preview更新（Archive, shopPhysical など）
+  // PC hover / focus preview
   (function bindHoverPreview() {
     var hasMM = typeof window.matchMedia === "function";
     var isFine = hasMM ? window.matchMedia("(pointer: fine)").matches : false;
@@ -163,23 +235,15 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
         var panel = el.closest ? el.closest(".drawer__panel") : null;
         if (!panel) return;
 
-        el.addEventListener("mouseenter", function () {
-          setPreview(panel, url);
-        });
-        el.addEventListener("mouseleave", function () {
-          setPreview(panel, "");
-        });
-        el.addEventListener("focusin", function () {
-          setPreview(panel, url);
-        });
-        el.addEventListener("focusout", function () {
-          setPreview(panel, "");
-        });
+        el.addEventListener("mouseenter", function () { setPreview(panel, url); });
+        el.addEventListener("mouseleave", function () { setPreview(panel, ""); });
+        el.addEventListener("focusin",   function () { setPreview(panel, url); });
+        el.addEventListener("focusout",  function () { setPreview(panel, ""); });
       })(items[i2]);
     }
   })();
 
-  // ★Mobile: “タップした瞬間” preview更新（遅延click対策）
+  // Mobile tap preview（遅延click対策）
   (function bindMobileTapPreview() {
     var hasMM = typeof window.matchMedia === "function";
     var isCoarse = hasMM ? window.matchMedia("(pointer: coarse)").matches : false;
@@ -210,6 +274,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 (function () {
   var fx      = document.getElementById("pointer-fx");
   var lockbox = document.getElementById("lockbox");
+  var drawer  = document.getElementById("drawer");
   if (!fx) return;
 
   var mmFine   = (typeof window.matchMedia === "function") ? window.matchMedia("(pointer: fine)") : null;
@@ -225,6 +290,11 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     fx.style.opacity = "0";
     fx.style.transform = "translate3d(-9999px, -9999px, 0)";
     if (lockbox) lockbox.style.opacity = "0";
+  }
+
+  // Drawer open中は常に消す（操作優先）
+  function drawerIsOpen() {
+    return drawer && drawer.classList.contains("is-open");
   }
 
   // PC
@@ -250,6 +320,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     }
 
     window.addEventListener("mousemove", function (e) {
+      if (drawerIsOpen()) { hardHide(); return; }
       moveFx(e.clientX, e.clientY);
       fx.style.opacity = "1";
     }, { passive: true });
@@ -265,20 +336,26 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       function hideLockbox() { lockbox.style.opacity = "0"; }
 
       document.addEventListener("mouseover", function (e) {
+        if (drawerIsOpen()) return;
         if (closestClickable(e.target)) showLockbox();
       });
 
       document.addEventListener("mouseout", function (e) {
+        if (drawerIsOpen()) return;
         var from = closestClickable(e.target);
         var to   = closestClickable(e.relatedTarget);
         if (from && from !== to) hideLockbox();
       });
 
       document.addEventListener("focusin", function (e) {
+        if (drawerIsOpen()) return;
         if (closestClickable(e.target)) showLockbox();
       });
 
-      document.addEventListener("focusout", hideLockbox);
+      document.addEventListener("focusout", function () {
+        if (drawerIsOpen()) return;
+        hideLockbox();
+      });
     }
 
     hardHide();
@@ -330,6 +407,8 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     }
 
     window.addEventListener("pointerdown", function (e) {
+      if (drawerIsOpen()) { hardHide(); return; } // ← Drawer中は出さない
+
       isDown = true;
 
       targetX = e.clientX;
@@ -348,6 +427,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     window.addEventListener("pointermove", function (e) {
       if (!isDown) return;
+      if (drawerIsOpen()) { hardHide(); return; }
       targetX = e.clientX;
       targetY = e.clientY;
     }, { passive: true });
