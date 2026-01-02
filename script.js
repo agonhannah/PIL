@@ -73,7 +73,6 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       panel.classList.toggle("is-active", isActive);
     }
 
-    // panel切替後：そのpanelに「最後に覚えているcover」があれば出す
     var panelEl = getPanelByName(name);
     if (panelEl && lastCoverByPanel[name]) {
       setPreview(panelEl, lastCoverByPanel[name]);
@@ -88,7 +87,6 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     setPanel(next);
 
-    // 念押し：次フレームでもう一回（iOS描画遅延対策）
     if (coverUrl) {
       requestAnimationFrame(function () {
         var nextPanel = getPanelByName(next);
@@ -103,14 +101,12 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
   }
 
   function focusFirstFocusable() {
-    // 「閉じる」ボタン優先
     var active = getActivePanel();
     if (!active) return;
 
     var closeBtn = active.querySelector("[data-close]");
     if (closeBtn) { closeBtn.focus(); return; }
 
-    // 次点
     var focusable = active.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
     if (focusable) focusable.focus();
   }
@@ -119,7 +115,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     panelHistory = [];
     lastFocusEl = document.activeElement || menuBtn;
 
-    clearAllPreviews();         // ← 残像防止
+    clearAllPreviews();
     setPanel("main");
 
     drawer.classList.add("is-open");
@@ -127,14 +123,11 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     document.body.classList.add("is-locked");
     setExpanded(true);
 
-    // フォーカスをdrawerへ
     requestAnimationFrame(function () {
       focusFirstFocusable();
     });
 
-    // pointer-fx を強制的に消す（drawer操作優先）
-    var fx = document.getElementById("pointer-fx");
-    if (fx) fx.style.opacity = "0";
+    // ★ここで pointer-fx を殺さない（これが原因）
   }
 
   function closeDrawer() {
@@ -147,7 +140,6 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     clearAllPreviews();
 
-    // フォーカスを戻す
     requestAnimationFrame(function () {
       if (lastFocusEl && typeof lastFocusEl.focus === "function") {
         lastFocusEl.focus();
@@ -157,11 +149,9 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     });
   }
 
-  // open / close
   menuBtn.addEventListener("click", openDrawer);
   overlay.addEventListener("click", closeDrawer);
 
-  // ESC to close
   window.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && drawer.classList.contains("is-open")) {
       e.preventDefault();
@@ -169,7 +159,6 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     }
   });
 
-  // basic focus trap (Tab が背景に抜けない)
   window.addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
     if (!drawer.classList.contains("is-open")) return;
@@ -194,7 +183,6 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     }
   });
 
-  // open next panel（coverも一緒に渡す）
   var openBtns = stack.querySelectorAll("[data-open-panel]");
   for (var i = 0; i < openBtns.length; i++) {
     (function (btn) {
@@ -208,19 +196,16 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     })(openBtns[i]);
   }
 
-  // back
   var backBtns = stack.querySelectorAll("[data-back]");
   for (var j = 0; j < backBtns.length; j++) {
     backBtns[j].addEventListener("click", goBack);
   }
 
-  // close
   var closeBtns = stack.querySelectorAll("[data-close]");
   for (var k = 0; k < closeBtns.length; k++) {
     closeBtns[k].addEventListener("click", closeDrawer);
   }
 
-  // PC hover / focus preview
   (function bindHoverPreview() {
     var hasMM = typeof window.matchMedia === "function";
     var isFine = hasMM ? window.matchMedia("(pointer: fine)").matches : false;
@@ -243,7 +228,6 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     }
   })();
 
-  // Mobile tap preview（遅延click対策）
   (function bindMobileTapPreview() {
     var hasMM = typeof window.matchMedia === "function";
     var isCoarse = hasMM ? window.matchMedia("(pointer: coarse)").matches : false;
@@ -269,15 +253,12 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 })();
 
 // ==============================
-// Pointer FX (PC + Mobile)
+// Pointer FX (PC + Mobile) - stable everywhere incl drawer
 // ==============================
 (function () {
   var fx      = document.getElementById("pointer-fx");
   var lockbox = document.getElementById("lockbox");
   if (!fx) return;
-
-  var drawer  = document.getElementById("drawer");
-  var overlay = document.getElementById("overlay");
 
   var mmFine   = (typeof window.matchMedia === "function") ? window.matchMedia("(pointer: fine)") : null;
   var mmCoarse = (typeof window.matchMedia === "function") ? window.matchMedia("(pointer: coarse)") : null;
@@ -294,59 +275,54 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     if (lockbox) lockbox.style.opacity = "0";
   }
 
+  var CLICKABLE_SELECTOR = [
+    "a[href]",
+    "button",
+    '[role="button"]',
+    "[data-open-panel]",
+    "[data-close]",
+    "[data-back]",
+    ".drawer__item",
+    ".drawer__listItem",
+    ".pill",
+    ".btn"
+  ].join(",");
+
+  function closestClickable(el) {
+    if (!el || !el.closest) return null;
+    return el.closest(CLICKABLE_SELECTOR);
+  }
+
   // ============================
-  // PC (fine pointer)
+  // PC: pointermove（mouse限定）で常に追従
   // ============================
   if (isFinePointer) {
     fx.style.opacity = "0";
 
-    var CLICKABLE_SELECTOR = [
-      "a[href]",
-      "button",
-      '[role="button"]',
-      "[data-open-panel]",
-      "[data-close]",
-      "[data-back]",
-      ".drawer__item",
-      ".drawer__listItem",
-      ".pill",
-      ".btn"
-    ].join(",");
-
-    function closestClickable(el) {
-      if (!el || !el.closest) return null;
-      return el.closest(CLICKABLE_SELECTOR);
-    }
-
-    function showFxAtEvent(e) {
+    document.addEventListener("pointermove", function (e) {
+      if (e.pointerType && e.pointerType !== "mouse") return;
       moveFx(e.clientX, e.clientY);
       fx.style.opacity = "1";
-    }
+    }, { passive: true, capture: true });
 
-    // ★ window だけだと drawer/overlay 上で拾えない環境があるので増やす
-    document.addEventListener("mousemove", showFxAtEvent, { passive: true });
-    if (drawer)  drawer.addEventListener("mousemove", showFxAtEvent, { passive: true });
-    if (overlay) overlay.addEventListener("mousemove", showFxAtEvent, { passive: true });
-
-    // ★ 強すぎる window mouseout は切る（これが drawer 周りで誤発火することがある）
-    // 代わりに「ドキュメント外に出た」だけで消す
     document.addEventListener("mouseleave", hardHide);
-
     window.addEventListener("blur", hardHide);
 
     if (lockbox) {
       function showLockbox() { lockbox.style.opacity = "1"; }
       function hideLockbox() { lockbox.style.opacity = "0"; }
 
-      document.addEventListener("mouseover", function (e) {
+      document.addEventListener("pointerover", function (e) {
+        if (e.pointerType && e.pointerType !== "mouse") return;
         if (closestClickable(e.target)) showLockbox();
-      });
+      }, { passive: true, capture: true });
 
-      document.addEventListener("mouseout", function (e) {
+      document.addEventListener("pointerout", function (e) {
+        if (e.pointerType && e.pointerType !== "mouse") return;
         var from = closestClickable(e.target);
         var to   = closestClickable(e.relatedTarget);
         if (from && from !== to) hideLockbox();
-      });
+      }, { passive: true, capture: true });
 
       document.addEventListener("focusin", function (e) {
         if (closestClickable(e.target)) showLockbox();
@@ -360,7 +336,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
   }
 
   // ============================
-  // Mobile (coarse pointer)
+  // Mobile: drag中だけ表示（drawer内でも拾う）
   // ============================
   if (isCoarsePointer) {
     document.body.classList.add("is-touch");
@@ -405,7 +381,6 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       }, 1000);
     }
 
-    // ★ iOSでdrawer内タップが取りこぼされる場合があるので document で拾う
     document.addEventListener("pointerdown", function (e) {
       isDown = true;
 
@@ -421,26 +396,24 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       requestAnimationFrame(function () {
         fx.style.transition = "";
       });
-    }, { passive: true });
+    }, { passive: true, capture: true });
 
     document.addEventListener("pointermove", function (e) {
       if (!isDown) return;
       targetX = e.clientX;
       targetY = e.clientY;
-    }, { passive: true });
+    }, { passive: true, capture: true });
 
     document.addEventListener("pointerup", function () {
       isDown = false;
       fadeOutNow();
-    }, { passive: true });
+    }, { passive: true, capture: true });
 
     document.addEventListener("pointercancel", function () {
       isDown = false;
       fadeOutNow();
-    }, { passive: true });
+    }, { passive: true, capture: true });
 
     hardHide();
   }
 })();
-
-  
