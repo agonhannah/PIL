@@ -830,3 +830,38 @@ body.is-locked{
 .drawer__close:hover::before{
   opacity: 1;
 }
+
+/* ================================
+   iOS Safari: link/button blue kill
+================================ */
+.drawer,
+.drawer *{
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* button のiOSデフォ青を潰す */
+.drawer button{
+  -webkit-appearance: none;
+  appearance: none;
+  color: var(--ink) !important;
+  background: transparent;
+}
+
+/* a の visited / link 色を固定 */
+.drawer a,
+.drawer a:link,
+.drawer a:visited,
+.drawer a:hover,
+.drawer a:active{
+  color: var(--ink) !important;
+}
+
+/* 主要テキストを強制的に黒固定（念押し） */
+.drawer__item,
+.drawer__listItem,
+.drawer__back,
+.drawer__small,
+.drawer__close{
+  color: var(--ink) !important;
+  -webkit-text-fill-color: var(--ink); /* iOSの謎上書き対策 */
+}
