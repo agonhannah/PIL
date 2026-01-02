@@ -1,112 +1,237 @@
 // ==============================
 // year
 // ==============================
-const yearEl = document.getElementById("year");
+var yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 // ==============================
 // Drawer (history-safe / multi-level)
+// + Preview injection on panel transition
 // ==============================
-(() => {
-  const menuBtn = document.getElementById("menuBtn");
-  const drawer  = document.getElementById("drawer");
-  const overlay = document.getElementById("overlay");
-  const stack   = document.getElementById("drawerStack");
+(function () {
+  var menuBtn = document.getElementById("menuBtn");
+  var drawer  = document.getElementById("drawer");
+  var overlay = document.getElementById("overlay");
+  var stack   = document.getElementById("drawerStack");
 
   if (!menuBtn || !drawer || !overlay || !stack) return;
 
-  let panelHistory = [];
+  var panelHistory = [];
+  var lastCoverByPanel = {}; // panelName -> url（購入drawer到達時に使う）
 
-  const setExpanded = (isOpen) => {
+  function setExpanded(isOpen) {
     menuBtn.setAttribute("aria-expanded", String(isOpen));
     drawer.setAttribute("aria-hidden", String(!isOpen));
-  };
+  }
 
-  const getActivePanel = () => stack.querySelector(".drawer__panel.is-active");
+  function getActivePanel() {
+    return stack.querySelector(".drawer__panel.is-active");
+  }
 
-  const getActivePanelName = () => {
-    const p = getActivePanel();
-    return p ? p.dataset.panel : "main";
-  };
+  function getActivePanelName() {
+    var p = getActivePanel();
+    return p && p.dataset ? p.dataset.panel : "main";
+  }
 
-  const setPanel = (name) => {
-    stack.querySelectorAll(".drawer__panel").forEach((panel) => {
-      panel.classList.toggle("is-active", panel.dataset.panel === name);
-    });
-  };
+  function getPanelByName(name) {
+    return stack.querySelector('.drawer__panel[data-panel="' + name + '"]');
+  }
 
-  const goPanel = (next) => {
-    const current = getActivePanelName();
+  function getPreviewEl(panelEl) {
+    if (!panelEl) return null;
+    return panelEl.querySelector(".drawer__preview");
+  }
+
+  function setPreview(panelEl, url) {
+    var pv = getPreviewEl(panelEl);
+    if (!pv) return;
+
+    if (!url) {
+      pv.style.opacity = "0";
+      pv.style.backgroundImage = "";
+      return;
+    }
+    pv.style.backgroundImage = 'url("' + url + '")';
+    pv.style.opacity = "1";
+  }
+
+  function clearAllPreviews() {
+    var pvs = stack.querySelectorAll(".drawer__panel .drawer__preview");
+    for (var i = 0; i < pvs.length; i++) {
+      pvs[i].style.opacity = "0";
+      pvs[i].style.backgroundImage = "";
+    }
+  }
+
+  function setPanel(name) {
+    var panels = stack.querySelectorAll(".drawer__panel");
+    for (var i = 0; i < panels.length; i++) {
+      var panel = panels[i];
+      var isActive = panel.dataset && panel.dataset.panel === name;
+      panel.classList.toggle("is-active", isActive);
+    }
+
+    // ★ panelが切り替わった直後：そのpanelに「最後に覚えているcover」があれば出す
+    var panelEl = getPanelByName(name);
+    if (panelEl && lastCoverByPanel[name]) {
+      setPreview(panelEl, lastCoverByPanel[name]);
+    }
+  }
+
+  function goPanel(next, coverUrl) {
+    var current = getActivePanelName();
     if (current !== next) panelHistory.push(current);
+
+    // coverを「遷移先panel用」に保存してから移動
+    if (coverUrl) lastCoverByPanel[next] = coverUrl;
+
     setPanel(next);
-  };
 
-  const goBack = () => {
-    const prev = panelHistory.pop() || "main";
+    // 念押し：次フレームでもう一回（iOSの描画遅延対策）
+    if (coverUrl) {
+      requestAnimationFrame(function () {
+        var nextPanel = getPanelByName(next);
+        setPreview(nextPanel, coverUrl);
+      });
+    }
+  }
+
+  function goBack() {
+    var prev = panelHistory.pop() || "main";
     setPanel(prev);
-  };
+  }
 
-  const openDrawer = () => {
+  function openDrawer() {
     panelHistory = [];
     drawer.classList.add("is-open");
     overlay.hidden = false;
     document.body.classList.add("is-locked");
     setPanel("main");
     setExpanded(true);
-  };
+  }
 
-  const closeDrawer = () => {
+  function closeDrawer() {
     panelHistory = [];
     drawer.classList.remove("is-open");
     overlay.hidden = true;
     document.body.classList.remove("is-locked");
     setExpanded(false);
-  };
+    clearAllPreviews();
+  }
 
   menuBtn.addEventListener("click", openDrawer);
   overlay.addEventListener("click", closeDrawer);
 
-  stack.querySelectorAll("[data-open-panel]").forEach((btn) => {
-    btn.addEventListener("click", () => goPanel(btn.dataset.openPanel));
-  });
+  // open next panel（★coverも一緒に渡す）
+  var openBtns = stack.querySelectorAll("[data-open-panel]");
+  for (var i = 0; i < openBtns.length; i++) {
+    (function (btn) {
+      btn.addEventListener("click", function () {
+        var next = btn.dataset ? btn.dataset.openPanel : null;
+        if (!next) return;
 
-  stack.querySelectorAll("[data-back]").forEach((btn) => {
-    btn.addEventListener("click", goBack);
-  });
+        var cover = btn.dataset ? btn.dataset.cover : "";
+        goPanel(next, cover);
+      });
+    })(openBtns[i]);
+  }
 
-  stack.querySelectorAll("[data-close]").forEach((btn) => {
-    btn.addEventListener("click", closeDrawer);
-  });
+  // back
+  var backBtns = stack.querySelectorAll("[data-back]");
+  for (var j = 0; j < backBtns.length; j++) {
+    backBtns[j].addEventListener("click", goBack);
+  }
+
+  // close
+  var closeBtns = stack.querySelectorAll("[data-close]");
+  for (var k = 0; k < closeBtns.length; k++) {
+    closeBtns[k].addEventListener("click", closeDrawer);
+  }
+
+  // ★PC hover / focus で preview更新（Archive, shopPhysical など）
+  (function bindHoverPreview() {
+    var hasMM = typeof window.matchMedia === "function";
+    var isFine = hasMM ? window.matchMedia("(pointer: fine)").matches : false;
+    if (!isFine) return;
+
+    var items = stack.querySelectorAll("[data-cover]");
+    for (var i2 = 0; i2 < items.length; i2++) {
+      (function (el) {
+        var url = el.dataset ? el.dataset.cover : "";
+        if (!url) return;
+
+        var panel = el.closest ? el.closest(".drawer__panel") : null;
+        if (!panel) return;
+
+        el.addEventListener("mouseenter", function () {
+          setPreview(panel, url);
+        });
+        el.addEventListener("mouseleave", function () {
+          setPreview(panel, "");
+        });
+        el.addEventListener("focusin", function () {
+          setPreview(panel, url);
+        });
+        el.addEventListener("focusout", function () {
+          setPreview(panel, "");
+        });
+      })(items[i2]);
+    }
+  })();
+
+  // ★Mobile: “タップした瞬間” preview更新（遅延click対策）
+  (function bindMobileTapPreview() {
+    var hasMM = typeof window.matchMedia === "function";
+    var isCoarse = hasMM ? window.matchMedia("(pointer: coarse)").matches : false;
+    if (!isCoarse) return;
+
+    document.body.classList.add("is-touch");
+
+    var items = stack.querySelectorAll("[data-cover]");
+    for (var i3 = 0; i3 < items.length; i3++) {
+      (function (el) {
+        var url = el.dataset ? el.dataset.cover : "";
+        if (!url) return;
+
+        var panel = el.closest ? el.closest(".drawer__panel") : null;
+        if (!panel) return;
+
+        el.addEventListener("pointerdown", function () {
+          setPreview(panel, url);
+        }, { passive: true });
+      })(items[i3]);
+    }
+  })();
 })();
 
 // ==============================
 // Pointer FX (PC + Mobile)
 // ==============================
-(() => {
-  const fx      = document.getElementById("pointer-fx");
-  const lockbox = document.getElementById("lockbox");
+(function () {
+  var fx      = document.getElementById("pointer-fx");
+  var lockbox = document.getElementById("lockbox");
   if (!fx) return;
 
-  const mmFine   = typeof window.matchMedia === "function" ? window.matchMedia("(pointer: fine)") : null;
-  const mmCoarse = typeof window.matchMedia === "function" ? window.matchMedia("(pointer: coarse)") : null;
-  const isFinePointer   = !!(mmFine && mmFine.matches);
-  const isCoarsePointer = !!(mmCoarse && mmCoarse.matches);
+  var mmFine   = (typeof window.matchMedia === "function") ? window.matchMedia("(pointer: fine)") : null;
+  var mmCoarse = (typeof window.matchMedia === "function") ? window.matchMedia("(pointer: coarse)") : null;
+  var isFinePointer   = !!(mmFine && mmFine.matches);
+  var isCoarsePointer = !!(mmCoarse && mmCoarse.matches);
 
-  const moveFx = (x, y) => {
+  function moveFx(x, y) {
     fx.style.transform = "translate3d(" + x + "px, " + y + "px, 0)";
-  };
+  }
 
-  const hardHide = () => {
+  function hardHide() {
     fx.style.opacity = "0";
     fx.style.transform = "translate3d(-9999px, -9999px, 0)";
     if (lockbox) lockbox.style.opacity = "0";
-  };
+  }
 
-  // -------- PC --------
+  // PC
   if (isFinePointer) {
     fx.style.opacity = "0";
 
-    const CLICKABLE_SELECTOR = [
+    var CLICKABLE_SELECTOR = [
       "a[href]",
       "button",
       '[role="button"]',
@@ -119,35 +244,37 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       ".btn"
     ].join(",");
 
-    const closestClickable = (el) =>
-      el && el.closest ? el.closest(CLICKABLE_SELECTOR) : null;
+    function closestClickable(el) {
+      if (!el || !el.closest) return null;
+      return el.closest(CLICKABLE_SELECTOR);
+    }
 
-    window.addEventListener("mousemove", (e) => {
+    window.addEventListener("mousemove", function (e) {
       moveFx(e.clientX, e.clientY);
       fx.style.opacity = "1";
     }, { passive: true });
 
-    window.addEventListener("mouseout", (e) => {
+    window.addEventListener("mouseout", function (e) {
       if (!e.relatedTarget && !e.toElement) hardHide();
     });
 
     window.addEventListener("blur", hardHide);
 
     if (lockbox) {
-      const showLockbox = () => (lockbox.style.opacity = "1");
-      const hideLockbox = () => (lockbox.style.opacity = "0");
+      function showLockbox() { lockbox.style.opacity = "1"; }
+      function hideLockbox() { lockbox.style.opacity = "0"; }
 
-      document.addEventListener("mouseover", (e) => {
+      document.addEventListener("mouseover", function (e) {
         if (closestClickable(e.target)) showLockbox();
       });
 
-      document.addEventListener("mouseout", (e) => {
-        const from = closestClickable(e.target);
-        const to   = closestClickable(e.relatedTarget);
+      document.addEventListener("mouseout", function (e) {
+        var from = closestClickable(e.target);
+        var to   = closestClickable(e.relatedTarget);
         if (from && from !== to) hideLockbox();
       });
 
-      document.addEventListener("focusin", (e) => {
+      document.addEventListener("focusin", function (e) {
         if (closestClickable(e.target)) showLockbox();
       });
 
@@ -158,51 +285,51 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     return;
   }
 
-  // -------- Mobile --------
+  // Mobile
   if (isCoarsePointer) {
     document.body.classList.add("is-touch");
 
-    let targetX = -9999, targetY = -9999;
-    let curX = -9999, curY = -9999;
-    let rafId = null;
-    let isDown = false;
+    var targetX = -9999, targetY = -9999;
+    var curX = -9999, curY = -9999;
+    var rafId = null;
+    var isDown = false;
 
-    const lerp = (a, b, t) => a + (b - a) * t;
+    function lerp(a, b, t) { return a + (b - a) * t; }
 
-    const render = () => {
-      const t = 0.18;
+    function render() {
+      var t = 0.18;
       curX = lerp(curX, targetX, t);
       curY = lerp(curY, targetY, t);
       moveFx(curX, curY);
       rafId = requestAnimationFrame(render);
-    };
+    }
 
-    const startRAF = () => {
+    function startRAF() {
       if (rafId) return;
       rafId = requestAnimationFrame(render);
-    };
+    }
 
-    const stopRAF = () => {
+    function stopRAF() {
       if (!rafId) return;
       cancelAnimationFrame(rafId);
       rafId = null;
-    };
+    }
 
-    const showFx = () => {
+    function showFx() {
       fx.style.opacity = "1";
       startRAF();
-    };
+    }
 
-    const fadeOutNow = () => {
+    function fadeOutNow() {
       fx.style.opacity = "0";
-      setTimeout(() => {
+      setTimeout(function () {
         targetX = targetY = curX = curY = -9999;
         fx.style.transform = "translate3d(-9999px, -9999px, 0)";
         stopRAF();
       }, 1000);
-    };
+    }
 
-    window.addEventListener("pointerdown", (e) => {
+    window.addEventListener("pointerdown", function (e) {
       isDown = true;
 
       targetX = e.clientX;
@@ -214,155 +341,27 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       moveFx(curX, curY);
 
       showFx();
-      requestAnimationFrame(() => {
+      requestAnimationFrame(function () {
         fx.style.transition = "";
       });
     }, { passive: true });
 
-    window.addEventListener("pointermove", (e) => {
+    window.addEventListener("pointermove", function (e) {
       if (!isDown) return;
       targetX = e.clientX;
       targetY = e.clientY;
     }, { passive: true });
 
-    window.addEventListener("pointerup", () => {
+    window.addEventListener("pointerup", function () {
       isDown = false;
       fadeOutNow();
     }, { passive: true });
 
-    window.addEventListener("pointercancel", () => {
+    window.addEventListener("pointercancel", function () {
       isDown = false;
       fadeOutNow();
     }, { passive: true });
 
     hardHide();
-  }
-})();
-
-// ==============================
-// Drawer Preview (single / safe)
-// - data-cover を持つ要素で preview を表示
-// - PC: hover/focus
-// - Mobile: pointerdown（タップした瞬間）
-// - data-open-panel の場合：遷移先panelにも即表示
-// - さらに「購入drawer(prodSessionCollection)」は入った瞬間に常時表示
-// ==============================
-(() => {
-  try {
-    const stack = document.getElementById("drawerStack");
-    if (!stack) return;
-
-    const hasMM = typeof window.matchMedia === "function";
-    const isFine   = hasMM ? window.matchMedia("(pointer: fine)").matches : false;
-    const isCoarse = hasMM ? window.matchMedia("(pointer: coarse)").matches : false;
-
-    // 遷移先panelに渡したcoverを覚えておく（購入drawerで使う）
-    const coverForPanel = Object.create(null);
-
-    const getPanelByName = (name) =>
-      stack.querySelector('.drawer__panel[data-panel="' + name + '"]');
-
-    const getPreviewEl = (panelEl) => {
-      if (!panelEl) return null;
-      return panelEl.querySelector(".drawer__preview");
-    };
-
-    const setPreview = (panelEl, url) => {
-      const pv = getPreviewEl(panelEl);
-      if (!pv) return;
-
-      if (!url) {
-        pv.style.opacity = "0";
-        pv.style.backgroundImage = "";
-        return;
-      }
-      pv.style.backgroundImage = 'url("' + url + '")';
-      pv.style.opacity = "1";
-    };
-
-    const clearAllPreviews = () => {
-      stack.querySelectorAll(".drawer__panel .drawer__preview").forEach((pv) => {
-        pv.style.opacity = "0";
-        pv.style.backgroundImage = "";
-      });
-    };
-
-    // 1) パネル内のdata-cover要素：PC hover / Mobile pointerdown
-    const items = stack.querySelectorAll("[data-cover]");
-    if (!items.length) return;
-
-    items.forEach((el) => {
-      const url = el.dataset ? el.dataset.cover : null;
-      if (!url) return;
-
-      const panel = el.closest ? el.closest(".drawer__panel") : null;
-      if (!panel) return;
-
-      if (isFine) {
-        el.addEventListener("mouseenter", () => setPreview(panel, url));
-        el.addEventListener("mouseleave", () => setPreview(panel, ""));
-        el.addEventListener("focusin",  () => setPreview(panel, url));
-        el.addEventListener("focusout", () => setPreview(panel, ""));
-      }
-
-      if (isCoarse) {
-        el.addEventListener("pointerdown", () => setPreview(panel, url), { passive: true });
-      }
-    });
-
-    // 2) data-open-panelで遷移する時：遷移先panelにも即表示 + coverを記憶
-    const raf = typeof window.requestAnimationFrame === "function"
-      ? window.requestAnimationFrame
-      : (fn) => setTimeout(fn, 0);
-
-    stack.querySelectorAll("[data-open-panel][data-cover]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const url  = btn.dataset ? btn.dataset.cover : null;
-        const next = btn.dataset ? btn.dataset.openPanel : null;
-        if (!url || !next) return;
-
-        coverForPanel[next] = url;
-
-        raf(() => {
-          const nextPanel = getPanelByName(next);
-          setPreview(nextPanel, url);
-
-          // ✅ 購入drawerは「入った瞬間から常時表示」にしたいので強制ON
-          if (next === "prodSessionCollection") {
-            setPreview(nextPanel, url);
-          }
-        });
-      });
-    });
-
-    // 3) 「Backで戻って再度入る」など、activeになった瞬間にも購入drawerは表示
-    if (typeof MutationObserver === "function") {
-      const obs = new MutationObserver(() => {
-        const active = stack.querySelector(".drawer__panel.is-active");
-        if (!active) return;
-
-        const name = active.dataset ? active.dataset.panel : "";
-        if (name === "prodSessionCollection") {
-          const url = coverForPanel[name];
-          if (url) setPreview(active, url);
-        }
-      });
-
-      obs.observe(stack, { subtree: true, attributes: true, attributeFilter: ["class"] });
-    }
-
-    // 4) close/back したら消す（安全）
-    document.addEventListener("click", (e) => {
-      const t = e && e.target ? e.target : null;
-      const closeBtn = t && t.closest ? t.closest("[data-close]") : null;
-      const backBtn  = t && t.closest ? t.closest("[data-back]")  : null;
-      if (closeBtn || backBtn) clearAllPreviews();
-    });
-
-  } catch (err) {
-    // ここで落ちても drawer/pointer を殺さない
-    if (typeof console !== "undefined" && console.warn) {
-      console.warn("Drawer preview init failed:", err);
-    }
   }
 })();
