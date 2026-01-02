@@ -2,9 +2,12 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>dhrma Kazuki Hanamoto</title>
-  <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
+  <meta
+    name="description"
+    content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop."
+  />
   <link rel="stylesheet" href="style.css?v=20260101-1" />
 </head>
 
@@ -53,7 +56,7 @@
 
       <div class="grid">
         <article class="card">
-          <div class="thumb"></div>
+          <div class="thumb" aria-hidden="true"></div>
           <div class="card__body">
             <h3 class="card__title">Work Title 01</h3>
             <p class="card__meta">2025 · Audio/Visual</p>
@@ -62,7 +65,12 @@
         </article>
       </div>
 
-      <div class="rule"></div>
+      <div class="rule" role="separator" aria-hidden="true"></div>
+    </section>
+
+    <!-- SHOP (anchor target only / hidden by CSS if you want) -->
+    <section id="shop" class="section" aria-label="Shop (anchor)">
+      <!-- Intentionally minimal. Drawer is the primary shop UI. -->
     </section>
 
     <!-- ABOUT -->
@@ -87,17 +95,23 @@
   <div class="overlay" id="overlay" hidden></div>
 
   <!-- Drawer -->
-  <aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true">
+  <aside
+    class="drawer"
+    id="drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+  >
     <div class="drawer__stack" id="drawerStack">
 
       <!-- PANEL: MAIN -->
-      <section class="drawer__panel is-active" data-panel="main">
+      <section class="drawer__panel is-active" data-panel="main" aria-label="Main menu">
         <div class="drawer__top">
           <span class="drawer__brand">dhrma Kazuki Hanamoto</span>
           <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
         </div>
 
-        <nav class="drawer__nav">
+        <nav class="drawer__nav" aria-label="Drawer navigation">
           <button class="drawer__item" type="button" data-open-panel="archive">
             Archive <span class="plus">+</span>
           </button>
@@ -111,7 +125,7 @@
       </section>
 
       <!-- PANEL: ARCHIVE -->
-      <section class="drawer__panel" data-panel="archive">
+      <section class="drawer__panel" data-panel="archive" aria-label="Archive">
         <div class="drawer__top">
           <button class="drawer__back" type="button" data-back>Back</button>
           <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
@@ -121,14 +135,14 @@
 
         <div class="drawer__preview" aria-hidden="true"></div>
 
-        <nav class="drawer__list">
+        <nav class="drawer__list" aria-label="Archive list">
           <a class="drawer__listItem" href="#" data-cover="images/test_01.jpg">Work Title 01</a>
           <a class="drawer__listItem" href="#" data-cover="images/test_02.jpg">Work Title 02</a>
         </nav>
       </section>
 
       <!-- PANEL: SHOP -->
-      <section class="drawer__panel" data-panel="shop">
+      <section class="drawer__panel" data-panel="shop" aria-label="Shop">
         <div class="drawer__top">
           <button class="drawer__back" type="button" data-back>Back</button>
           <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
@@ -136,7 +150,7 @@
 
         <div class="drawer__listTitle">Shop</div>
 
-        <nav class="drawer__list">
+        <nav class="drawer__list" aria-label="Shop categories">
           <button class="drawer__listItem" type="button" data-open-panel="shopPhysical">
             Physical Goods
           </button>
@@ -144,7 +158,7 @@
       </section>
 
       <!-- PANEL: SHOP PHYSICAL -->
-      <section class="drawer__panel" data-panel="shopPhysical">
+      <section class="drawer__panel" data-panel="shopPhysical" aria-label="Physical Goods">
         <div class="drawer__top">
           <button class="drawer__back" type="button" data-back>Back</button>
           <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
@@ -154,7 +168,7 @@
 
         <div class="drawer__preview" aria-hidden="true"></div>
 
-        <nav class="drawer__list">
+        <nav class="drawer__list" aria-label="Physical goods list">
           <button
             class="drawer__listItem"
             type="button"
@@ -167,7 +181,7 @@
       </section>
 
       <!-- PANEL: PRODUCT - Session Collection -->
-      <section class="drawer__panel" data-panel="prodSessionCollection">
+      <section class="drawer__panel" data-panel="prodSessionCollection" aria-label="Product details">
         <div class="drawer__top">
           <button class="drawer__back" type="button" data-back>Back</button>
           <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
@@ -177,33 +191,33 @@
           Session Collection [2022-24 Bootlegs]
         </div>
 
-        <!-- ★購入drawer側にも preview を持たせる -->
+        <!-- preview -->
         <div class="drawer__preview" aria-hidden="true"></div>
 
         <div class="drawer__note prod">
-  <p class="prod__format">format : CD</p>
+          <p class="prod__format">format : CD</p>
 
-  <p class="prod__desc">
-    SBK と dhrma による初のフルセッション作品。<br />
-    神戸と加古川を拠点にセッションを重ね生まれた全21曲を収録。<br />
-    SQUAL が客演参加、アートワークは QUEST が担当。
-  </p>
+          <p class="prod__desc">
+            SBK と dhrma による初のフルセッション作品。<br />
+            神戸と加古川を拠点にセッションを重ね生まれた全21曲を収録。<br />
+            SQUAL が客演参加、アートワークは QUEST が担当。
+          </p>
 
-<div class="prod__price">¥2500</div>
+          <div class="prod__price">¥2500</div>
 
-<a
-  class="prod__buy"
-  href="https://PARADICELONER.SHOP"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  Buy ↗
-</a>
-</div>
+          <a
+            class="prod__buy"
+            href="https://PARADICELONER.SHOP"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Buy ↗
+          </a>
+        </div>
       </section>
 
       <!-- PANEL: ORDER -->
-      <section class="drawer__panel" data-panel="order">
+      <section class="drawer__panel" data-panel="order" aria-label="Order">
         <div class="drawer__top">
           <button class="drawer__back" type="button" data-back>Back</button>
           <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
