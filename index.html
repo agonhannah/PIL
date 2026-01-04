@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>dhrma Kazuki Hanamoto</title>
   <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
-  <link rel="stylesheet" href="style.css?v=20260104-2130">
+
+  <!-- キャッシュ対策：更新するたびに数字を変える -->
+  <link rel="stylesheet" href="style.css?v=20260104-2115">
 </head>
 
 <body>
   <!-- Topbar -->
   <header class="topbar" role="banner">
-    <a class="toplink" href="#top" aria-label="Back to top" data-toplink>TOP</a>
+    <a class="toplink" href="#top" aria-label="Back to top">TOP</a>
 
     <button
       class="hamburger"
@@ -28,7 +30,7 @@
   </header>
 
   <main id="top" class="wrap">
-    <!-- Top (blank) -->
+    <!-- トップは一旦無地（動画枠だけ） -->
     <section class="hero" aria-label="Top">
       <div class="hero__blank" aria-hidden="true"></div>
 
@@ -66,8 +68,10 @@
     <!-- SHOP anchor -->
     <section id="shop" class="section" aria-label="Shop"></section>
 
-    <!-- ABOUT -->
+    <!-- CONTACT / ABOUT -->
     <section id="about" class="section" aria-label="About">
+      <div id="contact"></div>
+
       <div class="aboutbox">
         <p class="aboutbox__text">
           dhrma Kazuki Hanamoto<br />
@@ -87,77 +91,73 @@
 
   <!-- Drawer -->
   <aside class="drawer" id="drawer" aria-hidden="true">
-    <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
-
+    <div class="drawer__inner" id="drawerRoot" role="dialog" aria-modal="true" aria-label="Menu">
       <div class="drawer__head">
-        <a class="drawer__toplink" href="#top" data-close data-toplink>TOP</a>
+        <a class="drawer__toplink" href="#top" data-close>TOP</a>
         <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
       </div>
 
+      <!-- ここは必要最小限の区切りだけ残す -->
+      <div class="drawer__rule drawer__rule--thin" aria-hidden="true"></div>
+
+      <!-- ARCHIVE -->
+      <div class="acc">
+        <button class="acc__btn" type="button" data-acc="archive" aria-expanded="false">
+          <span class="acc__label">ARCHIVE</span>
+          <span class="acc__mark" aria-hidden="true">+</span>
+        </button>
+
+        <div class="acc__panel" data-acc-panel="archive" hidden>
+          <nav class="acc__list" aria-label="Archive list">
+            <a class="acc__link" href="#" data-close>Beat Live</a>
+            <a class="acc__link" href="#" data-close>Designs</a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- SHOP -->
+      <div class="acc">
+        <button class="acc__btn" type="button" data-acc="shop" aria-expanded="false">
+          <span class="acc__label">SHOP</span>
+          <span class="acc__mark" aria-hidden="true">+</span>
+        </button>
+
+        <div class="acc__panel" data-acc-panel="shop" hidden>
+          <!-- “同フォント / 1文字インデント / 箇条書き” -->
+          <nav class="acc__bullets" aria-label="Shop list">
+            <a class="acc__bullet" href="#shop" data-close><span class="dot">・</span>All</a>
+            <a class="acc__bullet" href="#shop" data-close><span class="dot">・</span>Digital</a>
+            <a class="acc__bullet" href="#shop" data-close><span class="dot">・</span>Physical</a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- ORDER -->
+      <div class="acc">
+        <button class="acc__btn" type="button" data-acc="order" aria-expanded="false">
+          <span class="acc__label">ORDER</span>
+          <span class="acc__mark" aria-hidden="true">+</span>
+        </button>
+
+        <div class="acc__panel" data-acc-panel="order" hidden>
+          <div class="acc__note">Coming soon</div>
+        </div>
+      </div>
+
+      <!-- ここだけ区切り線（ABOUT/CONTACT前） -->
       <div class="drawer__rule" aria-hidden="true"></div>
 
-      <!-- Accordion -->
-      <section class="drawer__acc" aria-label="Sections">
-
-        <!-- ARCHIVE -->
-        <div class="acc">
-          <button class="acc__btn" type="button" data-acc aria-expanded="false">
-            <span class="acc__label">ARCHIVE</span>
-            <span class="acc__mark" aria-hidden="true">+</span>
-          </button>
-
-          <div class="acc__panel" data-acc-panel>
-            <nav class="acc__list" aria-label="Archive list">
-              <a class="acc__item" href="#">Work Title 01</a>
-              <a class="acc__item" href="#">Work Title 02</a>
-            </nav>
-          </div>
-        </div>
-
-        <!-- SHOP -->
-        <div class="acc">
-          <button class="acc__btn" type="button" data-acc aria-expanded="false">
-            <span class="acc__label">SHOP</span>
-            <span class="acc__mark" aria-hidden="true">+</span>
-          </button>
-
-          <div class="acc__panel" data-acc-panel>
-            <div class="shopchips" aria-label="Shop categories">
-              <button class="chip" type="button">All</button>
-              <button class="chip" type="button">Digital</button>
-              <button class="chip" type="button">Physical</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ORDER -->
-        <div class="acc">
-          <button class="acc__btn" type="button" data-acc aria-expanded="false">
-            <span class="acc__label">ORDER</span>
-            <span class="acc__mark" aria-hidden="true">+</span>
-          </button>
-
-          <div class="acc__panel" data-acc-panel>
-            <div class="acc__note">Coming soon</div>
-          </div>
-        </div>
-
-      </section>
-
-      <div class="drawer__rule" aria-hidden="true"></div>
-
-      <!-- Secondary -->
       <nav class="drawer__secondary" aria-label="Secondary">
         <a class="sec__link" href="#about" data-close>ABOUT</a>
-        <a class="sec__link" href="#about" data-close>CONTACT</a>
+        <a class="sec__link" href="#contact" data-close>CONTACT</a>
       </nav>
-
     </div>
   </aside>
 
   <!-- Pointer FX -->
   <div id="pointer-fx" aria-hidden="true">
     <div id="pointer-blob"></div>
+
     <div id="lockbox" aria-hidden="true">
       <div class="lockbox__rect">
         <div class="lockbox__cross lockbox__cross--h"></div>
@@ -169,8 +169,9 @@
         <span class="lockbox__tick lockbox__tick--l"></span>
       </div>
     </div>
-  </div>
+  </div><!-- ✅ #pointer-fx の閉じタグ -->
 
-  <script src="script.js?v=20260104-2130" defer></script>
+  <!-- キャッシュ対策：更新するたびに数字を変える -->
+  <script src="script.js?v=20260104-2115" defer></script>
 </body>
 </html>
