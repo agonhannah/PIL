@@ -1,156 +1,236 @@
 /* =========================================================
    script.js
    - Drawer open/close
-   - Smooth accordion
+   - Accordion (data-acc / data-acc-panel)
    - Year
-   - Pointer FX (touch: spawn only / no follow)
+   - Pointer FX (touch: spawn only, NO follow)
 ========================================================= */
-(() => {
-  const $ = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
+(() => {
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  // Touch判定（iOSでmediaが外れることがあるので強め）
   const isTouch =
     ("ontouchstart" in window) ||
     (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) ||
-    matchMedia("(pointer: coarse)").matches;
+    window.matchMedia("(pointer: coarse)").matches;
+
+  document.body.classList.toggle("is-touch", isTouch);
 
   // Year
   const yearEl = $("#year");
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  // Drawer
+  /* ----------------------------
+     Drawer open/close
+  ---------------------------- */
   const menuBtn = $("#menuBtn");
   const overlay = $("#overlay");
   const drawer = $("#drawer");
 
-  const setOpen = (open) => {
-    menuBtn?.setAttribute("aria-expanded", open ? "true" : "false");
-    drawer?.setAttribute("aria-hidden", open ? "false" : "true");
-    drawer?.classList.toggle("is-open", open);
+  const setAriaOpen = (open) => {
+    if (menuBtn) menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    if (drawer) {
+      drawer.setAttribute("aria-hidden", open ? "false" : "true");
+      drawer.classList.toggle("is-open", open);
+    }
     if (overlay) overlay.hidden = !open;
     document.body.classList.toggle("is-locked", open);
   };
 
-  const openDrawer = () => setOpen(true);
-  const closeDrawer = () => setOpen(false);
+  const openDrawer = () => setAriaOpen(true);
+  const closeDrawer = () => setAriaOpen(false);
 
-  menuBtn?.addEventListener("click", () => {
-    const on = menuBtn.getAttribute("aria-expanded") === "true";
-    on ? closeDrawer() : openDrawer();
-  });
-  overlay?.addEventListener("click", closeDrawer);
+  if (menuBtn) {
+    menuBtn.addEventListener("click", () => {
+      const expanded = menuBtn.getAttribute("aria-expanded") === "true";
+      expanded ? closeDrawer() : openDrawer();
+    });
+  }
+  if (overlay) overlay.addEventListener("click", closeDrawer);
 
-  // Close buttons / TOP links
-  drawer?.addEventListener("click", (e) => {
-    const t = e.target;
-    if (t.closest("[data-close]")) {
-      e.preventDefault();
-      closeDrawer();
+  // data-close（TOP/×）で閉じる
+  if (drawer) {
+    drawer.addEventListener("click", (e) => {
+      const t = e.target;
+
+      const closeBtn = t.closest("[data-close]");
+      if (closeBtn) {
+        e.preventDefault();
+        closeDrawer();
+        return;
+      }
+    });
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
     }
   });
 
-  // TOP smooth scroll (both topbar + drawer TOP)
-  $$(".toplink,[data-toplink]").forEach((a) => {
-    a.addEventListener("click", (e) => {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      closeDrawer();
+  /* ----------------------------
+     Accordion
+     HTML:
+       button.acc__btn[data-acc="shop"]
+       div.acc__panel[data-acc-panel="shop" hidden]
+  ---------------------------- */
+  const accButtons = $$("[data-acc]");
+
+  // ぬるっと開閉（max-heightアニメ）
+  const openPanel = (btn, panel) => {
+    btn.setAttribute("aria-expanded", "true");
+    const mark = btn.querySelector(".acc__mark");
+    if (mark) mark.textContent = "−";
+
+    // hidden解除→高さ計測→アニメ
+    panel.hidden = false;
+    panel.style.overflow = "hidden";
+    panel.style.maxHeight = "0px";
+    panel.style.opacity = "0";
+
+    // 次フレームでscrollHeightへ
+    requestAnimationFrame(() => {
+      const h = panel.scrollHeight;
+      panel.style.transition = "max-height 280ms ease, opacity 220ms ease";
+      panel.style.maxHeight = h + "px";
+      panel.style.opacity = "1";
     });
-  });
 
-  // ESC close
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeDrawer();
-  });
+    // アニメ完了後にmax-heightを外して可変に
+    const onEnd = (ev) => {
+      if (ev.propertyName !== "max-height") return;
+      panel.style.transition = "";
+      panel.style.maxHeight = "none";
+      panel.style.overflow = "visible";
+      panel.removeEventListener("transitionend", onEnd);
+    };
+    panel.addEventListener("transitionend", onEnd);
+  };
 
-  // Smooth accordion
-  const accBtns = $$("[data-acc]");
-  accBtns.forEach((btn) => {
-    const panel = btn.parentElement?.querySelector("[data-acc-panel]");
+  const closePanel = (btn, panel) => {
+    btn.setAttribute("aria-expanded", "false");
+    const mark = btn.querySelector(".acc__mark");
+    if (mark) mark.textContent = "+";
+
+    // 現在高さを固定→0へ
+    panel.style.overflow = "hidden";
+    panel.style.maxHeight = panel.scrollHeight + "px";
+    panel.style.opacity = "1";
+    panel.style.transition = "max-height 240ms ease, opacity 180ms ease";
+
+    requestAnimationFrame(() => {
+      panel.style.maxHeight = "0px";
+      panel.style.opacity = "0";
+    });
+
+    const onEnd = (ev) => {
+      if (ev.propertyName !== "max-height") return;
+      panel.hidden = true;
+      panel.style.transition = "";
+      panel.style.maxHeight = "";
+      panel.style.opacity = "";
+      panel.style.overflow = "";
+      panel.removeEventListener("transitionend", onEnd);
+    };
+    panel.addEventListener("transitionend", onEnd);
+  };
+
+  // クリックで開閉（同時に複数開いてOK）
+  accButtons.forEach((btn) => {
+    const name = btn.getAttribute("data-acc");
+    const panel = document.querySelector(`[data-acc-panel="${name}"]`);
     if (!panel) return;
 
-    // 初期は閉じる（念のため）
-    panel.style.maxHeight = "0px";
-    panel.classList.remove("is-open");
-    btn.setAttribute("aria-expanded", "false");
-    btn.querySelector(".acc__mark") && (btn.querySelector(".acc__mark").textContent = "+");
-
-    btn.addEventListener("click", () => {
-      const open = btn.getAttribute("aria-expanded") === "true";
-
-      // close
-      if (open) {
-        btn.setAttribute("aria-expanded", "false");
-        const mark = btn.querySelector(".acc__mark");
-        if (mark) mark.textContent = "+";
-
-        panel.style.maxHeight = panel.scrollHeight + "px"; // いったん固定
-        requestAnimationFrame(() => {
-          panel.style.maxHeight = "0px";
-          panel.classList.remove("is-open");
-        });
-        return;
-      }
-
-      // open
-      btn.setAttribute("aria-expanded", "true");
+    // 初期状態を統一（hiddenの有無に合わせる）
+    const expanded = btn.getAttribute("aria-expanded") === "true";
+    if (expanded) {
+      panel.hidden = false;
       const mark = btn.querySelector(".acc__mark");
       if (mark) mark.textContent = "−";
+    } else {
+      panel.hidden = true;
+      const mark = btn.querySelector(".acc__mark");
+      if (mark) mark.textContent = "+";
+    }
 
-      panel.classList.add("is-open");
-      panel.style.maxHeight = panel.scrollHeight + "px";
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const isOpen = btn.getAttribute("aria-expanded") === "true";
+      if (isOpen) closePanel(btn, panel);
+      else openPanel(btn, panel);
     });
   });
 
-  // Pointer FX
+  /* ----------------------------
+     Pointer FX
+     - Touch: spawn only（追従なし）
+     - Desktop: follow
+  ---------------------------- */
   const fx = $("#pointer-fx");
-  if (!fx) return;
+  if (fx) {
+    let x = -9999, y = -9999;
+    let tx = -9999, ty = -9999;
+    let idleTimer = null;
 
-  let idle = null;
-  let x = -9999, y = -9999, tx = -9999, ty = -9999;
+    // モバイルは lockbox を消す（Point HERE相当）
+    if (isTouch) {
+      const lockbox = $("#lockbox");
+      if (lockbox) lockbox.style.display = "none";
+    }
 
-  const show = () => { fx.style.opacity = "1"; };
-  const hideLater = () => {
-    if (idle) clearTimeout(idle);
-    idle = setTimeout(() => { fx.style.opacity = "0"; }, isTouch ? 900 : 1200);
-  };
-  const setPos = (nx, ny) => {
-    x = nx; y = ny;
-    tx = nx; ty = ny;
-    fx.style.transform = `translate3d(${nx}px, ${ny}px, 0)`;
-  };
+    const show = () => { fx.style.opacity = "1"; };
 
-  // Touch: spawn only（追従しない）
-  const spawn = (e) => {
-    const p = e.touches?.[0] || e;
-    if (!p) return;
-    show();
-    setPos(p.clientX, p.clientY);
-    hideLater();
-  };
+    const scheduleIdleFade = () => {
+      // “パッと消えすぎない”けど早めに（調整OK）
+      const ms = isTouch ? 850 : 1200;
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => { fx.style.opacity = "0"; }, ms);
+    };
 
-  // Desktop: follow（軽く）
-  const move = (e) => {
-    tx = e.clientX;
-    ty = e.clientY;
-    show();
-    hideLater();
-  };
+    const setTransform = (nx, ny) => {
+      x = nx; y = ny;
+      tx = nx; ty = ny;
+      fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    };
 
-  if (isTouch) {
-    window.addEventListener("touchstart", spawn, { passive: true });
-    window.addEventListener("pointerdown", spawn, { passive: true });
-    // move系は登録しない（←追従の根を断つ）
-  } else {
-    window.addEventListener("pointermove", move, { passive: true });
-    window.addEventListener("pointerdown", move, { passive: true });
+    // Desktop follow
+    const onDesktopMove = (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+      show();
+      scheduleIdleFade();
+    };
+
+    // Touch spawn only（押した場所で固定）
+    const onTouchSpawn = (e) => {
+      const p = e.touches ? e.touches[0] : e;
+      if (!p) return;
+      show();
+      setTransform(p.clientX, p.clientY);
+      scheduleIdleFade();
+    };
 
     const tick = () => {
-      x += (tx - x) * 0.18;
-      y += (ty - y) * 0.18;
-      fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      if (!isTouch) {
+        // desktopのみ追従（lerp）
+        x += (tx - x) * 0.18;
+        y += (ty - y) * 0.18;
+        fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
       requestAnimationFrame(tick);
     };
+
+    if (isTouch) {
+      // captureで確実に拾う（リンク/ボタン上でも発現させる）
+      window.addEventListener("touchstart", onTouchSpawn, { passive: true, capture: true });
+      window.addEventListener("pointerdown", onTouchSpawn, { passive: true, capture: true });
+    } else {
+      window.addEventListener("pointermove", onDesktopMove, { passive: true });
+      window.addEventListener("pointerdown", onDesktopMove, { passive: true });
+    }
+
     requestAnimationFrame(tick);
   }
 })();
