@@ -185,7 +185,7 @@ if (topLink) {
     });
   });
 
-  /* ----------------------------
+    /* ----------------------------
      Pointer FX
   ---------------------------- */
   const fx = $("#pointer-fx");
@@ -196,11 +196,24 @@ if (topLink) {
     let idleTimer = null;
     let dimTimer  = null;
 
-    // モバイルは lockbox を消す（緑blobのみ）
-    if (isTouch) {
-      const lockbox = $("#lockbox");
-      if (lockbox) lockbox.style.display = "none";
+    const lockbox = $("#lockbox");
+
+    // POINT HERE をJSで自動生成（HTMLを触らなくてOK）
+    if (lockbox && !lockbox.querySelector(".lockbox__label")) {
+      const label = document.createElement("div");
+      label.className = "lockbox__label";
+      label.textContent = "POINT HERE";
+      lockbox.appendChild(label);
     }
+
+    // クリック可能判定（必要最低限）
+    const isInteractive = (el) => {
+      if (!el) return false;
+      const hit = el.closest && el.closest(
+        'a[href]:not([href=""]), button, [role="button"], input, textarea, select, label, summary'
+      );
+      return !!hit;
+    };
 
     const setTransform = (nx, ny) => {
       x = nx; y = ny;
@@ -226,21 +239,32 @@ if (topLink) {
       }, total);
     };
 
+    // “今いる場所”の下にある要素を取る（pointer-events:none なのでOK）
+    const updateHot = (clientX, clientY) => {
+      const el = document.elementFromPoint(clientX, clientY);
+      fx.classList.toggle("is-hot", isInteractive(el));
+    };
+
+    // Desktop follow
     const onDesktopMove = (e) => {
       tx = e.clientX;
       ty = e.clientY;
+      updateHot(e.clientX, e.clientY);
       scheduleIdleFade();
     };
 
+    // Touch spawn only（追従なし）
     const onTouchSpawn = (e) => {
       const p = e.touches ? e.touches[0] : e;
       if (!p) return;
       setTransform(p.clientX, p.clientY);
+      updateHot(p.clientX, p.clientY);
       scheduleIdleFade();
     };
 
     const tick = () => {
       if (!isTouch) {
+        // desktopのみ追従（lerp）
         x += (tx - x) * 0.18;
         y += (ty - y) * 0.18;
         fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
@@ -258,4 +282,3 @@ if (topLink) {
 
     requestAnimationFrame(tick);
   }
-})();
