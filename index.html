@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>dhrma Kazuki Hanamoto</title>
   <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
-
-  <link rel="stylesheet" href="style.css?v=20260104-2200">
+  <link rel="stylesheet" href="style.css?v=20260104-2130">
 </head>
 
 <body>
   <!-- Topbar -->
   <header class="topbar" role="banner">
-    <a class="toplink" href="#top" aria-label="Back to top">TOP</a>
+    <a class="toplink" href="#top" aria-label="Back to top" data-toplink>TOP</a>
 
     <button
       class="hamburger"
@@ -29,7 +28,7 @@
   </header>
 
   <main id="top" class="wrap">
-    <!-- トップ：無地（後で動画差し替え） -->
+    <!-- Top (blank) -->
     <section class="hero" aria-label="Top">
       <div class="hero__blank" aria-hidden="true"></div>
 
@@ -86,75 +85,60 @@
   <!-- Overlay -->
   <div class="overlay" id="overlay" hidden></div>
 
-  <!-- Drawer (右から全画面 / accordionで“間にニョッと”出す) -->
+  <!-- Drawer -->
   <aside class="drawer" id="drawer" aria-hidden="true">
     <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
+
       <div class="drawer__head">
-        <a class="drawer__toplink" href="#top" data-close>TOP</a>
+        <a class="drawer__toplink" href="#top" data-close data-toplink>TOP</a>
         <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
       </div>
 
       <div class="drawer__rule" aria-hidden="true"></div>
 
-      <!-- ACCORDION -->
-      <section class="drawer__acc" aria-label="Primary sections">
+      <!-- Accordion -->
+      <section class="drawer__acc" aria-label="Sections">
 
         <!-- ARCHIVE -->
         <div class="acc">
-          <button class="acc__btn" type="button" data-acc="archive" aria-expanded="false">
+          <button class="acc__btn" type="button" data-acc aria-expanded="false">
             <span class="acc__label">ARCHIVE</span>
             <span class="acc__mark" aria-hidden="true">+</span>
           </button>
-          <div class="acc__panel" data-acc-panel="archive" hidden>
+
+          <div class="acc__panel" data-acc-panel>
             <nav class="acc__list" aria-label="Archive list">
-              <a class="acc__link" href="#" data-close>Work Title 01</a>
-              <a class="acc__link" href="#" data-close>Work Title 02</a>
+              <a class="acc__item" href="#">Work Title 01</a>
+              <a class="acc__item" href="#">Work Title 02</a>
             </nav>
           </div>
         </div>
 
         <!-- SHOP -->
         <div class="acc">
-          <button class="acc__btn" type="button" data-acc="shop" aria-expanded="false">
+          <button class="acc__btn" type="button" data-acc aria-expanded="false">
             <span class="acc__label">SHOP</span>
             <span class="acc__mark" aria-hidden="true">+</span>
           </button>
 
-          <div class="acc__panel" data-acc-panel="shop" hidden>
-            <!-- sub accordion -->
-            <div class="subacc">
-              <button class="acc__subbtn" type="button" data-subacc="shopAll" aria-expanded="false">
-                <span>All</span><span class="submark" aria-hidden="true">+</span>
-              </button>
-              <div class="acc__subpanel" data-subacc-panel="shopAll" hidden>
-                <div class="acc__note">Coming soon</div>
-              </div>
-
-              <button class="acc__subbtn" type="button" data-subacc="shopDigital" aria-expanded="false">
-                <span>Digital</span><span class="submark" aria-hidden="true">+</span>
-              </button>
-              <div class="acc__subpanel" data-subacc-panel="shopDigital" hidden>
-                <div class="acc__note">Coming soon</div>
-              </div>
-
-              <button class="acc__subbtn" type="button" data-subacc="shopPhysical" aria-expanded="false">
-                <span>Physical</span><span class="submark" aria-hidden="true">+</span>
-              </button>
-              <div class="acc__subpanel" data-subacc-panel="shopPhysical" hidden>
-                <div class="acc__note">Coming soon</div>
-              </div>
+          <div class="acc__panel" data-acc-panel>
+            <div class="shopchips" aria-label="Shop categories">
+              <button class="chip" type="button">All</button>
+              <button class="chip" type="button">Digital</button>
+              <button class="chip" type="button">Physical</button>
             </div>
           </div>
         </div>
 
         <!-- ORDER -->
         <div class="acc">
-          <button class="acc__btn" type="button" data-acc="order" aria-expanded="false">
+          <button class="acc__btn" type="button" data-acc aria-expanded="false">
             <span class="acc__label">ORDER</span>
             <span class="acc__mark" aria-hidden="true">+</span>
           </button>
-          <div class="acc__panel" data-acc-panel="order" hidden>
-            <div class="acc__note">Order / Contact details</div>
+
+          <div class="acc__panel" data-acc-panel>
+            <div class="acc__note">Coming soon</div>
           </div>
         </div>
 
@@ -162,17 +146,18 @@
 
       <div class="drawer__rule" aria-hidden="true"></div>
 
+      <!-- Secondary -->
       <nav class="drawer__secondary" aria-label="Secondary">
         <a class="sec__link" href="#about" data-close>ABOUT</a>
         <a class="sec__link" href="#about" data-close>CONTACT</a>
       </nav>
+
     </div>
   </aside>
 
-  <!-- Pointer FX（DOMは残す） -->
+  <!-- Pointer FX -->
   <div id="pointer-fx" aria-hidden="true">
     <div id="pointer-blob"></div>
-
     <div id="lockbox" aria-hidden="true">
       <div class="lockbox__rect">
         <div class="lockbox__cross lockbox__cross--h"></div>
@@ -183,10 +168,9 @@
         <span class="lockbox__tick lockbox__tick--b"></span>
         <span class="lockbox__tick lockbox__tick--l"></span>
       </div>
-      <div class="lockbox__label">Point HERE</div>
     </div>
   </div>
 
-  <script src="script.js?v=20260104-2200" defer></script>
+  <script src="script.js?v=20260104-2130" defer></script>
 </body>
 </html>
