@@ -1,148 +1,221 @@
-<!-- index.html -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>dhrma Kazuki Hanamoto</title>
-  <meta name="description" content="dhrma / Kazuki Hanamoto — archive & shop." />
-  <link rel="stylesheet" href="style.css?v=20260104-2100">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>dhrma</title>
+  <meta name="description" content="dhrma / Kazuki Hanamoto — archive, shop, order." />
+  <link rel="stylesheet" href="style.css?v=20260104-2000" />
 </head>
 
 <body>
-  <!-- Topbar (HYKE-ish: TOP left / burger right) -->
-  <header class="topbar">
-    <a class="topbar__top" href="/" aria-label="Back to top">TOP</a>
+  <!-- Topbar -->
+  <header class="topbar" role="banner">
+    <a class="topbar__top" href="#top" aria-label="Back to top">TOP</a>
 
     <button
-      class="topbar__menu"
+      class="topbar__menuBtn"
       id="menuBtn"
       type="button"
       aria-label="Open menu"
       aria-controls="drawer"
       aria-expanded="false"
     >
-      <span class="hamburger" aria-hidden="true"></span>
+      <!-- SVG hamburger (確実に三本線になる) -->
+      <svg class="iconHamburger" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
     </button>
   </header>
 
-  <!-- Top is blank for now -->
-  <main class="wrap" aria-label="Main">
-    <section class="blank" aria-label="Blank top area"></section>
+  <!-- Top: blank for now (動画貼る予定のプレース) -->
+  <main id="top" class="page" role="main" aria-label="Main">
+    <section class="blankHero" aria-label="Top placeholder">
+      <!-- intentionally blank -->
+    </section>
+
+    <footer class="foot">
+      <div class="foot__inner">
+        <div class="foot__name">dhrma Kazuki Hanamoto</div>
+        <a class="foot__mail" href="mailto:kazukihanamoto.dhrma@gmail.com">kazukihanamoto.dhrma@gmail.com</a>
+        <div class="foot__copy">© <span id="year"></span> dhrma</div>
+      </div>
+    </footer>
   </main>
 
   <!-- Overlay -->
   <div class="overlay" id="overlay" hidden></div>
 
-  <!-- Drawer (right full-screen) -->
-  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="drawer__inner" id="drawerStack">
+  <!-- Drawer (right, fullscreen on mobile) -->
+  <aside
+    class="drawer"
+    id="drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+  >
+    <div class="drawer__panel is-active" data-panel="main" aria-label="Main menu">
+      <div class="drawer__head">
+        <div class="drawer__brand">dhrma</div>
 
-      <!-- PANEL: MAIN -->
-      <section class="drawer__panel is-active" data-panel="main" aria-label="Menu">
-        <div class="drawer__top">
-          <div class="drawer__brand">dhrma</div>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
-        </div>
+        <button class="drawer__close" type="button" data-close aria-label="Close menu">
+          <!-- SVG X -->
+          <svg class="iconX" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
 
-        <!-- primary expandable groups (HYKE-like) -->
-        <nav class="drawer__groups" aria-label="Primary groups">
-          <button class="drawer__row" type="button" data-open-panel="archive">
-            <span class="drawer__rowLabel">ARCHIVE</span>
-            <span class="drawer__rowPlus">+</span>
-          </button>
+      <!-- Primary (HYKEっぽい：太くない／大文字／仕切り線＋右に+) -->
+      <nav class="drawer__primary" aria-label="Primary">
+        <button class="drawer__row" type="button" data-open-panel="archive">
+          <span class="drawer__label">ARCHIVE</span>
+          <span class="drawer__plus">+</span>
+        </button>
 
-          <button class="drawer__row" type="button" data-open-panel="shop">
-            <span class="drawer__rowLabel">SHOP</span>
-            <span class="drawer__rowPlus">+</span>
-          </button>
+        <button class="drawer__row" type="button" data-open-panel="shop">
+          <span class="drawer__label">SHOP</span>
+          <span class="drawer__plus">+</span>
+        </button>
 
-          <button class="drawer__row" type="button" data-open-panel="order">
-            <span class="drawer__rowLabel">ORDER</span>
-            <span class="drawer__rowPlus">+</span>
-          </button>
-        </nav>
+        <button class="drawer__row" type="button" data-open-panel="order">
+          <span class="drawer__label">ORDER</span>
+          <span class="drawer__plus">+</span>
+        </button>
+      </nav>
 
-        <!-- secondary plain links -->
-        <nav class="drawer__links" aria-label="Secondary links">
-          <a class="drawer__link" href="#works">WORKS</a>
-          <a class="drawer__link" href="#contact">CONTACT</a>
-        </nav>
+      <!-- Secondary list -->
+      <nav class="drawer__secondary" aria-label="Secondary">
+        <a class="drawer__link" href="#works">WORKS</a>
+        <a class="drawer__link" href="#contact">CONTACT</a>
+        <a class="drawer__link" href="#account">ACCOUNT</a>
+        <a class="drawer__link" href="#bag">BAG (0)</a>
+      </nav>
+    </div>
 
-        <div class="drawer__meta" aria-label="Meta">
-          <a class="drawer__link" href="#account">ACCOUNT</a>
-          <a class="drawer__link" href="#bag">BAG (0)</a>
-        </div>
-      </section>
+    <!-- PANEL: ARCHIVE -->
+    <div class="drawer__panel" data-panel="archive" aria-label="Archive">
+      <div class="drawer__head">
+        <div class="drawer__brand">ARCHIVE</div>
+        <button class="drawer__close" type="button" data-close aria-label="Close menu">
+          <svg class="iconX" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
 
-      <!-- PANEL: ARCHIVE -->
-      <section class="drawer__panel" data-panel="archive" aria-label="Archive">
-        <div class="drawer__top">
-          <div class="drawer__brand">ARCHIVE</div>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
-        </div>
+      <button class="drawer__back" type="button" data-back>BACK</button>
 
-        <nav class="drawer__list" aria-label="Archive list">
-          <a class="drawer__item" href="#" data-cover="images/test_01.jpg">Work Title 01</a>
-          <a class="drawer__item" href="#" data-cover="images/test_02.jpg">Work Title 02</a>
-        </nav>
-      </section>
+      <nav class="drawer__list" aria-label="Archive list">
+        <a class="drawer__item" href="#" data-cover="images/test_01.jpg">Work Title 01</a>
+        <a class="drawer__item" href="#" data-cover="images/test_02.jpg">Work Title 02</a>
+      </nav>
+    </div>
 
-      <!-- PANEL: SHOP -->
-      <section class="drawer__panel" data-panel="shop" aria-label="Shop">
-        <div class="drawer__top">
-          <div class="drawer__brand">SHOP</div>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
-        </div>
+    <!-- PANEL: SHOP -->
+    <div class="drawer__panel" data-panel="shop" aria-label="Shop">
+      <div class="drawer__head">
+        <div class="drawer__brand">SHOP</div>
+        <button class="drawer__close" type="button" data-close aria-label="Close menu">
+          <svg class="iconX" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
 
-        <nav class="drawer__list" aria-label="Shop list">
-          <button class="drawer__itemBtn" type="button" data-open-panel="prodSession" data-cover="images/SessionCollection.JPG">
-            Session Collection [CD]
-          </button>
-        </nav>
-      </section>
+      <button class="drawer__back" type="button" data-back>BACK</button>
 
-      <!-- PANEL: PRODUCT -->
-      <section class="drawer__panel" data-panel="prodSession" aria-label="Product">
-        <div class="drawer__top">
-          <div class="drawer__brand">Session Collection</div>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
-        </div>
+      <nav class="drawer__list" aria-label="Shop list">
+        <button class="drawer__itemBtn" type="button" data-open-panel="shopPhysical">
+          Physical Goods <span class="drawer__plusInline">+</span>
+        </button>
+      </nav>
+    </div>
 
-        <div class="drawer__product">
-          <div class="prod__meta">format : CD</div>
-          <p class="prod__desc">
-            SBK と dhrma による初のフルセッション作品。<br />
-            神戸と加古川を拠点にセッションを重ね生まれた全21曲を収録。<br />
-            SQUAL が客演参加、アートワークは QUEST が担当。
-          </p>
-          <div class="prod__price">¥2500</div>
-          <a class="prod__buy" href="https://PARADICELONER.SHOP" target="_blank" rel="noopener noreferrer">
-            Buy ↗
-          </a>
-        </div>
-      </section>
+    <!-- PANEL: SHOP PHYSICAL -->
+    <div class="drawer__panel" data-panel="shopPhysical" aria-label="Physical goods">
+      <div class="drawer__head">
+        <div class="drawer__brand">PHYSICAL</div>
+        <button class="drawer__close" type="button" data-close aria-label="Close menu">
+          <svg class="iconX" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
 
-      <!-- PANEL: ORDER -->
-      <section class="drawer__panel" data-panel="order" aria-label="Order">
-        <div class="drawer__top">
-          <div class="drawer__brand">ORDER</div>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
-        </div>
+      <button class="drawer__back" type="button" data-back>BACK</button>
 
-        <div class="drawer__note">Order / Contact details</div>
-      </section>
+      <nav class="drawer__list" aria-label="Physical goods list">
+        <button
+          class="drawer__itemBtn"
+          type="button"
+          data-open-panel="prodSessionCollection"
+          data-cover="images/SessionCollection.JPG"
+        >
+          Session Collection [2022-24 Bootlegs] <span class="drawer__plusInline">+</span>
+        </button>
+      </nav>
+    </div>
 
+    <!-- PANEL: PRODUCT -->
+    <div class="drawer__panel" data-panel="prodSessionCollection" aria-label="Product details">
+      <div class="drawer__head">
+        <div class="drawer__brand">PRODUCT</div>
+        <button class="drawer__close" type="button" data-close aria-label="Close menu">
+          <svg class="iconX" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <button class="drawer__back" type="button" data-back>BACK</button>
+
+      <div class="prod">
+        <div class="prod__title">Session Collection [2022-24 Bootlegs]</div>
+        <div class="prod__meta">FORMAT : CD</div>
+
+        <p class="prod__desc">
+          SBK と dhrma による初のフルセッション作品。<br />
+          神戸と加古川を拠点にセッションを重ね生まれた全21曲を収録。<br />
+          SQUAL が客演参加、アートワークは QUEST が担当。
+        </p>
+
+        <div class="prod__price">¥2500</div>
+
+        <a class="prod__buy" href="https://PARADICELONER.SHOP" target="_blank" rel="noopener noreferrer">
+          BUY ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- PANEL: ORDER -->
+    <div class="drawer__panel" data-panel="order" aria-label="Order">
+      <div class="drawer__head">
+        <div class="drawer__brand">ORDER</div>
+        <button class="drawer__close" type="button" data-close aria-label="Close menu">
+          <svg class="iconX" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <button class="drawer__back" type="button" data-back>BACK</button>
+
+      <div class="drawer__note">
+        Order / Contact details (to be updated)
+      </div>
     </div>
   </aside>
 
-  <!-- Pointer FX (HTMLは残す / JSはあなたの現行を使う) -->
+  <!-- Pointer FX (keep) -->
   <div id="pointer-fx" aria-hidden="true">
     <div id="pointer-blob"></div>
+
     <div id="lockbox" aria-hidden="true">
       <div class="lockbox__rect">
         <div class="lockbox__cross lockbox__cross--h"></div>
         <div class="lockbox__cross lockbox__cross--v"></div>
+
         <span class="lockbox__tick lockbox__tick--t"></span>
         <span class="lockbox__tick lockbox__tick--r"></span>
         <span class="lockbox__tick lockbox__tick--b"></span>
@@ -152,6 +225,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=20260104-2100" defer></script>
+  <script src="script.js?v=20260104-2000" defer></script>
 </body>
 </html>
