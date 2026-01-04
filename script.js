@@ -4,9 +4,6 @@
    - Accordion (data-acc / data-acc-panel)
    - Year
    - Pointer FX
-     - Touch: spawn only（追従なし）
-     - Desktop: follow
-     - Fade: すぐ薄まり始めて、同じ時間感で消え切る
 ========================================================= */
 
 (() => {
@@ -26,108 +23,93 @@
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
   /* ----------------------------
-   Drawer open/close  + TOP jump fix
----------------------------- */
-const menuBtn = $("#menuBtn");
-const overlay = $("#overlay");   // 無ければnullのままでOK
-const drawer  = $("#drawer");
+     Drawer open/close
+  ---------------------------- */
+  const menuBtn = $("#menuBtn");
+  const overlay = $("#overlay");   // 無ければnullのままでOK
+  const drawer  = $("#drawer");
 
-const setAriaOpen = (open) => {
-  if (menuBtn) {
-    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
-    menuBtn.classList.toggle("is-open", open); // ← 三本線→× 用
-  }
-
-  if (drawer) {
-    drawer.setAttribute("aria-hidden", open ? "false" : "true");
-    drawer.classList.toggle("is-open", open);
-  }
-
-  if (overlay) {
-    overlay.classList.toggle("is-open", open);
-    overlay.hidden = !open;
-  }
-
-  document.body.classList.toggle("is-locked", open);
-};
-
-const openDrawer  = () => setAriaOpen(true);
-const closeDrawer = () => setAriaOpen(false);
-
-// drawerを閉じた後にトップへ戻す（bodyロック解除後に実行）
-const goTopAfterClose = () => {
-  closeDrawer();
-
-  // 次フレームでロック解除が反映されてからスクロール
-  requestAnimationFrame(() => {
-    // “再更新っぽい”動き：確実に最上部へ
-    window.scrollTo(0, 0);
-
-    // URLも #top に揃える（必要なら）
-    if (location.hash !== "#top") history.replaceState(null, "", "#top");
-  });
-};
-
-if (menuBtn) {
-  menuBtn.addEventListener("click", (e) => {
-    const expanded = menuBtn.getAttribute("aria-expanded") === "true";
-    expanded ? closeDrawer() : openDrawer();
-  });
-}
-
-if (overlay) overlay.addEventListener("click", closeDrawer);
-
-// drawer内の data-close を踏んだら閉じる
-if (drawer) {
-  drawer.addEventListener("click", (e) => {
-    const closeEl = e.target.closest && e.target.closest("[data-close]");
-    if (!closeEl) return;
-
-    const href = closeEl.getAttribute("href") || "";
-
-    // TOP：閉じる → 先頭へ → “再更新っぽく” ハッシュを付け直す
-    if (href === "#top") {
-      e.preventDefault();
-      closeDrawer();
-
-      requestAnimationFrame(() => {
-        window.scrollTo(0, 0);
-        // hashを一回消して付け直す（iOSで効きやすい）
-        history.replaceState(null, "", " ");
-        location.hash = "#top";
-      });
-      return;
+  const setAriaOpen = (open) => {
+    if (menuBtn) {
+      menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      menuBtn.classList.toggle("is-open", open); // 三本線→×
     }
 
-    // その他：普通に閉じる（# は止める）
-    if (href === "#") e.preventDefault();
+    if (drawer) {
+      drawer.setAttribute("aria-hidden", open ? "false" : "true");
+      drawer.classList.toggle("is-open", open);
+    }
+
+    if (overlay) {
+      overlay.classList.toggle("is-open", open);
+      overlay.hidden = !open;
+    }
+
+    document.body.classList.toggle("is-locked", open);
+  };
+
+  const openDrawer  = () => setAriaOpen(true);
+  const closeDrawer = () => setAriaOpen(false);
+
+  // ★TOPは「スクロール」じゃなく「再読み込み」したい
+  const HOME_ANIM_MS = 240; // drawerのtransition 240ms と合わせる
+
+  const reloadHomeAfterClose = () => {
     closeDrawer();
-  });
-}
+    setTimeout(() => {
+      // hash無しで“再更新”っぽくトップへ
+      const url = location.pathname + location.search;
+      location.href = url;
+    }, HOME_ANIM_MS);
+  };
 
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+  if (menuBtn) {
+    menuBtn.addEventListener("click", () => {
+      const expanded = menuBtn.getAttribute("aria-expanded") === "true";
+      expanded ? closeDrawer() : openDrawer();
+    });
   }
-});
 
-// 画面上のTOP（topbar）も同じ挙動にしたい場合
-const topLink = $(".toplink");
-if (topLink) {
-  topLink.addEventListener("click", (e) => {
-    // drawerが開いてる時だけ “閉じてからトップ” にする
-    const isOpen = drawer && drawer.classList.contains("is-open");
-    if (isOpen) {
-      e.preventDefault();
-      goTopAfterClose();
+  if (overlay) overlay.addEventListener("click", closeDrawer);
+
+  // drawer内の data-close を踏んだら閉じる
+  if (drawer) {
+    drawer.addEventListener("click", (e) => {
+      const closeEl = e.target.closest && e.target.closest("[data-close]");
+      if (!closeEl) return;
+
+      const href = closeEl.getAttribute("href") || "";
+
+      // もし drawer内にTOPリンクが残ってるなら、これで“再更新”
+      if (href === "#top" || closeEl.hasAttribute("data-home")) {
+        e.preventDefault();
+        reloadHomeAfterClose();
+        return;
+      }
+
+      // その他：普通に閉じる（# は止める）
+      if (href === "#") e.preventDefault();
+      closeDrawer();
+    });
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
     }
   });
-}
+
+  // TopbarのTOP：常に “再更新”
+  const topLink = $(".toplink");
+  if (topLink) {
+    topLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      reloadHomeAfterClose();
+    });
+  }
 
   /* ----------------------------
      Accordion
-     button.acc__btn[data-acc="archive"]
-     div.acc__panel[data-acc-panel="archive" hidden]
   ---------------------------- */
   const accButtons = $$("[data-acc]");
 
@@ -226,7 +208,6 @@ if (topLink) {
       if (lockbox) lockbox.style.display = "none";
     }
 
-    // ★これが無いと落ちる（今回の主原因）
     const setTransform = (nx, ny) => {
       x = nx; y = ny;
       tx = nx; ty = ny;
@@ -235,44 +216,37 @@ if (topLink) {
 
     const showFull = () => { fx.style.opacity = "1"; };
 
-    // 押した瞬間から薄まり始める（ただし「消えた」に見えない値）
     const scheduleIdleFade = () => {
       if (idleTimer) clearTimeout(idleTimer);
       if (dimTimer) clearTimeout(dimTimer);
 
-      // まずは確実に “見える” 1.0 を出す
       showFull();
 
-      // すぐ薄まり開始（即だと環境によって見えないので 40ms）
       dimTimer = setTimeout(() => {
         fx.style.opacity = isTouch ? "0.72" : "0.65";
       }, 40);
 
-      // 同じ時間感で消え切る
       const total = isTouch ? 1100 : 1400;
       idleTimer = setTimeout(() => {
         fx.style.opacity = "0";
       }, total);
     };
 
-    // Desktop follow
     const onDesktopMove = (e) => {
       tx = e.clientX;
       ty = e.clientY;
       scheduleIdleFade();
     };
 
-    // Touch spawn only（追従なし）
     const onTouchSpawn = (e) => {
       const p = e.touches ? e.touches[0] : e;
       if (!p) return;
-      setTransform(p.clientX, p.clientY); // 固定
+      setTransform(p.clientX, p.clientY);
       scheduleIdleFade();
     };
 
     const tick = () => {
       if (!isTouch) {
-        // desktopのみ追従（lerp）
         x += (tx - x) * 0.18;
         y += (ty - y) * 0.18;
         fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
@@ -281,7 +255,6 @@ if (topLink) {
     };
 
     if (isTouch) {
-      // クリック可能要素上でも発現させたいので capture:true
       window.addEventListener("touchstart", onTouchSpawn, { passive: true, capture: true });
       window.addEventListener("pointerdown", onTouchSpawn, { passive: true, capture: true });
     } else {
@@ -292,4 +265,3 @@ if (topLink) {
     requestAnimationFrame(tick);
   }
 })();
-
