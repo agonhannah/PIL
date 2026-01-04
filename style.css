@@ -846,3 +846,16 @@ body.is-locked{ overflow: hidden; }
     padding-right: var(--gutter);
   }
 }
+
+
+/* =========================================================
+   FORCE: Mobile drawer full-screen (reliable)
+========================================================= */
+@media (pointer: coarse){
+  .drawer{
+    width: 100vw !important;
+    height: 100dvh !important; /* iOS対応 */
+    max-width: none !important;
+    border-right: none !important;
+  }
+}
