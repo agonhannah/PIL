@@ -1,176 +1,301 @@
+/* =========================================================
+   script.js
+   - Drawer open/close + panel navigation
+   - Year
+   - Pointer FX (mobile: NO follow, instant spawn)
+========================================================= */
+
 (() => {
-  const $ = (s, root = document) => root.querySelector(s);
-  const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
+  // ---------------------------------------------
+  // Helpers
+  // ---------------------------------------------
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+  const isCoarse = window.matchMedia("(pointer: coarse)").matches;
+
+  // add a flag class for CSS if needed
+  document.body.classList.toggle("is-touch", isCoarse);
+
+  // ---------------------------------------------
   // Year
+  // ---------------------------------------------
   const yearEl = $("#year");
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
+  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  // ---------- Drawer ----------
-  const drawer = $("#drawer");
-  const overlay = $("#overlay");
+  // ---------------------------------------------
+  // Drawer (overlay + panel stack)
+  // ---------------------------------------------
   const menuBtn = $("#menuBtn");
+  const overlay = $("#overlay");
+  const drawer = $("#drawer");
+  const drawerStack = $("#drawerStack");
+
+  // panel stack navigation
+  const panels = drawerStack ? $$(".drawer__panel", drawerStack) : [];
+  const panelByName = (name) => panels.find((p) => p.dataset.panel === name);
+
+  let panelStack = ["main"]; // history
+
+  const setAriaOpen = (open) => {
+    if (menuBtn) menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    if (drawer) {
+      drawer.setAttribute("aria-hidden", open ? "false" : "true");
+      drawer.classList.toggle("is-open", open);
+    }
+    if (overlay) overlay.hidden = !open;
+    document.body.classList.toggle("is-locked", open);
+  };
+
+  const showPanel = (name, push = true) => {
+    const next = panelByName(name);
+    if (!next) return;
+
+    // hide all
+    panels.forEach((p) => p.classList.remove("is-active"));
+    // show target
+    next.classList.add("is-active");
+
+    if (push) {
+      const last = panelStack[panelStack.length - 1];
+      if (last !== name) panelStack.push(name);
+    }
+  };
+
+  const goBack = () => {
+    if (panelStack.length <= 1) {
+      showPanel("main", false);
+      panelStack = ["main"];
+      return;
+    }
+    panelStack.pop();
+    const prev = panelStack[panelStack.length - 1] || "main";
+    showPanel(prev, false);
+  };
 
   const openDrawer = () => {
-    drawer.classList.add("is-open");
-    drawer.setAttribute("aria-hidden", "false");
-    overlay.hidden = false;
-    menuBtn.setAttribute("aria-expanded", "true");
-    document.body.classList.add("is-locked");
+    setAriaOpen(true);
+    showPanel(panelStack[panelStack.length - 1] || "main", false);
   };
 
   const closeDrawer = () => {
-    drawer.classList.remove("is-open");
-    drawer.setAttribute("aria-hidden", "true");
-    overlay.hidden = true;
-    menuBtn.setAttribute("aria-expanded", "false");
-    document.body.classList.remove("is-locked");
+    setAriaOpen(false);
+    // reset to main for next open (好みなら外してOK)
+    showPanel("main", false);
+    panelStack = ["main"];
   };
 
-  menuBtn?.addEventListener("click", openDrawer);
-  overlay?.addEventListener("click", closeDrawer);
-
-  $$("[data-close]").forEach(el => el.addEventListener("click", closeDrawer));
-
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && drawer.classList.contains("is-open")) closeDrawer();
-  });
-
-  // ---------- Accordion helpers ----------
-  function setAccState(btn, panel, open) {
-    btn.setAttribute("aria-expanded", open ? "true" : "false");
-    panel.hidden = !open;
-    const mark = $(".acc__mark", btn);
-    if (mark) mark.textContent = open ? "−" : "+";
+  // Menu button
+  if (menuBtn) {
+    menuBtn.addEventListener("click", () => {
+      const expanded = menuBtn.getAttribute("aria-expanded") === "true";
+      expanded ? closeDrawer() : openDrawer();
+    });
   }
 
-  // 主アコーディオン（ARCHIVE/SHOP/ORDER）
-  function togglePrimary(key) {
-    const btn = $(`.acc__btn[data-acc="${key}"]`);
-    const panel = $(`.acc__panel[data-acc-panel="${key}"]`);
-    if (!btn || !panel) return;
+  // Overlay click closes
+  if (overlay) overlay.addEventListener("click", closeDrawer);
 
-    const willOpen = btn.getAttribute("aria-expanded") !== "true";
+  // Close buttons + Back buttons + Panel open buttons
+  if (drawerStack) {
+    drawerStack.addEventListener("click", (e) => {
+      const t = e.target;
 
-    // 他のprimaryを閉じる
-    $$(".acc__btn[data-acc]").forEach(otherBtn => {
-      if (otherBtn.classList.contains("acc__subbtn")) return; // subは無視
-      const otherKey = otherBtn.getAttribute("data-acc");
-      if (!otherKey) return;
-      const otherPanel = $(`.acc__panel[data-acc-panel="${otherKey}"]`);
-      if (!otherPanel) return;
-      if (otherBtn === btn) return;
-      setAccState(otherBtn, otherPanel, false);
+      // close
+      const closeBtn = t.closest("[data-close]");
+      if (closeBtn) {
+        e.preventDefault();
+        closeDrawer();
+        return;
+      }
+
+      // back
+      const backBtn = t.closest("[data-back]");
+      if (backBtn) {
+        e.preventDefault();
+        goBack();
+        return;
+      }
+
+      // open panel
+      const openBtn = t.closest("[data-open-panel]");
+      if (openBtn) {
+        e.preventDefault();
+        const name = openBtn.getAttribute("data-open-panel");
+        showPanel(name, true);
+        return;
+      }
+    });
+  }
+
+  // ESC closes drawer
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+    }
+  });
+
+  // Prevent background scroll on iOS when drawer open (extra safety)
+  // (CSS body.is-locked { overflow:hidden; } is primary)
+  let lastTouchY = 0;
+  if (drawer) {
+    drawer.addEventListener(
+      "touchstart",
+      (e) => {
+        lastTouchY = e.touches[0].clientY;
+      },
+      { passive: true }
+    );
+    drawer.addEventListener(
+      "touchmove",
+      (e) => {
+        // allow scroll inside drawer; block only if drawer has no scroll room
+        // (kept minimal)
+      },
+      { passive: true }
+    );
+  }
+
+  // ---------------------------------------------
+  // Optional: Drawer preview background from data-cover
+  // (works with your existing markup; safe if absent)
+  // ---------------------------------------------
+  const attachPreviewHandlers = () => {
+    if (!drawerStack) return;
+
+    const updatePreview = (panelEl, url) => {
+      const pv = $(".drawer__preview", panelEl);
+      if (!pv) return;
+      if (!url) {
+        pv.style.opacity = "0";
+        pv.style.backgroundImage = "";
+        return;
+      }
+      pv.style.backgroundImage = `url("${url}")`;
+      pv.style.opacity = "1";
+    };
+
+    // hover/focus for fine pointer
+    drawerStack.addEventListener("mouseover", (e) => {
+      const a = e.target.closest("[data-cover]");
+      if (!a) return;
+      const panelEl = e.target.closest(".drawer__panel");
+      if (!panelEl) return;
+      updatePreview(panelEl, a.getAttribute("data-cover"));
     });
 
-    setAccState(btn, panel, willOpen);
+    drawerStack.addEventListener("mouseout", (e) => {
+      const panelEl = e.target.closest(".drawer__panel");
+      if (!panelEl) return;
+      // do nothing (kept)
+    });
 
-    // SHOPを閉じたら、goodsも閉じる（中身残るの防止）
-    if (key === "shop" && !willOpen) {
-      const subBtn = $(`.acc__subbtn[data-acc="goods"]`);
-      const subPanel = $(`.acc__subpanel[data-acc-panel="goods"]`);
-      if (subBtn && subPanel) setAccState(subBtn, subPanel, false);
-    }
+    drawerStack.addEventListener("focusin", (e) => {
+      const a = e.target.closest("[data-cover]");
+      if (!a) return;
+      const panelEl = e.target.closest(".drawer__panel");
+      if (!panelEl) return;
+      updatePreview(panelEl, a.getAttribute("data-cover"));
+    });
+  };
+  attachPreviewHandlers();
+
+  // ---------------------------------------------
+  // TOP link (if you have it in DOM)
+  // - If you have <a id="topLink">TOP</a> etc, it will work.
+  // ---------------------------------------------
+  const topLink = $("#topLink") || $(".topbar__top");
+  if (topLink) {
+    topLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      closeDrawer();
+    });
   }
 
-  // サブアコーディオン（goods）
-  function toggleSub(key) {
-    const btn = $(`.acc__subbtn[data-acc="${key}"]`);
-    const panel = $(`.acc__subpanel[data-acc-panel="${key}"]`);
-    if (!btn || !panel) return;
-
-    const willOpen = btn.getAttribute("aria-expanded") !== "true";
-    setAccState(btn, panel, willOpen);
-  }
-
-  // bind primary
-  $$(".acc__btn[data-acc]").forEach(btn => {
-    if (btn.classList.contains("acc__subbtn")) return;
-    btn.addEventListener("click", () => togglePrimary(btn.getAttribute("data-acc")));
-  });
-
-  // bind sub
-  $$(".acc__subbtn[data-acc]").forEach(btn => {
-    btn.addEventListener("click", () => toggleSub(btn.getAttribute("data-acc")));
-  });
-
-  // ---------- Pointer FX ----------
+  // ---------------------------------------------
+  // Pointer FX
+  // - Desktop: lerp follow (smooth)
+  // - Mobile: instant spawn at touch point (NO follow)
+  // ---------------------------------------------
   const fx = $("#pointer-fx");
-  const blob = $("#pointer-blob");
-  if (!fx || !blob) return;
+  if (fx) {
+    let x = -9999,
+      y = -9999,
+      tx = -9999,
+      ty = -9999;
 
-  let visible = false;
-  let targetX = -9999, targetY = -9999;
-  let curX = -9999, curY = -9999;
-  let raf = 0;
+    let shown = false;
+    let idleTimer = null;
 
-  // 追従のヌルさ（軽さ優先で少し上げる）
-  const ease = 0.28;
+    // モバイルは「Point HERE」不要 → body classだけ付ける（CSSで消す想定）
+    // すでにCSSで消してない場合は、lockbox要素を非表示にする
+    if (isCoarse) {
+      const lockbox = $("#lockbox");
+      if (lockbox) lockbox.style.display = "none";
+    }
 
-  const show = () => {
-    if (visible) return;
-    visible = true;
-    fx.style.opacity = "1";
-  };
+    const setPos = (nx, ny) => {
+      x = tx = nx;
+      y = ty = ny;
+      fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    };
 
-  const hide = () => {
-    if (!visible) return;
-    visible = false;
-    fx.style.opacity = "0";
-  };
+    const show = () => {
+      if (!shown) {
+        shown = true;
+        fx.style.opacity = "1";
+      } else {
+        fx.style.opacity = "1";
+      }
+    };
 
-  const tick = () => {
-    curX += (targetX - curX) * ease;
-    curY += (targetY - curY) * ease;
-    fx.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
-    raf = requestAnimationFrame(tick);
-  };
+    const scheduleIdleFade = () => {
+      // “パッと消える” のは避けたいので、薄くなるだけ・長め
+      // （必要ならこの時間を伸ばしてOK）
+      const ms = isCoarse ? 1800 : 1400;
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        fx.style.opacity = "0";
+        shown = false;
+      }, ms);
+    };
 
-  const start = () => {
-    if (raf) return;
-    raf = requestAnimationFrame(tick);
-  };
+    const onMove = (e) => {
+      const p = e.touches ? e.touches[0] : e;
+      if (!p) return;
 
-  const stop = () => {
-    if (!raf) return;
-    cancelAnimationFrame(raf);
-    raf = 0;
-  };
+      tx = p.clientX;
+      ty = p.clientY;
 
-  // pointer (desktop)
-  window.addEventListener("pointermove", (e) => {
-    targetX = e.clientX;
-    targetY = e.clientY;
-    show();
-    start();
-  }, { passive: true });
+      show();
 
-  window.addEventListener("pointerleave", () => {
-    hide();                      // 即消す
-    setTimeout(() => { if (!visible) stop(); }, 80); // 止めるのも早く
-  });
+      // モバイル：即座にその場で発現（追従しない）
+      if (isCoarse) {
+        setPos(tx, ty);
+      }
 
-  // touch (mobile)
-  window.addEventListener("touchstart", (e) => {
-    const t = e.touches[0];
-    if (!t) return;
-    targetX = t.clientX;
-    targetY = t.clientY;
-    show();
-    start();
-  }, { passive: true });
+      scheduleIdleFade();
+    };
 
-  window.addEventListener("touchmove", (e) => {
-    const t = e.touches[0];
-    if (!t) return;
-    targetX = t.clientX;
-    targetY = t.clientY;
-    show();
-  }, { passive: true });
+    const tick = () => {
+      if (!isCoarse) {
+        // Desktop follow (smooth)
+        x += (tx - x) * 0.18;
+        y += (ty - y) * 0.18;
+        fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+      requestAnimationFrame(tick);
+    };
 
-  window.addEventListener("touchend", () => {
-    hide();                      // 即消す
-    setTimeout(() => { if (!visible) stop(); }, 70);
-  }, { passive: true });
+    // events
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("touchmove", onMove, { passive: true });
 
+    // “触れた瞬間に出す”
+    window.addEventListener("touchstart", onMove, { passive: true });
+    window.addEventListener("pointerdown", onMove, { passive: true });
+
+    requestAnimationFrame(tick);
+  }
 })();
