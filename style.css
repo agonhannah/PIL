@@ -90,6 +90,7 @@ body::after{
   place-items:center;
   cursor:pointer;
   padding:0;
+  margin-left:auto;
 }
 
 .hamburger__lines{
