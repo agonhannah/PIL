@@ -27,7 +27,7 @@ a, a:link, a:visited, a:hover, a:active{ color:inherit; text-decoration:none; }
 button{ color:inherit; }
 .drawer, .drawer *{ -webkit-tap-highlight-color: transparent; }
 
-/* Noise overlay（assets/noise.png が無いならここをコメントアウト推奨） */
+/* Noise overlay（assets/noise.png が無いならコメントアウト推奨） */
 body::after{
   content:"";
   position:fixed;
@@ -39,7 +39,6 @@ body::after{
   mix-blend-mode:overlay;
   z-index:999;
 }
-
 body::before{
   content:"";
   position:fixed;
@@ -151,7 +150,6 @@ body::before{
   background:transparent;
   color:var(--ink);
 }
-
 .btn--ghost:hover{
   transform: translate(1px,-1px);
   border-color: rgba(17,17,17,0.5);
@@ -237,10 +235,11 @@ body::before{
 }
 .inline{ border-bottom:1px solid rgba(17,17,17,0.30); }
 .inline:hover{ border-bottom-color: rgba(17,17,17,0.9); }
+
 .footer{ margin-top: 18px; color: var(--muted); font-size:12px; }
 
 /* =========================================================
-   Drawer (right full-screen)
+   Drawer
 ========================================================= */
 .overlay{
   position:fixed;
@@ -270,7 +269,6 @@ body::before{
   height:100%;
   overflow:auto;
   -webkit-overflow-scrolling: touch;
-
   padding:
     calc(18px + env(safe-area-inset-top, 0px))
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
@@ -309,7 +307,7 @@ body::before{
   margin: 14px 0;
 }
 
-/* Accordion rows */
+/* Accordion */
 .acc{ border-top:1px solid var(--line); }
 .acc:last-child{ border-bottom:1px solid var(--line); }
 
@@ -361,14 +359,9 @@ body::before{
   padding: 6px 0 2px;
 }
 
-/* Sub accordion inside SHOP (“間にニョッ”） */
-.subacc{
-  border-top: 1px solid rgba(17,17,17,.10);
-  padding-top: 6px;
-  margin-top: 6px;
-}
-
-.subacc__btn{
+/* SHOP sub accordion */
+.subacc{ padding-top: 4px; }
+.acc__subbtn{
   width:100%;
   display:flex;
   align-items:center;
@@ -377,21 +370,16 @@ body::before{
   border:0;
   background:transparent;
   cursor:pointer;
-
   font-size:16px;
   letter-spacing: .02em;
 }
-
-.subacc__mark{
+.submark{
   font-size: 22px;
-  line-height: 1;
   font-weight: 200;
   opacity: .7;
 }
-
-.subacc__panel{
-  padding: 0 0 10px;
-}
+.acc__subbtn[aria-expanded="true"] .submark{ opacity:1; }
+.acc__subpanel{ padding: 0 0 10px; }
 
 /* Secondary links */
 .drawer__secondary{
@@ -400,7 +388,6 @@ body::before{
   gap: 14px;
   padding-top: 10px;
 }
-
 .sec__link{
   font-size: 14px;
   letter-spacing: .34em;
@@ -422,15 +409,7 @@ body.is-locked{ overflow:hidden; }
   opacity:0;
   transform: translate3d(-9999px,-9999px,0);
   will-change: transform, opacity;
-  transition: opacity 140ms ease-out; /* 速めに消える */
-}
-
-/* モバイルは transform の遷移を絶対させない（追従に見える原因を殺す） */
-@media (pointer:coarse){
-  #pointer-fx{
-    transition-property: opacity !important;
-  }
-  #lockbox{ display:none !important; }
+  transition: opacity 160ms ease; /* 速めにスッと消える */
 }
 
 #pointer-blob{
@@ -442,6 +421,11 @@ body.is-locked{ overflow:hidden; }
   background: rgba(0, 255, 90, 0.85);
   filter: blur(10px);
   transform: translate(-50%,-50%);
+}
+
+/* モバイルはPoint HEREを消す */
+@media (pointer:coarse){
+  #lockbox{ display:none !important; }
 }
 
 /* PC: システムカーソル消す（任意） */
