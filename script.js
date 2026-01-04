@@ -63,27 +63,54 @@
   if (overlay) overlay.addEventListener("click", closeDrawer);
 
   // data-close（TOP/×）で閉じる（drawer内）
-  if (drawer) {
-    drawer.addEventListener("click", (e) => {
-      const t = e.target;
+if (drawer) {
+  drawer.addEventListener("click", (e) => {
+    const t = e.target;
+    const hit = t.closest && t.closest("[data-close], [data-home]");
+    if (!hit) return;
 
-      const closeBtn = t.closest && t.closest("[data-close]");
-      if (closeBtn) {
-        // a(data-close) はジャンプしつつ閉じるでOK
-        // ただし "#" だったらpreventDefaultする
-        const isAnchor = closeBtn.tagName === "A";
-        if (!isAnchor || closeBtn.getAttribute("href") === "#") e.preventDefault();
-        closeDrawer();
-        return;
-      }
-    });
-  }
+    e.preventDefault();
 
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+    // まず閉じる（ここで右に見切れるアニメが走る）
+    closeDrawer();
+
+    // drawerのアニメ時間に合わせて（CSS 240ms + 余裕）
+    const WAIT = 280;
+
+    // TOPは「初期状態へ戻す」(スクロール + ハッシュ整理 + アコーディオンも閉じる)
+    if (hit.matches("[data-home]")) {
+      setTimeout(() => {
+        // 1) スクロールを最上部へ
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+        // 2) ハッシュを消して「再更新っぽさ」を出す（任意）
+        history.replaceState(null, "", location.pathname + location.search);
+
+        // 3) アコーディオンを初期化（全部閉じる）
+        document.querySelectorAll("[data-acc]").forEach((btn) => {
+          btn.setAttribute("aria-expanded", "false");
+          const name = btn.getAttribute("data-acc");
+          const panel = document.querySelector(`[data-acc-panel="${name}"]`);
+          if (panel) panel.hidden = true;
+          const mark = btn.querySelector(".acc__mark");
+          if (mark) mark.textContent = "+";
+        });
+
+        // 4) “再描画感” を強めたいなら軽くリフロー（任意）
+        document.body.style.transform = "translateZ(0)";
+        requestAnimationFrame(() => (document.body.style.transform = ""));
+      }, WAIT);
+
+      return;
+    }
+
+    // TOP以外（通常リンク）は、閉じた後に普通に遷移（必要なら）
+    const href = hit.getAttribute("href");
+    if (href && href !== "#") {
+      setTimeout(() => { location.href = href; }, WAIT);
     }
   });
+}
 
   /* ----------------------------
      Accordion
