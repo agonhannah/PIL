@@ -1,4 +1,4 @@
-　/* =========================================================
+/* =========================================================
    Off-White-ish minimal + noise + slight misalignment
    - no framework
    - no heavy animation
@@ -13,7 +13,7 @@
   --panel2: rgba(255,255,255,0.5);
   --radius: 14px;
 
-  /* ★左揃え基準 */
+  /* 左揃え基準（MenuとPARADの左端を統一） */
   --gutter: 20px;
   --gutter-sm: 20px;
 }
@@ -77,15 +77,13 @@ body::before{
 a{ color: inherit; text-decoration: none; }
 
 /* ここ重要：touch-action:none は不安定になりやすい → pan-y */
-body.is-touch{
-  touch-action: pan-y;
-}
+body.is-touch{ touch-action: pan-y; }
 
 /* =========================================================
    Layout
 ========================================================= */
 
-/* ★Menu と PARAD の左を一致させる：topbar の左右も --gutter 基準に統一 */
+/* Menu と PARAD の左端を揃える：topbar も --gutter 基準 */
 .topbar{
   position: sticky;
   top: 0;
@@ -111,7 +109,7 @@ body.is-touch{
   gap: 12px;
 }
 
-/* ★ここが基準：PARAD(=wrap) の左右余白 */
+/* PARAD 側（wrap）も同じ gutter */
 .wrap{
   position: relative;
   z-index: 1;
@@ -120,9 +118,7 @@ body.is-touch{
   padding: 48px var(--gutter) 64px;
 }
 
-/* =========================================================
-   Top-left Menu button
-========================================================= */
+/* Menu button */
 .menuBtn{
   font-size: 17px;
   font-weight: 900;
@@ -133,8 +129,8 @@ body.is-touch{
   padding: 4px 0;
   cursor: pointer;
 
-  /* ★ズレの原因を完全に殺す */
-  margin-left: 0 important!;
+  /* ここが最重要：ズレ要因を完全に消す */
+  margin-left: 0 !important;
 }
 
 .menuBtn:hover{
@@ -206,7 +202,7 @@ body.is-touch{
 }
 
 /* =========================================================
-   Sections
+   Sections / Grid / About（ここはそのまま）
 ========================================================= */
 
 .section{ padding: 10px 0 18px; }
@@ -232,19 +228,13 @@ body.is-touch{
   color: var(--muted);
 }
 
-/* =========================================================
-   Grid + Cards
-========================================================= */
-
 .grid{
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
 
-.grid--shop{
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
+.grid--shop{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 .card{
   border: 1px solid var(--line);
@@ -304,10 +294,6 @@ body.is-touch{
   border-color: rgba(17,17,17,0.45);
 }
 
-/* =========================================================
-   About
-========================================================= */
-
 .aboutbox{
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -320,12 +306,6 @@ body.is-touch{
   color: var(--muted);
   line-height: 1.7;
   font-size: 13px;
-}
-
-.links{
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
 }
 
 .inline{
@@ -345,7 +325,7 @@ body.is-touch{
 }
 
 /* =========================================================
-   Drawer (left)
+   Drawer
 ========================================================= */
 
 .overlay{
@@ -361,10 +341,7 @@ body.is-touch{
   top: 0;
   left: 0;
   height: 100vh;
-
-  /* PC/Tablet: left drawer */
   width: min(78vw, 360px);
-
   background: rgba(246,246,244,0.95);
   border-right: 1px solid var(--line);
   z-index: 1300;
@@ -373,7 +350,8 @@ body.is-touch{
   transition: transform 260ms ease;
   will-change: transform;
 
-  padding: 18px 16px;
+  /* 外側は0にして、中のpanelで余白管理（モバイルで楽） */
+  padding: 0;
 }
 
 .drawer.is-open{ transform: translateX(0); }
@@ -412,7 +390,6 @@ body.is-touch{
   letter-spacing: -0.02em;
 }
 
-/* close button: minus */
 .drawer__close{
   width: 40px;
   height: 40px;
@@ -445,7 +422,6 @@ body.is-touch{
   gap: 10px;
 }
 
-/* main menu items */
 .drawer__item{
   display:flex;
   align-items: baseline;
@@ -468,35 +444,11 @@ body.is-touch{
   cursor: pointer;
 }
 
-.drawer__item:active{ transform: translateX(1px); }
-
-/* plus: small + thin */
 .plus{
   font-size: 14px;
   font-weight: 300;
   opacity: 0.65;
   margin-left: 10px;
-}
-
-.drawer__foot{
-  margin-top: 28px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(17,17,17,0.10);
-}
-
-.drawer__small{
-  font-size: 13px;
-  color: var(--muted);
-  border-bottom: 1px solid rgba(17,17,17,0.25);
-}
-
-body.is-locked{ overflow: hidden; }
-
-/* Drawer sub UI */
-.drawer__backRow{
-  display:flex;
-  align-items:center;
-  gap: 10px;
 }
 
 .drawer__back{
@@ -512,15 +464,9 @@ body.is-locked{ overflow: hidden; }
   color: var(--ink);
 }
 
-.drawer__back:hover{
-  opacity: 1;
-  transform: translateX(1px);
-}
-
 .drawer__listTitle{
   margin-top: 10px;
   font-size: 14px;
-  opacity: 1;
   letter-spacing: 0.02em;
   font-weight: 700;
   color: var(--ink);
@@ -554,15 +500,12 @@ body.is-locked{ overflow: hidden; }
   color: var(--ink);
 }
 
-.drawer__listItem:active{ transform: translateX(1px); }
-
 .drawer__note{
   margin-top: 18px;
   font-size: 14px;
   opacity: 0.75;
 }
 
-/* Preview layer */
 .drawer__preview{
   position: absolute;
   inset: 0;
@@ -577,7 +520,6 @@ body.is-locked{ overflow: hidden; }
   transform: scale(1.08);
 }
 
-/* White veil */
 .drawer__preview::after{
   content:"";
   position:absolute;
@@ -585,21 +527,19 @@ body.is-locked{ overflow: hidden; }
   background: rgba(246,246,244,0.35);
 }
 
-/* bring text front */
 .drawer__top,
 .drawer__listTitle,
 .drawer__list,
-.drawer__note,
-.drawer__foot{
+.drawer__note{
   position: relative;
   z-index: 1;
 }
 
+body.is-locked{ overflow: hidden; }
+
 /* iOS tap highlight kill */
 .drawer,
-.drawer *{
-  -webkit-tap-highlight-color: transparent;
-}
+.drawer *{ -webkit-tap-highlight-color: transparent; }
 
 .drawer button{
   -webkit-appearance: none;
@@ -616,83 +556,8 @@ body.is-locked{ overflow: hidden; }
   color: var(--ink) !important;
 }
 
-.drawer__item,
-.drawer__listItem,
-.drawer__back,
-.drawer__small,
-.drawer__close{
-  color: var(--ink) !important;
-  -webkit-text-fill-color: var(--ink);
-}
-
 /* =========================================================
-   Product block inside drawer
-========================================================= */
-
-.prod__format{
-  margin: 0 0 10px 0;
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  color: var(--muted);
-}
-
-.prod__desc{
-  margin: 0 0 14px 0;
-  font-size: 13px;
-  line-height: 1.7;
-  color: rgba(17,17,17,0.70);
-}
-
-.prod__row{ display: none; }
-
-.drawer .drawer__note.prod{
-  padding-left: 0 !important;
-  text-align: left !important;
-}
-
-.drawer .drawer__note.prod .prod__price{
-  display: block;
-  margin: 16px 0 18px;
-  padding-left: 0 !important;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-align: left;
-}
-
-.drawer .drawer__note.prod .prod__buy,
-.drawer .drawer__note.prod .prod__buy:link,
-.drawer .drawer__note.prod .prod__buy:visited,
-.drawer .drawer__note.prod .prod__buy:hover,
-.drawer .drawer__note.prod .prod__buy:active{
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-
-  margin: 0 !important;
-  padding: 0 14px !important;
-  height: 34px;
-
-  border: 1px solid rgba(17,17,17,0.18) !important;
-  background: rgba(255,255,255,0.55) !important;
-  border-radius: 999px;
-
-  font-size: 12px;
-  color: var(--ink) !important;
-  -webkit-text-fill-color: var(--ink);
-
-  text-indent: 0 !important;
-  text-decoration: none;
-}
-
-.drawer .drawer__note.prod .prod__buy:active{
-  transform: translateX(1px);
-}
-
-.prod__detail{ display: none; }
-
-/* =========================================================
-   Pointer FX (PC + Mobile)
+   Pointer FX
 ========================================================= */
 
 #pointer-fx{
@@ -701,7 +566,6 @@ body.is-locked{ overflow: hidden; }
   left: 0;
   pointer-events: none;
   z-index: 1400;
-
   opacity: 0;
   transform: translate3d(-9999px, -9999px, 0);
   will-change: transform, opacity;
@@ -724,88 +588,6 @@ body.is-locked{ overflow: hidden; }
   z-index: 1;
 }
 
-#lockbox{
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-
-  opacity: 0;
-  transition: opacity 120ms ease;
-  will-change: opacity;
-  color: #000;
-}
-
-#lockbox .lockbox__rect{
-  width: 100px;
-  height: 60px;
-  border: 1px solid currentColor;
-  border-radius: 2px;
-  position: relative;
-  box-sizing: border-box;
-}
-
-#lockbox .lockbox__cross{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  background: currentColor;
-  transform: translate(-50%, -50%);
-}
-#lockbox .lockbox__cross--h{ width: 17px; height: 1px; }
-#lockbox .lockbox__cross--v{ width: 1px; height: 10px; }
-
-#lockbox .lockbox__tick{
-  position: absolute;
-  background: currentColor;
-  opacity: 1;
-  display: block;
-}
-
-#lockbox .lockbox__tick--t{
-  top: 0;
-  left: 50%;
-  width: 1px;
-  height: 5px;
-  transform: translateX(-50%);
-}
-#lockbox .lockbox__tick--b{
-  bottom: 0;
-  left: 50%;
-  width: 1px;
-  height: 5px;
-  transform: translateX(-50%);
-}
-#lockbox .lockbox__tick--l{
-  left: 0;
-  top: 50%;
-  width: 5px;
-  height: 1px;
-  transform: translateY(-50%);
-}
-#lockbox .lockbox__tick--r{
-  right: 0;
-  top: 50%;
-  width: 5px;
-  height: 1px;
-  transform: translateY(-50%);
-}
-
-#lockbox .lockbox__label{
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  margin-left: 8px;
-  transform: translate(0, -50%) rotate(90deg);
-  transform-origin: left center;
-  font-size: 8px;
-  letter-spacing: 0.2em;
-  font-weight: 700;
-  color: currentColor;
-  white-space: nowrap;
-}
-
 /* =========================================================
    Responsive
 ========================================================= */
@@ -814,48 +596,30 @@ body.is-locked{ overflow: hidden; }
   .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-/* ★スマホ：drawer をフルスクリーン + 左揃え固定 */
+/* スマホ */
 @media (max-width: 640px){
   :root{ --gutter: var(--gutter-sm); }
 
   .wrap{ padding-top: 26px; }
-
-  .topbar{
-    padding:
-      calc(14px + env(safe-area-inset-top, 0px))
-      calc(var(--gutter) + env(safe-area-inset-right, 0px))
-      14px
-      calc(var(--gutter) + env(safe-area-inset-left, 0px));
-  }
-
   .grid{ grid-template-columns: 1fr; }
   .grid--shop{ grid-template-columns: 1fr; }
   .hero__lead{ font-size: 14px; }
 
-  /* drawer full screen */
-  .drawer{
-    width: 100vw;
-    height: 100vh;
-    border-right: none;
-  }
-
-  /* drawer内余白も gutter に寄せる */
-  .drawer,
+  /* panelの左右余白も gutter に揃える */
   .drawer__panel{
     padding-left: var(--gutter);
     padding-right: var(--gutter);
+    padding-top: calc(18px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
   }
 }
 
-
-/* =========================================================
-   FORCE: Mobile drawer full-screen (reliable)
-========================================================= */
+/* モバイル確実判定（iPhoneはこっちが効くことが多い） */
 @media (pointer: coarse){
   .drawer{
     width: 100vw !important;
-    height: 100dvh !important; /* iOS対応 */
     max-width: none !important;
+    height: 100dvh !important;
     border-right: none !important;
   }
 }
