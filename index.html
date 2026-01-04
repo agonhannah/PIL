@@ -4,17 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>dhrma Kazuki Hanamoto</title>
-  <meta
-    name="description"
-    content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop."
-  />
- <link rel="stylesheet" href="style.css?v=20260104-1900">
+  <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
+  <link rel="stylesheet" href="style.css?v=20260104-2000">
 </head>
 
-<body>
+<body id="top">
   <!-- Topbar -->
   <header class="topbar">
-    <nav class="topbar__left" aria-label="Primary">
+    <nav class="topbar__inner" aria-label="Primary">
+      <!-- Left: TOP -->
+      <a class="topLink" href="#top" aria-label="Back to top">TOP</a>
+
+      <!-- Right: Hamburger menu -->
       <button
         class="menuBtn"
         id="menuBtn"
@@ -23,27 +24,24 @@
         aria-controls="drawer"
         aria-expanded="false"
       >
-        Menu ✶
+        <span class="menuBtn__icon" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
       </button>
     </nav>
   </header>
 
   <main class="wrap">
-    <!-- HERO -->
-    <section class="hero" aria-labelledby="hero-title">
-      <h1 class="hero__title" id="hero-title">
-        PARAD<br />ICE<br />LONER.
-      </h1>
-
-      <p class="hero__lead">
-        ARCHIVE of WORKS by dhrma Kazuki Hanamoto
-      </p>
-
+    <!-- HERO / TOP VISUAL (video will be placed later) -->
+    <section class="hero" aria-label="Hero">
+      <div class="hero__frame" aria-label="Video placeholder">
+        <!-- 後でここに <video> を貼る想定 -->
+      </div>
+      <p class="hero__lead">ARCHIVE of WORKS by dhrma Kazuki Hanamoto</p>
       <div class="hero__actions">
         <a class="btn btn--solid" href="#works">View Works</a>
         <a class="btn btn--ghost" href="#shop">Open Shop</a>
       </div>
-
       <div class="rule" role="separator" aria-hidden="true"></div>
     </section>
 
@@ -68,13 +66,11 @@
       <div class="rule" role="separator" aria-hidden="true"></div>
     </section>
 
-    <!-- SHOP (anchor target only / hidden by CSS if you want) -->
-    <section id="shop" class="section" aria-label="Shop (anchor)">
-      <!-- Intentionally minimal. Drawer is the primary shop UI. -->
-    </section>
+    <!-- SHOP anchor (drawer が主導) -->
+    <section id="shop" class="section" aria-label="Shop (anchor)"></section>
 
     <!-- ABOUT -->
-    <section id="about" class="section">
+    <section id="about" class="section" aria-label="About">
       <div class="aboutbox">
         <p class="aboutbox__text">
           dhrma Kazuki Hanamoto<br />
@@ -94,7 +90,7 @@
   <!-- Overlay -->
   <div class="overlay" id="overlay" hidden></div>
 
-  <!-- Drawer -->
+  <!-- Drawer (FULL SCREEN from RIGHT) -->
   <aside
     class="drawer"
     id="drawer"
@@ -108,14 +104,14 @@
       <section class="drawer__panel is-active" data-panel="main" aria-label="Main menu">
         <div class="drawer__top">
           <span class="drawer__brand">dhrma Kazuki Hanamoto</span>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
+          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
         </div>
 
         <nav class="drawer__nav" aria-label="Drawer navigation">
           <button class="drawer__item" type="button" data-open-panel="archive">
             Archive <span class="plus">+</span>
           </button>
-          <button class="drawer__item" type="button" data-open-panel="shop">
+          <button class="drawer__item" type="button" data-open-panel="shopPanel">
             Shop <span class="plus">+</span>
           </button>
           <button class="drawer__item" type="button" data-open-panel="order">
@@ -128,11 +124,10 @@
       <section class="drawer__panel" data-panel="archive" aria-label="Archive">
         <div class="drawer__top">
           <button class="drawer__back" type="button" data-back>Back</button>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
+          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
         </div>
 
         <div class="drawer__listTitle">Archive</div>
-
         <div class="drawer__preview" aria-hidden="true"></div>
 
         <nav class="drawer__list" aria-label="Archive list">
@@ -142,10 +137,10 @@
       </section>
 
       <!-- PANEL: SHOP -->
-      <section class="drawer__panel" data-panel="shop" aria-label="Shop">
+      <section class="drawer__panel" data-panel="shopPanel" aria-label="Shop">
         <div class="drawer__top">
           <button class="drawer__back" type="button" data-back>Back</button>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
+          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
         </div>
 
         <div class="drawer__listTitle">Shop</div>
@@ -161,11 +156,10 @@
       <section class="drawer__panel" data-panel="shopPhysical" aria-label="Physical Goods">
         <div class="drawer__top">
           <button class="drawer__back" type="button" data-back>Back</button>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
+          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
         </div>
 
         <div class="drawer__listTitle">Physical Goods</div>
-
         <div class="drawer__preview" aria-hidden="true"></div>
 
         <nav class="drawer__list" aria-label="Physical goods list">
@@ -180,18 +174,14 @@
         </nav>
       </section>
 
-      <!-- PANEL: PRODUCT - Session Collection -->
+      <!-- PANEL: PRODUCT -->
       <section class="drawer__panel" data-panel="prodSessionCollection" aria-label="Product details">
         <div class="drawer__top">
           <button class="drawer__back" type="button" data-back>Back</button>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
+          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
         </div>
 
-        <div class="drawer__listTitle">
-          Session Collection [2022-24 Bootlegs]
-        </div>
-
-        <!-- preview -->
+        <div class="drawer__listTitle">Session Collection [2022-24 Bootlegs]</div>
         <div class="drawer__preview" aria-hidden="true"></div>
 
         <div class="drawer__note prod">
@@ -220,7 +210,7 @@
       <section class="drawer__panel" data-panel="order" aria-label="Order">
         <div class="drawer__top">
           <button class="drawer__back" type="button" data-back>Back</button>
-          <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
+          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
         </div>
 
         <div class="drawer__listTitle">Order</div>
@@ -230,7 +220,7 @@
     </div>
   </aside>
 
-  <!-- Pointer FX -->
+  <!-- Pointer FX（HTMLは今のまま採用） -->
   <div id="pointer-fx" aria-hidden="true">
     <div id="pointer-blob"></div>
 
@@ -248,6 +238,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=20260102-1" defer></script>
+  <script src="script.js?v=20260104-2000" defer></script>
 </body>
 </html>
