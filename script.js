@@ -182,18 +182,24 @@
 
     const show = () => { fx.style.opacity = "1"; };
 
-    const scheduleIdleFade = () => {
-      // “パッと消えすぎない”けど早めに（調整OK）
-      const ms = isTouch ? 850 : 1200;
-      if (idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(() => { fx.style.opacity = "0"; }, ms);
-    };
+  const scheduleIdleFade = () => {
+  if (idleTimer) clearTimeout(idleTimer);
 
-    const setTransform = (nx, ny) => {
-      x = nx; y = ny;
-      tx = nx; ty = ny;
-      fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-    };
+  // 全体の消失時間（体感）
+  const total = isTouch ? 1400 : 1600;
+  const half = total / 2;
+
+  // ① すぐ薄まる
+  idleTimer = setTimeout(() => {
+    fx.style.opacity = "0.35";
+
+    // ② 同じ時間で完全に消える
+    idleTimer = setTimeout(() => {
+      fx.style.opacity = "0";
+    }, half);
+
+  }, half);
+};
 
     // Desktop follow
     const onDesktopMove = (e) => {
