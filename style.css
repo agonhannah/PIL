@@ -3,7 +3,10 @@
   --ink:#111;
   --muted:rgba(17,17,17,.58);
   --line:rgba(17,17,17,.18);
-  --panel:rgba(246,246,244,.92);
+
+  /* drawer背景：透けをなくすため不透明に */
+  --panel:#ffffff;
+
   --radius:14px;
   --gutter:20px;
 }
@@ -46,9 +49,8 @@ body::after{
   z-index:999;
 }
 
-
 /* =========================================================
-   Topbar（drawer基準に合わせる / 白ベタ / 線なし）
+   Topbar（白ベタ / 線なし / drawerのヘッダー基準に揃える）
 ========================================================= */
 .topbar{
   position:sticky;
@@ -65,21 +67,22 @@ body::after{
     14px
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
 
-  background:#fff;            /* ←完全に白 */
-  backdrop-filter:none;       /* ←ぼかし無し */
-  border-bottom:0;            /* ←線を消す */
+  background:#fff;
+  backdrop-filter:none;
+  border-bottom:0;
 }
 
 .toplink{
-  /* drawer__toplink と“見た目”を合わせる（位置ズレ防止でline-heightも） */
+  /* drawer__toplink に合わせる */
   font-size:14px;
   letter-spacing:.30em;
   text-transform:uppercase;
   opacity:.80;
+
   line-height:1;
   display:inline-flex;
   align-items:center;
-  height:44px;                /* クリック領域と縦位置も安定 */
+  height:44px;
 }
 
 .hamburger{
@@ -108,30 +111,25 @@ body::after{
 .wrap{
   max-width:1120px;
   margin:0 auto;
-  padding:0 var(--gutter) 64px; /* ← 上を0に変更（フルブリード優先） */
+  padding:0 var(--gutter) 64px;
 }
 
-/* Hero: full-bleed stage (video will be injected later) */
-.hero{
-  padding: 0;
-  margin: 0;
-}
+/* (今はmainが空なので、以下は残しておくだけでOK) */
+.hero{ padding:0; margin:0; }
 
-/* いまは空の器。後でvideoをここに敷く */
 .hero__blank{
-  width: 100vw;
-  height: 100vh;               /* まずは1画面 */
+  width:100vw;
+  height:100vh;
 
-  /* 安定フルブリード（横ズレ/横スク回避） */
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  position:relative;
+  left:50%;
+  right:50%;
+  margin-left:-50vw;
+  margin-right:-50vw;
 
-  background: transparent;
-  border: 0;
-  border-radius: 0;
+  background:transparent;
+  border:0;
+  border-radius:0;
 }
 
 .hero__lead{
@@ -152,7 +150,6 @@ body::after{
   border:1px solid var(--line);
 }
 
-/* Aboutの上だけ残す rule */
 .rule{
   height:1px;
   background:var(--line);
@@ -214,7 +211,7 @@ body::after{
 .drawer{
   position:fixed;
   inset:0;
-  background:var(--panel);
+  background:var(--panel);     /* ←不透明 #fff */
   transform:translateX(105%);
   transition:transform 240ms ease;
   z-index:1300;
@@ -234,25 +231,29 @@ body::after{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line); /* ← これがTOPとARCHIVEの間のアンダーバー */
+  padding-bottom:14px;
+  border-bottom:1px solid var(--line);
 }
 
-/* ===== Drawer Typography: ここで統一 ===== */
+/* Typography unify */
 .drawer__toplink,
 .acc__btn,
 .drawer__secondary a,
 .acc__link{
   font-family: Helvetica, Arial, sans-serif;
-  color: var(--ink);
+  color:var(--ink);
 }
 
-/* TOPは少し大きくして差を出す */
 .drawer__toplink{
-  font-size:14px;              /* ←大きく */
+  font-size:14px;
   letter-spacing:.30em;
   text-transform:uppercase;
   opacity:.80;
+
+  display:inline-flex;
+  align-items:center;
+  height:44px;
+  line-height:1;
 }
 
 .drawer__close{
@@ -261,6 +262,7 @@ body::after{
   display:grid;
   place-items:center;
   padding:0;
+
   font-size:22px;
   line-height:1;
   font-weight:300;
@@ -268,7 +270,7 @@ body::after{
 }
 
 /* =========================================================
-   Accordion (ARCHIVE / SHOP / ORDER)
+   Accordion
 ========================================================= */
 .acc__btn{
   width:100%;
@@ -277,10 +279,10 @@ body::after{
   justify-content:space-between;
   align-items:center;
 
-  font-size:12px;              /* 見出しは小さめ */
-  letter-spacing:.32em;        /* スペース多め */
+  font-size:12px;
+  letter-spacing:.32em;
   text-transform:uppercase;
-  font-weight:400;             /* 太くしない */
+  font-weight:400;
 }
 
 .acc__mark{
@@ -289,12 +291,10 @@ body::after{
   opacity:.6;
 }
 
-/* パネル */
 .acc__panel{
   padding:6px 0 14px;
 }
 
-/* リスト（同フォント/同色/箇条書き） */
 .acc__link{
   display:block;
   padding:8px 0;
@@ -305,31 +305,18 @@ body::after{
   opacity:.92;
 }
 
-/* 箇条書き “・” を1文字分あける */
 .acc__link::before{
   content:"・";
   margin-right:1em;
   opacity:.55;
 }
 
-/* =========================================================
-   Divider rules (requested)
-   - ARCHIVE–SHOP 間：なし
-   - SHOP–ABOUT 間：あり
-========================================================= */
-
-/* まず全部消す */
-.drawer__rule{ display:none; }
-
-/* SHOP–ABOUT の境界だけ作る（secondary の直前） */
+/* SHOP–ABOUT の境界だけ */
 .drawer__secondary{
   margin-top:18px;
   padding-top:18px;
-  border-top:1px solid var(--line);  /* ←ここが「SHOP–ABOUT間のアンダーバー」 */
-}
+  border-top:1px solid var(--line);
 
-/* Secondary links */
-.drawer__secondary{
   display:flex;
   flex-direction:column;
   gap:12px;
@@ -352,9 +339,9 @@ body::after{
   pointer-events:none;
   z-index:1400;
   opacity:0;
-  transform: translate3d(-9999px,-9999px,0);
+  transform:translate3d(-9999px,-9999px,0);
   will-change: transform, opacity;
-  transition: opacity 420ms linear; /* ← linear に変更 */
+  transition:opacity 420ms linear;
 }
 #pointer-blob{
   width:84px;
@@ -369,44 +356,14 @@ body::after{
   #lockbox{ display:none !important; }
 }
 
-
+/* top stage title（いま表示してる "2026 dhrma..." 用） */
 .topstage{
-  padding: 22px 0 0;
+  padding:22px 0 0;
 }
 .topstage__title{
-  margin: 0;
-  font-size: 12px;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-/* =========================================================
-   Topbar <-> Drawer header unify
-   - underline width = inner gutter width (same as drawer)
-   - TOP typography = drawer TOP
-========================================================= */
-
-.topbar{
-  position: sticky; /* 念のため維持 */
-  border-bottom: 0 !important;         /* フル幅線を消す */
-  position: relative;                  /* ::after用 */
-}
-
-/* Topbarの下線を “内側幅” で描く（drawerのline感に合わせる） */
-.topbar::after{
-  content:"";
-  position:absolute;
-  left: calc(var(--gutter) + env(safe-area-inset-left, 0px));
-  right: calc(var(--gutter) + env(safe-area-inset-right, 0px));
-  bottom: 0;
-  height: 1px;
-  background: var(--line);
-}
-
-/* TopbarのTOPを drawer TOP に寄せる */
-.topbar .toplink{
-  font-size: 14px;
-  letter-spacing: .30em;
-  text-transform: uppercase;
-  opacity: .80;
+  margin:0;
+  font-size:12px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--muted);
 }
