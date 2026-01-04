@@ -23,12 +23,12 @@ body{
   overflow-x:hidden;
 }
 
-/* iOSの勝手な青/ハイライト抑止（最重要） */
+/* iOSの勝手な青/ハイライト抑止 */
 a, a:link, a:visited, a:hover, a:active{ color:inherit; text-decoration:none; }
 button{ color:inherit; }
 .drawer, .drawer *{ -webkit-tap-highlight-color: transparent; }
 
-/* Noise overlay */
+/* Noise overlay（assets/noise.png が無いならここをコメントアウト推奨） */
 body::after{
   content:"";
   position:fixed;
@@ -41,7 +41,6 @@ body::after{
   z-index:999;
 }
 
-/* subtle paper shadow */
 body::before{
   content:"";
   position:fixed;
@@ -115,7 +114,7 @@ body::before{
 }
 
 /* =========================================================
-   Hero（無地枠）
+   Hero
 ========================================================= */
 .hero{ padding: 18px 0 12px; }
 
@@ -166,7 +165,7 @@ body::before{
 }
 
 /* =========================================================
-   Works（そのまま）
+   Works
 ========================================================= */
 .section{ padding: 10px 0 18px; }
 
@@ -245,7 +244,7 @@ body::before{
 .footer{ margin-top: 18px; color: var(--muted); font-size:12px; }
 
 /* =========================================================
-   Drawer（右から全画面 / HYKE風）
+   Drawer
 ========================================================= */
 .overlay{
   position:fixed;
@@ -365,7 +364,7 @@ body::before{
   padding: 6px 0 2px;
 }
 
-/* Sub accordion inside SHOP */
+/* Sub accordion inside SHOP（“にょっ”と出す） */
 .acc__subbtn{
   width:100%;
   display:flex;
@@ -402,7 +401,7 @@ body::before{
 body.is-locked{ overflow:hidden; }
 
 /* =========================================================
-   Pointer FX（軽量化：ラグ対策）
+   Pointer FX（モバイルは “Point HERE” 消して緑だけ）
 ========================================================= */
 #pointer-fx{
   position:fixed;
@@ -413,7 +412,7 @@ body.is-locked{ overflow:hidden; }
   opacity:0;
   transform: translate3d(-9999px,-9999px,0);
   will-change: transform, opacity;
-  transition: opacity 140ms linear; /* ←すぐ消える */
+  transition: opacity 90ms linear; /* ←消えるのを早く */
 }
 
 #pointer-blob{
@@ -423,8 +422,13 @@ body.is-locked{ overflow:hidden; }
   height: 84px;
   border-radius:999px;
   background: rgba(0, 255, 90, 0.85);
-  filter: blur(10px);              /* ←軽くする */
+  filter: blur(10px);
   transform: translate(-50%,-50%);
+}
+
+/* lockbox（Point HERE）周りはPCだけ出す */
+@media (pointer:coarse){
+  #lockbox{ display:none !important; }
 }
 
 /* PC: システムカーソル消す（任意） */
@@ -434,7 +438,7 @@ body.is-locked{ overflow:hidden; }
 }
 
 /* =========================================================
-   Mobile微調整
+   Mobile
 ========================================================= */
 @media (max-width: 640px){
   .wrap{ padding-top: 18px; }
