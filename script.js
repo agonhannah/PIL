@@ -46,6 +46,7 @@
   }
 
   document.body.classList.toggle("is-locked", open);
+  document.body.classList.toggle("menu-open", open);
 };
 
   const openDrawer  = () => setAriaOpen(true);
