@@ -316,11 +316,14 @@ body::after{
 ========================================================= */
 #pointer-fx{
   position:fixed;
-  top:0; left:0;
+  top:0;
+  left:0;
   pointer-events:none;
-  opacity:0;
-  transition:opacity 90ms linear;
   z-index:1400;
+  opacity:0;
+  transform: translate3d(-9999px,-9999px,0);
+  will-change: transform, opacity;
+  transition: opacity 420ms ease-out;
 }
 #pointer-blob{
   width:84px;
