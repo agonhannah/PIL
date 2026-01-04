@@ -328,3 +328,73 @@ body.is-locked{
 .drawer.is-open ~ .topbar #menuBtn .hamburger__lines span:nth-child(3){
   transform: translateY(-6px) rotate(-45deg);
 }
+
+/* =========================================================
+   FIX: Topbarを常時表示 / DrawerはTopbarの下から
+========================================================= */
+
+/* topbarの高さ（44pxボタン + 上下padding）を変数化 */
+:root{
+  --topbar-pad-top: calc(18px + env(safe-area-inset-top, 0px));
+  --topbar-pad-btm: 14px;
+  --topbar-h: calc(var(--topbar-pad-top) + var(--topbar-pad-btm) + 44px);
+}
+
+/* Topbar: 常時固定して最前面 */
+.topbar{
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 2000;
+  background:#fff;
+  border-bottom: 0;
+}
+
+/* 本文がtopbarの下から始まるように（mainが増えても崩れない） */
+body{
+  padding-top: var(--topbar-h);
+}
+
+/* Drawer: topbarの下から出す */
+.drawer{
+  top: var(--topbar-h);
+  height: calc(100dvh - var(--topbar-h));
+  inset: auto 0 0 0; /* 上書き：top以外は左右下を0に */
+  z-index: 1300;
+}
+
+/* Overlayは画面全体でOK（topbarの操作を優先するなら下げる） */
+.overlay{
+  z-index: 1200;
+}
+
+/* Drawerの内側padding：safe-area-topはもう不要（topbarで処理済） */
+.drawer__inner{
+  padding-top: 18px;
+}
+
+/* =========================================================
+   Hamburger → X（drawer open時）
+========================================================= */
+
+/* 初期：三本線 */
+.hamburger__lines span{
+  display:block;
+  width:22px;
+  height:1px;
+  background:rgba(17,17,17,.7);
+  transition: transform 180ms ease, opacity 180ms ease;
+  transform-origin: center;
+}
+
+/* open状態：中央線を消して、上下を回転 */
+.hamburger.is-open .hamburger__lines span:nth-child(1){
+  transform: translateY(6px) rotate(45deg);
+}
+.hamburger.is-open .hamburger__lines span:nth-child(2){
+  opacity: 0;
+}
+.hamburger.is-open .hamburger__lines span:nth-child(3){
+  transform: translateY(-6px) rotate(-45deg);
+}
