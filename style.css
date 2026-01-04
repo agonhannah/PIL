@@ -46,8 +46,9 @@ body::after{
   z-index:999;
 }
 
+
 /* =========================================================
-   Topbar
+   Topbar（drawer基準に合わせる / 白ベタ / 線なし）
 ========================================================= */
 .topbar{
   position:sticky;
@@ -57,23 +58,28 @@ body::after{
   justify-content:space-between;
   align-items:center;
 
+  /* drawer__inner の上余白(18px)に合わせる */
   padding:
-    calc(14px + env(safe-area-inset-top, 0px))
+    calc(18px + env(safe-area-inset-top, 0px))
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
     14px
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
 
-  background:rgba(246,246,244,.78);
-  backdrop-filter: blur(6px);
-
- 
+  background:#fff;            /* ←完全に白 */
+  backdrop-filter:none;       /* ←ぼかし無し */
+  border-bottom:0;            /* ←線を消す */
 }
 
 .toplink{
+  /* drawer__toplink と“見た目”を合わせる（位置ズレ防止でline-heightも） */
   font-size:14px;
   letter-spacing:.30em;
   text-transform:uppercase;
   opacity:.80;
+  line-height:1;
+  display:inline-flex;
+  align-items:center;
+  height:44px;                /* クリック領域と縦位置も安定 */
 }
 
 .hamburger{
