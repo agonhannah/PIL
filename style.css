@@ -358,3 +358,14 @@ body::after{
   #lockbox{ display:none !important; }
 }
 
+
+.topstage{
+  padding: 22px 0 0;
+}
+.topstage__title{
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
