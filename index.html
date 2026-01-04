@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>dhrma Kazuki Hanamoto</title>
   <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
-  <link rel="stylesheet" href="style.css?v=20260104-2200">
+  <link rel="stylesheet" href="style.css?v=20260104-2359">
 </head>
 
 <body>
@@ -21,15 +21,12 @@
       aria-controls="drawer"
       aria-expanded="false"
     >
-      <span class="sr">Menu</span>
+      <span class="hamburger__mid" aria-hidden="true"></span>
     </button>
   </header>
 
-  <!-- Top / (動画を貼る予定の無地エリア) -->
   <main id="top" class="page">
-    <section class="blankTop" aria-label="Top (placeholder)">
-      <!-- ここに後で動画を貼る -->
-    </section>
+    <section class="blankTop" aria-label="Top (placeholder)"></section>
 
     <section class="belowTop">
       <p class="lead">ARCHIVE of WORKS by dhrma Kazuki Hanamoto</p>
@@ -61,9 +58,7 @@
         <div class="rule" role="separator" aria-hidden="true"></div>
       </section>
 
-      <section id="shop" class="block" aria-label="Shop (anchor only)">
-        <!-- DrawerをメインUIにするので、ここは空でOK -->
-      </section>
+      <section id="shop" class="block" aria-label="Shop (anchor only)"></section>
 
       <section class="block" id="contact">
         <div class="about">
@@ -84,36 +79,25 @@
   <!-- Overlay -->
   <div class="overlay" id="overlay" hidden></div>
 
-  <!-- Drawer (Right, full screen on mobile) -->
-  <aside
-    class="drawer"
-    id="drawer"
-    role="dialog"
-    aria-modal="true"
-    aria-hidden="true"
-  >
+  <!-- Drawer -->
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="drawerInner">
-
-      <!-- Drawer Header -->
       <div class="drawerHead">
         <a class="drawerTop" href="#top" data-close>TOP</a>
         <button class="drawerClose" type="button" data-close aria-label="Close menu"></button>
       </div>
 
-      <!-- STACK (slide panels inside drawer) -->
       <div class="panelStack" id="panelStack">
-
-        <!-- PANEL: MAIN (accordion like HYKE) -->
+        <!-- MAIN -->
         <section class="panel is-active" data-panel="main" aria-label="Menu">
           <div class="acc">
-
             <!-- ARCHIVE -->
             <div class="accRow">
               <button class="accBtn" type="button" data-acc="archive">
                 <span class="accLabel">ARCHIVE</span>
                 <span class="accIcon" aria-hidden="true"></span>
               </button>
-              <div class="accBody" id="acc-archive">
+              <div class="accBody">
                 <a class="accItem" href="#" data-cover="images/test_01.jpg">Work Title 01</a>
                 <a class="accItem" href="#" data-cover="images/test_02.jpg">Work Title 02</a>
               </div>
@@ -125,7 +109,7 @@
                 <span class="accLabel">SHOP</span>
                 <span class="accIcon" aria-hidden="true"></span>
               </button>
-              <div class="accBody" id="acc-shop">
+              <div class="accBody">
                 <button class="accItem is-btn" type="button" data-open-panel="shopPhysical">
                   Physical Goods
                 </button>
@@ -138,12 +122,11 @@
                 <span class="accLabel">ORDER</span>
                 <span class="accIcon" aria-hidden="true"></span>
               </button>
-              <div class="accBody" id="acc-order">
+              <div class="accBody">
                 <a class="accItem" href="#contact" data-close>Contact</a>
                 <a class="accItem" href="#works" data-close>Works</a>
               </div>
             </div>
-
           </div>
 
           <div class="miniLinks">
@@ -154,7 +137,7 @@
           </div>
         </section>
 
-        <!-- PANEL: SHOP PHYSICAL (slide-in) -->
+        <!-- SHOP PHYSICAL -->
         <section class="panel" data-panel="shopPhysical" aria-label="Physical Goods">
           <div class="panelTop">
             <button class="backBtn" type="button" data-back>Back</button>
@@ -173,11 +156,9 @@
               Session Collection [2022-24 Bootlegs]
             </button>
           </div>
-
-          <div class="panelNote">※ ここから商品詳細へ（同じドロワー内でスライド）</div>
         </section>
 
-        <!-- PANEL: PRODUCT -->
+        <!-- PRODUCT -->
         <section class="panel" data-panel="prodSessionCollection" aria-label="Product details">
           <div class="panelTop">
             <button class="backBtn" type="button" data-back>Back</button>
@@ -202,16 +183,13 @@
             </a>
           </div>
         </section>
+      </div>
 
-      </div><!-- /panelStack -->
-
-      <!-- Preview layer (optional) -->
       <div class="drawerPreview" id="drawerPreview" aria-hidden="true"></div>
-
     </div>
   </aside>
 
-  <!-- Pointer FX (keep) -->
+  <!-- Pointer FX -->
   <div id="pointer-fx" aria-hidden="true">
     <div id="pointer-blob"></div>
 
@@ -219,7 +197,6 @@
       <div class="lockbox__rect">
         <div class="lockbox__cross lockbox__cross--h"></div>
         <div class="lockbox__cross lockbox__cross--v"></div>
-
         <span class="lockbox__tick lockbox__tick--t"></span>
         <span class="lockbox__tick lockbox__tick--r"></span>
         <span class="lockbox__tick lockbox__tick--b"></span>
@@ -229,6 +206,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=20260104-2200" defer></script>
+  <script src="script.js?v=20260104-2359" defer></script>
 </body>
 </html>
