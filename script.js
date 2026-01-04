@@ -33,14 +33,20 @@
   const drawer  = $("#drawer");
 
   const setAriaOpen = (open) => {
-    if (menuBtn) menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
-    if (drawer) {
-      drawer.setAttribute("aria-hidden", open ? "false" : "true");
-      drawer.classList.toggle("is-open", open);
-    }
-    if (overlay) overlay.hidden = !open;
-    document.body.classList.toggle("is-locked", open);
-  };
+  if (menuBtn) menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+
+  if (drawer) {
+    drawer.setAttribute("aria-hidden", open ? "false" : "true");
+    drawer.classList.toggle("is-open", open);
+  }
+
+  if (overlay) {
+    overlay.classList.toggle("is-open", open); // ←これが本命
+    overlay.hidden = false;                    // ←hidden運用をやめる
+  }
+
+  document.body.classList.toggle("is-locked", open);
+};
 
   const openDrawer  = () => setAriaOpen(true);
   const closeDrawer = () => setAriaOpen(false);
