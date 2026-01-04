@@ -26,16 +26,16 @@
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
   /* ----------------------------
-     Drawer open/close
-  ---------------------------- */
-  const menuBtn = $("#menuBtn");
-  const overlay = $("#overlay");
-  const drawer  = $("#drawer");
+   Drawer open/close  + TOP jump fix
+---------------------------- */
+const menuBtn = $("#menuBtn");
+const overlay = $("#overlay");   // 無ければnullのままでOK
+const drawer  = $("#drawer");
 
-  const setAriaOpen = (open) => {
+const setAriaOpen = (open) => {
   if (menuBtn) {
     menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
-    menuBtn.classList.toggle("is-open", open); // ←これ追加（×変形用）
+    menuBtn.classList.toggle("is-open", open); // ← 三本線→× 用
   }
 
   if (drawer) {
@@ -51,63 +51,70 @@
   document.body.classList.toggle("is-locked", open);
 };
 
-  const openDrawer  = () => setAriaOpen(true);
-  const closeDrawer = () => setAriaOpen(false);
+const openDrawer  = () => setAriaOpen(true);
+const closeDrawer = () => setAriaOpen(false);
 
-  if (menuBtn) {
-    menuBtn.addEventListener("click", () => {
-      const expanded = menuBtn.getAttribute("aria-expanded") === "true";
-      expanded ? closeDrawer() : openDrawer();
-    });
-  }
-  if (overlay) overlay.addEventListener("click", closeDrawer);
+// drawerを閉じた後にトップへ戻す（bodyロック解除後に実行）
+const goTopAfterClose = () => {
+  closeDrawer();
 
-  // data-close（TOP/×）で閉じる（drawer内）
+  // 次フレームでロック解除が反映されてからスクロール
+  requestAnimationFrame(() => {
+    // “再更新っぽい”動き：確実に最上部へ
+    window.scrollTo(0, 0);
+
+    // URLも #top に揃える（必要なら）
+    if (location.hash !== "#top") history.replaceState(null, "", "#top");
+  });
+};
+
+if (menuBtn) {
+  menuBtn.addEventListener("click", (e) => {
+    const expanded = menuBtn.getAttribute("aria-expanded") === "true";
+    expanded ? closeDrawer() : openDrawer();
+  });
+}
+
+if (overlay) overlay.addEventListener("click", closeDrawer);
+
+// drawer内の data-close を踏んだら閉じる
 if (drawer) {
   drawer.addEventListener("click", (e) => {
     const t = e.target;
-    const hit = t.closest && t.closest("[data-close], [data-home]");
-    if (!hit) return;
 
-    e.preventDefault();
+    const closeEl = t.closest && t.closest("[data-close]");
+    if (!closeEl) return;
 
-    // まず閉じる（ここで右に見切れるアニメが走る）
-    closeDrawer();
+    const href = closeEl.getAttribute("href") || "";
 
-    // drawerのアニメ時間に合わせて（CSS 240ms + 余裕）
-    const WAIT = 280;
-
-    // TOPは「初期状態へ戻す」(スクロール + ハッシュ整理 + アコーディオンも閉じる)
-    if (hit.matches("[data-home]")) {
-      setTimeout(() => {
-        // 1) スクロールを最上部へ
-        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-
-        // 2) ハッシュを消して「再更新っぽさ」を出す（任意）
-        history.replaceState(null, "", location.pathname + location.search);
-
-        // 3) アコーディオンを初期化（全部閉じる）
-        document.querySelectorAll("[data-acc]").forEach((btn) => {
-          btn.setAttribute("aria-expanded", "false");
-          const name = btn.getAttribute("data-acc");
-          const panel = document.querySelector(`[data-acc-panel="${name}"]`);
-          if (panel) panel.hidden = true;
-          const mark = btn.querySelector(".acc__mark");
-          if (mark) mark.textContent = "+";
-        });
-
-        // 4) “再描画感” を強めたいなら軽くリフロー（任意）
-        document.body.style.transform = "translateZ(0)";
-        requestAnimationFrame(() => (document.body.style.transform = ""));
-      }, WAIT);
-
+    // TOPだけは「閉じる→トップへ戻す」を強制
+    if (href === "#top") {
+      e.preventDefault();
+      goTopAfterClose();
       return;
     }
 
-    // TOP以外（通常リンク）は、閉じた後に普通に遷移（必要なら）
-    const href = hit.getAttribute("href");
-    if (href && href !== "#") {
-      setTimeout(() => { location.href = href; }, WAIT);
+    // それ以外は通常：リンクは生かしつつ閉じる
+    if (href === "#") e.preventDefault();
+    closeDrawer();
+  });
+}
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+  }
+});
+
+// 画面上のTOP（topbar）も同じ挙動にしたい場合
+const topLink = $(".toplink");
+if (topLink) {
+  topLink.addEventListener("click", (e) => {
+    // drawerが開いてる時だけ “閉じてからトップ” にする
+    const isOpen = drawer && drawer.classList.contains("is-open");
+    if (isOpen) {
+      e.preventDefault();
+      goTopAfterClose();
     }
   });
 }
