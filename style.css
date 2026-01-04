@@ -369,3 +369,33 @@ body::after{
   text-transform: uppercase;
   color: var(--muted);
 }
+/* =========================================================
+   Topbar <-> Drawer header unify
+   - underline width = inner gutter width (same as drawer)
+   - TOP typography = drawer TOP
+========================================================= */
+
+.topbar{
+  position: sticky; /* 念のため維持 */
+  border-bottom: 0 !important;         /* フル幅線を消す */
+  position: relative;                  /* ::after用 */
+}
+
+/* Topbarの下線を “内側幅” で描く（drawerのline感に合わせる） */
+.topbar::after{
+  content:"";
+  position:absolute;
+  left: calc(var(--gutter) + env(safe-area-inset-left, 0px));
+  right: calc(var(--gutter) + env(safe-area-inset-right, 0px));
+  bottom: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+/* TopbarのTOPを drawer TOP に寄せる */
+.topbar .toplink{
+  font-size: 14px;
+  letter-spacing: .30em;
+  text-transform: uppercase;
+  opacity: .80;
+}
