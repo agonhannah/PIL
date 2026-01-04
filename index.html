@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>dhrma Kazuki Hanamoto</title>
   <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
-
-  <!-- キャッシュ対策：数字を更新する -->
   <link rel="stylesheet" href="style.css?v=20260104-2215">
 </head>
 
@@ -30,7 +28,10 @@
   </header>
 
   <main id="top" class="wrap">
-　　　　<!-- いまは何も置かない -->
+    <!-- TOPはテキストだけ -->
+    <section class="topstage" aria-label="Top">
+      <p class="topstage__title">2026 dhrma Kazuki Hanamoto</p>
+    </section>
   </main>
 
   <!-- Overlay -->
@@ -46,7 +47,6 @@
 
       <!-- Accordion -->
       <section class="drawer__acc" aria-label="Menu sections">
-
         <!-- ARCHIVE -->
         <div class="acc">
           <button class="acc__btn" type="button" data-acc="archive" aria-expanded="false">
@@ -77,7 +77,6 @@
             </nav>
           </div>
         </div>
-
       </section>
 
       <!-- Secondary -->
@@ -88,7 +87,7 @@
     </div>
   </aside>
 
-  <!-- Pointer FX（DOM崩れ防止のため閉じタグ全部揃えてある） -->
+  <!-- Pointer FX -->
   <div id="pointer-fx" aria-hidden="true">
     <div id="pointer-blob"></div>
 
@@ -105,7 +104,6 @@
     </div>
   </div>
 
-  <!-- キャッシュ対策：数字を更新する -->
   <script src="script.js?v=20260104-2215" defer></script>
 </body>
 </html>
