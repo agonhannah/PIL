@@ -514,4 +514,48 @@ body::before{
 
   background: transparent;
   border-left: none;
+  
+  
+  /* ===== FIX: Menu と PARAD を同じ左端に揃える ===== */
+:root { --gutter: 20px; }
+
+/* wrap（PARAD側）の左余白 */
+.wrap{
+  padding-left: var(--gutter) !important;
+  padding-right: var(--gutter) !important;
+}
+
+/* topbar も同じ左余白 */
+.topbar{
+  padding-left:  calc(var(--gutter) + env(safe-area-inset-left, 0px)) !important;
+  padding-right: calc(var(--gutter) + env(safe-area-inset-right, 0px)) !important;
+  justify-content: flex-start !important;
+}
+
+/* ★これが重要：navが幅100%で中央寄せになるのを潰す */
+.topbar__left{
+  width: auto !important;
+  flex: 0 0 auto !important;
+  justify-content: flex-start !important;
+}
+
+/* Menuボタン自体のズレも潰す */
+#menuBtn, .menuBtn{
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+/* ===== FIX: iPhoneでdrawerをフルスクリーン ===== */
+@media (pointer: coarse){
+  .drawer{
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100dvh !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+}
  
