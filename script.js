@@ -2,36 +2,33 @@
    script.js
    - Drawer open/close + panel navigation
    - Year
-   - Pointer FX (mobile: spawn only on tap, NO follow)
+   - Pointer FX (touch: spawn only, NO follow)
 ========================================================= */
 
 (() => {
-  // ---------------------------------------------
-  // Helpers
-  // ---------------------------------------------
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  const isCoarse = window.matchMedia("(pointer: coarse)").matches;
-  document.body.classList.toggle("is-touch", isCoarse);
+  // iOSで(pointer:coarse)が外れる事があるので、touch判定を強化
+  const isTouch =
+    ("ontouchstart" in window) ||
+    (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) ||
+    window.matchMedia("(pointer: coarse)").matches;
 
-  // ---------------------------------------------
+  document.body.classList.toggle("is-touch", isTouch);
+
   // Year
-  // ---------------------------------------------
   const yearEl = $("#year");
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  // ---------------------------------------------
-  // Drawer (overlay + panel stack)
-  // ---------------------------------------------
+  // Drawer
   const menuBtn = $("#menuBtn");
   const overlay = $("#overlay");
   const drawer = $("#drawer");
   const drawerStack = $("#drawerStack");
-
   const panels = drawerStack ? $$(".drawer__panel", drawerStack) : [];
-  const panelByName = (name) => panels.find((p) => p.dataset.panel === name);
 
+  const panelByName = (name) => panels.find((p) => p.dataset.panel === name);
   let panelStack = ["main"];
 
   const setAriaOpen = (open) => {
@@ -64,8 +61,7 @@
       return;
     }
     panelStack.pop();
-    const prev = panelStack[panelStack.length - 1] || "main";
-    showPanel(prev, false);
+    showPanel(panelStack[panelStack.length - 1] || "main", false);
   };
 
   const openDrawer = () => {
@@ -108,8 +104,7 @@
       const openBtn = t.closest("[data-open-panel]");
       if (openBtn) {
         e.preventDefault();
-        const name = openBtn.getAttribute("data-open-panel");
-        showPanel(name, true);
+        showPanel(openBtn.getAttribute("data-open-panel"), true);
         return;
       }
     });
@@ -121,45 +116,7 @@
     }
   });
 
-  // ---------------------------------------------
-  // Drawer preview (optional)
-  // ---------------------------------------------
-  const attachPreviewHandlers = () => {
-    if (!drawerStack) return;
-
-    const updatePreview = (panelEl, url) => {
-      const pv = $(".drawer__preview", panelEl);
-      if (!pv) return;
-      if (!url) {
-        pv.style.opacity = "0";
-        pv.style.backgroundImage = "";
-        return;
-      }
-      pv.style.backgroundImage = `url("${url}")`;
-      pv.style.opacity = "1";
-    };
-
-    drawerStack.addEventListener("mouseover", (e) => {
-      const a = e.target.closest("[data-cover]");
-      if (!a) return;
-      const panelEl = e.target.closest(".drawer__panel");
-      if (!panelEl) return;
-      updatePreview(panelEl, a.getAttribute("data-cover"));
-    });
-
-    drawerStack.addEventListener("focusin", (e) => {
-      const a = e.target.closest("[data-cover]");
-      if (!a) return;
-      const panelEl = e.target.closest(".drawer__panel");
-      if (!panelEl) return;
-      updatePreview(panelEl, a.getAttribute("data-cover"));
-    });
-  };
-  attachPreviewHandlers();
-
-  // ---------------------------------------------
-  // TOP link (optional)
-  // ---------------------------------------------
+  // TOP link (if exists)
   const topLink = $("#topLink") || $(".topbar__top");
   if (topLink) {
     topLink.addEventListener("click", (e) => {
@@ -169,48 +126,35 @@
     });
   }
 
-  // ---------------------------------------------
   // Pointer FX
-  // - Desktop: follow (lerp)
-  // - Mobile: spawn ONLY on tap (touchstart/pointerdown), NO follow after
-  // ---------------------------------------------
   const fx = $("#pointer-fx");
   if (fx) {
-    let x = -9999,
-      y = -9999,
-      tx = -9999,
-      ty = -9999;
-
-    let shown = false;
+    let x = -9999, y = -9999;
+    let tx = -9999, ty = -9999;
     let idleTimer = null;
 
-    // モバイルではラベル不要
-    if (isCoarse) {
+    // Mobile: Point HERE ラベル不要（緑blobのみ）
+    if (isTouch) {
       const lockbox = $("#lockbox");
       if (lockbox) lockbox.style.display = "none";
     }
 
-    const setPos = (nx, ny) => {
-      x = tx = nx;
-      y = ty = ny;
+    const setTransform = (nx, ny) => {
+      x = nx; y = ny;
+      tx = nx; ty = ny;
       fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     };
 
-    const show = () => {
-      shown = true;
-      fx.style.opacity = "1";
-    };
+    const show = () => { fx.style.opacity = "1"; };
 
     const scheduleIdleFade = () => {
-      const ms = isCoarse ? 1800 : 1400;
+      // “パッと消えすぎない”範囲で少し早め
+      const ms = isTouch ? 1200 : 1400;
       if (idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(() => {
-        fx.style.opacity = "0";
-        shown = false;
-      }, ms);
+      idleTimer = setTimeout(() => { fx.style.opacity = "0"; }, ms);
     };
 
-    // Desktop move (follow target)
+    // Desktop: follow
     const onDesktopMove = (e) => {
       tx = e.clientX;
       ty = e.clientY;
@@ -218,18 +162,19 @@
       scheduleIdleFade();
     };
 
-    // Mobile tap ONLY (spawn then stop tracking)
-    const onMobileTap = (e) => {
+    // Touch: spawn only (NO follow)
+    // touchstart/ pointerdown で位置確定、以後 move を一切拾わない
+    const onTouchSpawn = (e) => {
       const p = e.touches ? e.touches[0] : e;
       if (!p) return;
       show();
-      setPos(p.clientX, p.clientY); // ←ここで固定
+      setTransform(p.clientX, p.clientY); // ←ここで固定
       scheduleIdleFade();
     };
 
     const tick = () => {
-      if (!isCoarse) {
-        // desktop follow
+      if (!isTouch) {
+        // follow (lerp)
         x += (tx - x) * 0.18;
         y += (ty - y) * 0.18;
         fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
@@ -237,11 +182,10 @@
       requestAnimationFrame(tick);
     };
 
-    if (isCoarse) {
-      // IMPORTANT:
-      // mobileでは touchmove/pointermove を一切拾わない → 追従しない
-      window.addEventListener("touchstart", onMobileTap, { passive: true });
-      window.addEventListener("pointerdown", onMobileTap, { passive: true });
+    if (isTouch) {
+      // move系は絶対登録しない
+      window.addEventListener("touchstart", onTouchSpawn, { passive: true });
+      window.addEventListener("pointerdown", onTouchSpawn, { passive: true });
     } else {
       window.addEventListener("pointermove", onDesktopMove, { passive: true });
       window.addEventListener("pointerdown", onDesktopMove, { passive: true });
