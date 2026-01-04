@@ -340,3 +340,29 @@ body::after{
   #lockbox{ display:none !important; }
 }
 
+/* =========================
+   FORCE HIDE (until video ready)
+   keep only hero__blank
+========================= */
+
+/* hero下の仮テキスト＆ボタン一式（古いHTML対策） */
+.hero__lead,
+.hero__actions,
+.hero .rule{
+  display:none !important;
+}
+
+/* Works一式（見出し〜カードまで） */
+#works{
+  display:none !important;
+}
+
+/* Aboutのboxもいったん消したいなら（必要なければ消さなくてOK） */
+/*
+.aboutbox,
+.footer{
+  display:none !important;
+}
+*/
+
+
