@@ -369,9 +369,6 @@ body.is-locked{
   white-space:nowrap;
 }
 
-/* モバイルは緑blobだけ（必要なら外してOK） */
-@media (pointer:coarse){
-  #lockbox{ display:none; }
-}
+
 /* もし closebtn を残していたら強制非表示 */
 .closebtn{ display:none !important; }
