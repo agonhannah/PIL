@@ -1,318 +1,307 @@
-/* style.css (drawer-focused / HYKE-ish minimal) */
 :root{
-  --bg:#fff;
+  --bg:#f7f7f4;
   --ink:#111;
-  --muted:rgba(17,17,17,.60);
-  --line:rgba(17,17,17,.16);
-  --gutter:20px;
-  --topH:56px;
+  --line:rgba(17,17,17,.18);
+  --muted:rgba(17,17,17,.55);
+  --gutter:18px;
 }
 
-*{ box-sizing:border-box; }
-html,body{ height:100%; }
+*{box-sizing:border-box}
+html,body{height:100%}
+
 body{
   margin:0;
   background:var(--bg);
   color:var(--ink);
-  font-family: Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: geometricPrecision;
+  font-family:Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:geometricPrecision;
   overflow-x:hidden;
 }
-a{ color:inherit; text-decoration:none; }
 
-/* optional subtle noise (keep if you like) */
-body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  background-image:url("assets/noise.png");
-  background-size:420px 420px;
-  opacity:.08;
-  pointer-events:none;
-  mix-blend-mode:overlay;
-  z-index:999;
+/* PC: system cursor off (keep) */
+@media (pointer:fine){
+  html,body{cursor:none!important}
+  .overlay,.drawer,.drawer *{cursor:none!important}
 }
 
-/* topbar */
+/* ===== Topbar ===== */
 .topbar{
   position:sticky;
   top:0;
-  z-index:50;
-  height: var(--topH);
+  z-index:100;
   display:flex;
   align-items:center;
   justify-content:space-between;
+
   padding:
-    calc(14px + env(safe-area-inset-top,0px))
+    calc(10px + env(safe-area-inset-top,0px))
     calc(var(--gutter) + env(safe-area-inset-right,0px))
-    14px
+    10px
     calc(var(--gutter) + env(safe-area-inset-left,0px));
+
+  background:rgba(247,247,244,.92);
+  backdrop-filter:blur(8px);
   border-bottom:1px solid var(--line);
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(6px);
 }
 
+/* left TOP */
 .topbar__top{
   font-size:12px;
   letter-spacing:.22em;
-  font-weight:300;     /* HYKEっぽい細さ */
-  opacity:.9;
+  font-weight:300;
+  text-transform:uppercase;
+  color:var(--ink);
+  text-decoration:none;
 }
 
-/* hamburger */
+/* right menu button */
 .topbar__menu{
-  width:44px;
-  height:44px;
-  border:0;
+  border:none;
   background:transparent;
-  padding:0;
-  display:grid;
-  place-items:center;
+  padding:10px 0;
+  margin:0;
+  cursor:pointer;
+  -webkit-appearance:none;
+  appearance:none;
 }
-.hamburger{
-  width:22px;
-  height:14px;
-  position:relative;
+
+/* burger (3 lines) */
+.burger{
+  width:28px;
+  display:inline-block;
+}
+.burger i{
   display:block;
-}
-.hamburger::before,
-.hamburger::after{
-  content:"";
-  position:absolute;
-  left:0; right:0;
   height:1px;
-  background: rgba(17,17,17,.75);
-}
-.hamburger::before{ top:2px; }
-.hamburger::after{ bottom:2px; }
-.hamburger{ }
-.hamburger::before{ }
-.hamburger::after{ }
-.hamburger{ box-shadow: 0 0 0 0 transparent; }
-.hamburger{ }
-.hamburger{ }
-.hamburger{ }
-.hamburger{ }
-.hamburger{ }
-.hamburger{ }
-.hamburger{ }
-.hamburger{ }
-.hamburger{ }
-.hamburger{ }
-.hamburger{
-  /* 真ん中線 */
-}
-.hamburger{
-  background: linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 6px,
-    rgba(17,17,17,.75) 6px,
-    rgba(17,17,17,.75) 7px,
-    transparent 7px,
-    transparent 100%
-  );
+  background:var(--ink);
+  opacity:.9;
+  margin:6px 0;
 }
 
-/* blank top area */
-.wrap{
-  padding: 24px var(--gutter) 80px;
-}
-.blank{
-  height: 70vh;
-  border:0;
+/* ===== Blank stage ===== */
+.stage{
+  min-height:calc(100vh - 56px);
+  padding:
+    18px
+    calc(var(--gutter) + env(safe-area-inset-right,0px))
+    calc(18px + env(safe-area-inset-bottom,0px))
+    calc(var(--gutter) + env(safe-area-inset-left,0px));
 }
 
-/* overlay + drawer */
+.stage__blank{
+  width:100%;
+  height:min(44vh,420px);
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:rgba(255,255,255,.35);
+}
+
+/* ===== Overlay ===== */
 .overlay{
   position:fixed;
   inset:0;
-  background: rgba(0,0,0,.08);
-  z-index:1200;
+  background:rgba(0,0,0,.08);
+  z-index:1000;
 }
 
+/* ===== Drawer fullscreen from right ===== */
 .drawer{
   position:fixed;
-  top:0;
-  right:0;
-  width:100vw;
-  height:100dvh;
-  background:#fff;
-  z-index:1300;
-  transform: translateX(105%);
-  transition: transform 260ms ease;
+  inset:0;
+  z-index:1100;
+  transform:translateX(100%);
+  transition:transform 220ms ease;
+  background:rgba(247,247,244,.98);
 }
-.drawer.is-open{ transform: translateX(0); }
+.drawer.is-open{transform:translateX(0)}
 
 .drawer__inner{
-  height:100%;
+  height:100dvh;
   padding:
     calc(18px + env(safe-area-inset-top,0px))
     calc(var(--gutter) + env(safe-area-inset-right,0px))
     calc(18px + env(safe-area-inset-bottom,0px))
     calc(var(--gutter) + env(safe-area-inset-left,0px));
-  position:relative;
 }
 
-/* panels */
-.drawer__panel{
-  position:absolute;
-  inset:0;
-  padding:inherit;
-  opacity:0;
-  pointer-events:none;
-  transform: translateX(10px);
-  transition: opacity 160ms ease, transform 160ms ease;
-  background:#fff;
-}
-.drawer__panel.is-active{
-  opacity:1;
-  pointer-events:auto;
-  transform: translateX(0);
-}
-
-/* header inside drawer */
-.drawer__top{
+/* header */
+.drawer__head{
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   justify-content:space-between;
-  padding-top: 4px;
-  margin-bottom: 18px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--line);
 }
 .drawer__brand{
-  font-size:18px;      /* HYKEの左上ロゴ感 */
-  letter-spacing:.12em;
+  font-size:20px;
+  letter-spacing:.06em;
   font-weight:600;
+  text-transform:uppercase;
 }
 .drawer__close{
-  width:44px;
-  height:44px;
-  border:0;
+  border:none;
   background:transparent;
   font-size:28px;
-  font-weight:200;
+  font-weight:300;
   line-height:1;
-  transform: translateY(-6px);
+  padding:6px 0;
+  cursor:pointer;
+  color:var(--ink);
 }
 
-/* primary rows with dividers */
-.drawer__groups{
-  border-top:1px solid var(--line);
+/* nav */
+.drawer__nav{padding-top:16px}
+
+.drawer__section{
+  border-bottom:1px solid var(--line);
 }
+
 .drawer__row{
   width:100%;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding: 22px 0;
-  border:0;
-  border-bottom:1px solid var(--line);
+  gap:16px;
+
+  padding:18px 0;
+  border:none;
   background:transparent;
+  cursor:pointer;
   text-align:left;
+
+  -webkit-appearance:none;
+  appearance:none;
 }
-.drawer__rowLabel{
+
+.drawer__label{
   font-size:14px;
   letter-spacing:.18em;
   font-weight:400;
+  text-transform:uppercase;
 }
-.drawer__rowPlus{
+
+.drawer__plus{
   font-size:18px;
   font-weight:300;
-  opacity:.7;
+  opacity:.8;
 }
 
-/* secondary link list */
-.drawer__links{
-  padding-top: 22px;
+.drawer__sub{
+  padding:0 0 14px;
 }
+
 .drawer__link{
   display:block;
-  padding: 10px 0;
+  padding:10px 0;
   font-size:12px;
-  letter-spacing:.20em;
-  font-weight:400;
-  color: rgba(17,17,17,.90);
-}
-.drawer__meta{
-  padding-top: 18px;
-}
-
-/* sub panels list */
-.drawer__list{
-  border-top:1px solid var(--line);
-}
-.drawer__item,
-.drawer__itemBtn{
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding: 18px 0;
-  border:0;
-  border-bottom:1px solid var(--line);
-  background:transparent;
-  text-align:left;
-  font-size:13px;
-  letter-spacing:.14em;
-  font-weight:400;
-}
-
-/* product */
-.drawer__product{ padding-top: 18px; }
-.prod__meta{
-  font-size:11px;
   letter-spacing:.18em;
-  color: var(--muted);
-  margin-bottom: 12px;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:var(--ink);
+  opacity:.9;
 }
-.prod__desc{
-  margin:0 0 14px;
-  font-size:13px;
-  line-height:1.8;
-  color: rgba(17,17,17,.78);
+
+.drawer__minor{
+  padding-top:18px;
 }
-.prod__price{
-  font-size:13px;
-  letter-spacing:.12em;
-  font-weight:600;
-  margin: 18px 0 14px;
-}
-.prod__buy{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  height:36px;
-  padding:0 14px;
-  border:1px solid rgba(17,17,17,.18);
-  border-radius:999px;
+.drawer__minorLink{
+  display:block;
+  padding:10px 0;
   font-size:12px;
-  letter-spacing:.12em;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:var(--ink);
+  opacity:.65;
 }
 
-/* lock scroll */
-body.is-locked{ overflow:hidden; }
+.drawer__foot{
+  position:absolute;
+  left:calc(var(--gutter) + env(safe-area-inset-left,0px));
+  right:calc(var(--gutter) + env(safe-area-inset-right,0px));
+  bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  font-size:12px;
+  color:var(--muted);
+  letter-spacing:.06em;
+}
 
-/* Pointer FX minimal keep */
+/* iOS highlight off */
+.drawer, .drawer *{-webkit-tap-highlight-color:transparent}
+
+/* lock scroll when open */
+body.is-locked{overflow:hidden}
+
+/* ===== Pointer FX (あなたの既存CSSが別であるならここは不要) ===== */
 #pointer-fx{
   position:fixed;
-  top:0; left:0;
+  top:0;left:0;
   pointer-events:none;
   z-index:1400;
   opacity:0;
-  transform: translate3d(-9999px,-9999px,0);
-  will-change: transform, opacity;
+  transform:translate3d(-9999px,-9999px,0);
+  will-change:transform,opacity;
 }
-@media (pointer: coarse){
-  #pointer-fx{ transition: opacity 1000ms linear; }
+@media (pointer:coarse){
+  #pointer-fx{transition:opacity 1000ms linear}
 }
 #pointer-blob{
   position:absolute;
-  top:0; left:0;
-  width:92px; height:92px;
+  top:0;left:0;
+  width:92px;height:92px;
   border-radius:999px;
-  background: rgba(0,255,90,.9);
-  filter: blur(15px);
-  transform: translate(-50%,-50%);
+  background:rgba(0,255,90,.9);
+  filter:blur(15px);
+  transform:translate(-50%,-50%);
   z-index:1;
+}
+#lockbox{
+  position:absolute;
+  top:0;left:0;
+  transform:translate(-50%,-50%);
+  z-index:2;
+  opacity:0;
+  transition:opacity 120ms ease;
+  will-change:opacity;
+  color:#000;
+}
+#lockbox .lockbox__rect{
+  width:100px;height:60px;
+  border:1px solid currentColor;
+  border-radius:2px;
+  position:relative;
+}
+#lockbox .lockbox__cross{
+  position:absolute;
+  top:50%;left:50%;
+  background:currentColor;
+  transform:translate(-50%,-50%);
+}
+#lockbox .lockbox__cross--h{width:17px;height:1px}
+#lockbox .lockbox__cross--v{width:1px;height:10px}
+#lockbox .lockbox__tick{
+  position:absolute;
+  background:currentColor;
+  opacity:1;
+  display:block;
+}
+#lockbox .lockbox__tick--t{top:0;left:50%;width:1px;height:5px;transform:translateX(-50%)}
+#lockbox .lockbox__tick--b{bottom:0;left:50%;width:1px;height:5px;transform:translateX(-50%)}
+#lockbox .lockbox__tick--l{left:0;top:50%;width:5px;height:1px;transform:translateY(-50%)}
+#lockbox .lockbox__tick--r{right:0;top:50%;width:5px;height:1px;transform:translateY(-50%)}
+#lockbox .lockbox__label{
+  position:absolute;
+  top:50%;left:100%;
+  margin-left:8px;
+  transform:translate(0,-50%) rotate(90deg);
+  transform-origin:left center;
+  font-size:8px;
+  letter-spacing:.2em;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+/* ===== Mobile safety: make sure topbar height consistent ===== */
+@media (max-width:640px){
+  :root{ --gutter:16px; }
 }
