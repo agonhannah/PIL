@@ -1,16 +1,14 @@
 /* =========================================================
    script.js
-   - Drawer open/close
-   - Accordion (data-acc / data-acc-panel)
-   - Year
-   - Pointer FX
+   - Drawer open/close + HOME reload
+   - Accordion
+   - Pointer FX (blob + lockbox hot only on desktop)
 ========================================================= */
 
 (() => {
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  // Touch判定（iOSで(pointer:coarse)が外れるケース対策）
   const isTouch =
     ("ontouchstart" in window) ||
     (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) ||
@@ -18,89 +16,66 @@
 
   document.body.classList.toggle("is-touch", !!isTouch);
 
-  // Year
-  const yearEl = $("#year");
-  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
-
   /* ----------------------------
-   Drawer open/close + HOME reload
----------------------------- */
-const menuBtn = $("#menuBtn");
-const overlay = $("#overlay");   // 無ければnullのままでOK
-const drawer  = $("#drawer");
+     Drawer
+  ---------------------------- */
+  const menuBtn = $("#menuBtn");
+  const overlay = $("#overlay"); // 無ければ null
+  const drawer  = $("#drawer");
 
-const setAriaOpen = (open) => {
-  if (menuBtn) {
-    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
-    menuBtn.classList.toggle("is-open", open); // 三本線→×
-  }
-
-  if (drawer) {
-    drawer.setAttribute("aria-hidden", open ? "false" : "true");
-    drawer.classList.toggle("is-open", open);
-  }
-
-  if (overlay) {
-    overlay.classList.toggle("is-open", open);
-    overlay.hidden = !open;
-  }
-
-  document.body.classList.toggle("is-locked", open);
-};
-
-const openDrawer  = () => setAriaOpen(true);
-const closeDrawer = () => setAriaOpen(false);
-
-// “再更新っぽく”トップへ（hash無しでリロード）
-const reloadHome = () => {
-  const url = location.pathname + location.search;
-  location.replace(url);
-};
-
-if (menuBtn) {
-  menuBtn.addEventListener("click", () => {
-    const expanded = menuBtn.getAttribute("aria-expanded") === "true";
-    expanded ? closeDrawer() : openDrawer();   // ← × はスライドで閉じる
-  });
-}
-
-if (overlay) overlay.addEventListener("click", closeDrawer);
-
-// drawer内リンク：data-close で閉じる。TOPだけは即リロード（パッと消える）
-if (drawer) {
-  drawer.addEventListener("click", (e) => {
-    const closeEl = e.target.closest && e.target.closest("[data-close]");
-    if (!closeEl) return;
-
-    const href = closeEl.getAttribute("href") || "";
-
-    // Drawer内TOP（data-home）だけは即リロード
-    if (closeEl.hasAttribute("data-home") || href === "#top") {
-      e.preventDefault();
-      reloadHome();     // ← 即リロード（drawerはパッと消える）
-      return;
+  const setOpen = (open) => {
+    if (menuBtn) {
+      menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      menuBtn.classList.toggle("is-open", open);
     }
+    if (drawer) {
+      drawer.setAttribute("aria-hidden", open ? "false" : "true");
+      drawer.classList.toggle("is-open", open);
+    }
+    if (overlay) {
+      overlay.classList.toggle("is-open", open);
+      overlay.hidden = !open;
+    }
+    document.body.classList.toggle("is-locked", open);
+  };
 
-    // その他：普通に閉じる（# は止める）
-    if (href === "#") e.preventDefault();
-    closeDrawer();
-  });
-}
+  const openDrawer  = () => setOpen(true);
+  const closeDrawer = () => setOpen(false);
 
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+  if (menuBtn) {
+    menuBtn.addEventListener("click", () => {
+      const expanded = menuBtn.getAttribute("aria-expanded") === "true";
+      expanded ? closeDrawer() : openDrawer();
+    });
   }
-});
+  if (overlay) overlay.addEventListener("click", closeDrawer);
 
-// TopbarのTOP：常に即リロード（drawer開閉に触らない）
-const topLink = $(".toplink");
-if (topLink) {
-  topLink.addEventListener("click", (e) => {
+  // drawer内の data-close は閉じる。リンクは生かす（# は止める）
+  if (drawer) {
+    drawer.addEventListener("click", (e) => {
+      const closeEl = e.target.closest && e.target.closest("[data-close]");
+      if (!closeEl) return;
+
+      const href = closeEl.getAttribute("href") || "";
+      if (href === "#") e.preventDefault();
+      closeDrawer();
+    });
+  }
+
+  // TOPは「再更新」：data-home が付いたリンクを全部これにする
+  const goHome = (e) => {
     e.preventDefault();
-    reloadHome(); // ← これが“再更新”
+    // GitHub Pagesでも安全に “hash無し”で戻す
+    const url = location.pathname + location.search;
+    location.replace(url);
+  };
+  $$("[data-home]").forEach((el) => el.addEventListener("click", goHome));
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+    }
   });
-}
 
   /* ----------------------------
      Accordion
@@ -166,27 +141,21 @@ if (topLink) {
     const panel = document.querySelector(`[data-acc-panel="${name}"]`);
     if (!panel) return;
 
+    // 初期
     const expanded = btn.getAttribute("aria-expanded") === "true";
     const mark = btn.querySelector(".acc__mark");
-
-    if (expanded) {
-      panel.hidden = false;
-      if (mark) mark.textContent = "−";
-    } else {
-      panel.hidden = true;
-      if (mark) mark.textContent = "+";
-    }
+    panel.hidden = !expanded;
+    if (mark) mark.textContent = expanded ? "−" : "+";
 
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       const isOpen = btn.getAttribute("aria-expanded") === "true";
-      if (isOpen) closePanel(btn, panel);
-      else openPanel(btn, panel);
+      isOpen ? closePanel(btn, panel) : openPanel(btn, panel);
     });
   });
 
-    /* ----------------------------
-     Pointer FX
+  /* ----------------------------
+     Pointer FX (blob always, lockbox only on desktop "hot")
   ---------------------------- */
   const fx = $("#pointer-fx");
   if (fx) {
@@ -196,23 +165,11 @@ if (topLink) {
     let idleTimer = null;
     let dimTimer  = null;
 
-    const lockbox = $("#lockbox");
-
-    // POINT HERE をJSで自動生成（HTMLを触らなくてOK）
-    if (lockbox && !lockbox.querySelector(".lockbox__label")) {
-      const label = document.createElement("div");
-      label.className = "lockbox__label";
-      label.textContent = "POINT HERE";
-      lockbox.appendChild(label);
-    }
-
-    // クリック可能判定（必要最低限）
     const isInteractive = (el) => {
       if (!el) return false;
-      const hit = el.closest && el.closest(
+      return !!(el.closest && el.closest(
         'a[href]:not([href=""]), button, [role="button"], input, textarea, select, label, summary'
-      );
-      return !!hit;
+      ));
     };
 
     const setTransform = (nx, ny) => {
@@ -221,13 +178,11 @@ if (topLink) {
       fx.style.transform = `translate3d(${nx}px, ${ny}px, 0)`;
     };
 
-    const showFull = () => { fx.style.opacity = "1"; };
-
     const scheduleIdleFade = () => {
       if (idleTimer) clearTimeout(idleTimer);
       if (dimTimer) clearTimeout(dimTimer);
 
-      showFull();
+      fx.style.opacity = "1";
 
       dimTimer = setTimeout(() => {
         fx.style.opacity = isTouch ? "0.72" : "0.65";
@@ -239,13 +194,12 @@ if (topLink) {
       }, total);
     };
 
-    // “今いる場所”の下にある要素を取る（pointer-events:none なのでOK）
     const updateHot = (clientX, clientY) => {
+      // fx は pointer-events:none なので elementFromPoint が正しく取れる
       const el = document.elementFromPoint(clientX, clientY);
-      fx.classList.toggle("is-hot", isInteractive(el));
+      fx.classList.toggle("is-hot", !isTouch && isInteractive(el));
     };
 
-    // Desktop follow
     const onDesktopMove = (e) => {
       tx = e.clientX;
       ty = e.clientY;
@@ -253,18 +207,17 @@ if (topLink) {
       scheduleIdleFade();
     };
 
-    // Touch spawn only（追従なし）
     const onTouchSpawn = (e) => {
       const p = e.touches ? e.touches[0] : e;
       if (!p) return;
       setTransform(p.clientX, p.clientY);
-      updateHot(p.clientX, p.clientY);
+      // touchは lockbox 出さない（blobのみ）
+      fx.classList.remove("is-hot");
       scheduleIdleFade();
     };
 
     const tick = () => {
       if (!isTouch) {
-        // desktopのみ追従（lerp）
         x += (tx - x) * 0.18;
         y += (ty - y) * 0.18;
         fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
@@ -282,3 +235,4 @@ if (topLink) {
 
     requestAnimationFrame(tick);
   }
+})();
