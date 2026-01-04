@@ -3,12 +3,13 @@
   --ink:#111;
   --muted:rgba(17,17,17,.58);
   --line:rgba(17,17,17,.18);
-
-  /* drawer背景：透けをなくすため不透明に */
   --panel:#ffffff;
 
   --radius:14px;
   --gutter:20px;
+
+  /* topbarの実高さ（padding-top + 中身44 + padding-bottom） */
+  --topbar-h: calc((18px + env(safe-area-inset-top, 0px)) + 44px + 14px);
 }
 
 *{ box-sizing:border-box; }
@@ -23,6 +24,9 @@ body{
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   overflow-x:hidden;
+
+  /* topbar分だけ下げる（重要） */
+  padding-top: var(--topbar-h);
 }
 
 a, a:link, a:visited, a:hover, a:active{
@@ -50,12 +54,15 @@ body::after{
 }
 
 /* =========================================================
-   Topbar（白ベタ / 線なし / drawerヘッダー基準に揃える）
+   Topbar（常時固定 / 最前面）
 ========================================================= */
 .topbar{
-  position:sticky;
+  position:fixed;
+  left:0;
+  right:0;
   top:0;
-  z-index:50;
+  z-index:3000;
+
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -67,7 +74,6 @@ body::after{
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
 
   background:#fff;
-  backdrop-filter:none;
   border-bottom:0;
 }
 
@@ -100,12 +106,28 @@ body::after{
   gap:5px;
 }
 .hamburger__lines span{
+  display:block;
+  width:22px;
   height:1px;
   background:rgba(17,17,17,.7);
+
+  transition: transform 180ms ease, opacity 180ms ease;
+  transform-origin:center;
+}
+
+/* menuBtn が open のとき：三本線→× */
+#menuBtn.is-open .hamburger__lines span:nth-child(1){
+  transform: translateY(6px) rotate(45deg);
+}
+#menuBtn.is-open .hamburger__lines span:nth-child(2){
+  opacity:0;
+}
+#menuBtn.is-open .hamburger__lines span:nth-child(3){
+  transform: translateY(-6px) rotate(-45deg);
 }
 
 /* =========================================================
-   Layout（今 main 空でもOK）
+   Layout（mainが増えてもOK）
 ========================================================= */
 .wrap{
   max-width:1120px;
@@ -114,12 +136,12 @@ body::after{
 }
 
 /* =========================================================
-   Overlay（JSの overlay.classList.toggle("is-open") に追従）
+   Overlay（ある場合）
 ========================================================= */
 .overlay{
   position:fixed;
   inset:0;
-  z-index:1200;
+  z-index:2000; /* drawerより下 / topbarより下 */
 
   background:rgba(0,0,0,.06);
   backdrop-filter:blur(2px);
@@ -128,7 +150,6 @@ body::after{
   pointer-events:none;
   transition:opacity 200ms ease;
 }
-
 .overlay.is-open{
   opacity:1;
   pointer-events:auto;
@@ -140,47 +161,52 @@ body.is-locked{
 }
 
 /* =========================================================
-   Drawer
+   Drawer（topbarの下から / 閉じる時もスライド）
 ========================================================= */
 .drawer{
   position:fixed;
-  inset:0;
-  z-index:1300;
+  top:var(--topbar-h);
+  left:0;
+  right:0;
+  bottom:0;
+
+  z-index:2500; /* overlayより上 / topbarより下 */
   background:var(--panel);
 
   transform:translateX(105%);
-  transition: transform 240ms ease, visibility 0s linear 240ms; /* ←追加 */
-  will-change: transform;
+  will-change:transform;
 
+  /* 重要：visibilityは240ms後に切る */
+  visibility:hidden;
   pointer-events:none;
-  visibility:hidden; /* ←ここは残してOK */
+  transition:
+    transform 240ms ease,
+    visibility 0s linear 240ms;
 }
 
 .drawer.is-open{
   transform:translateX(0);
-  transition: transform 240ms ease, visibility 0s; /* ←追加 */
-  pointer-events:auto;
   visibility:visible;
+  pointer-events:auto;
+
+  /* 開く時はvisibility即反映 */
+  transition:
+    transform 240ms ease,
+    visibility 0s;
 }
 
 .drawer__inner{
   height:100%;
   padding:
-    calc(18px + env(safe-area-inset-top, 0px))
+    18px
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
     calc(18px + env(safe-area-inset-bottom, 0px))
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
 }
 
-.drawer__head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding-bottom:14px;
-  border-bottom:1px solid var(--line);
-}
-
-/* Typography unify */
+/* =========================================================
+   Typography unify
+========================================================= */
 .drawer__toplink,
 .acc__btn,
 .drawer__secondary a,
@@ -199,20 +225,6 @@ body.is-locked{
   align-items:center;
   height:44px;
   line-height:1;
-}
-
-/* drawer open中は三重線を×に変形 */
-.drawer.is-open .hamburger__lines span:nth-child(1){
-  transform: translateY(6px) rotate(45deg);
-}
-.drawer.is-open .hamburger__lines span:nth-child(2){
-  opacity:0;
-}
-.drawer.is-open .hamburger__lines span:nth-child(3){
-  transform: translateY(-6px) rotate(-45deg);
-}
-.hamburger__lines span{
-  transition: transform 200ms ease, opacity 200ms ease;
 }
 
 /* =========================================================
@@ -250,7 +262,6 @@ body.is-locked{
   font-weight:400;
   opacity:.92;
 }
-
 .acc__link::before{
   content:"・";
   margin-right:1em;
@@ -284,6 +295,7 @@ body.is-locked{
   left:0;
   pointer-events:none;
   z-index:1400;
+
   opacity:0;
   transform:translate3d(-9999px,-9999px,0);
   will-change: transform, opacity;
@@ -314,151 +326,5 @@ body.is-locked{
   color:var(--muted);
 }
 
-/* 三重線 -> × 変形（drawerが開いている時） */
-.drawer.is-open ~ .topbar #menuBtn .hamburger__lines span{
-  transition: transform 200ms ease, opacity 200ms ease;
-}
-
-.drawer.is-open ~ .topbar #menuBtn .hamburger__lines span:nth-child(1){
-  transform: translateY(6px) rotate(45deg);
-}
-.drawer.is-open ~ .topbar #menuBtn .hamburger__lines span:nth-child(2){
-  opacity: 0;
-}
-.drawer.is-open ~ .topbar #menuBtn .hamburger__lines span:nth-child(3){
-  transform: translateY(-6px) rotate(-45deg);
-}
-
-/* =========================================================
-   FIX: Topbarを常時表示 / DrawerはTopbarの下から
-========================================================= */
-
-/* topbarの高さ（44pxボタン + 上下padding）を変数化 */
-:root{
-  --topbar-pad-top: calc(18px + env(safe-area-inset-top, 0px));
-  --topbar-pad-btm: 14px;
-  --topbar-h: calc(var(--topbar-pad-top) + var(--topbar-pad-btm) + 44px);
-}
-
-/* Topbar: 常時固定して最前面 */
-.topbar{
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  z-index: 2000;
-  background:#fff;
-  border-bottom: 0;
-}
-
-/* 本文がtopbarの下から始まるように（mainが増えても崩れない） */
-body{
-  padding-top: var(--topbar-h);
-}
-
-/* Drawer: topbarの下から出す */
-.drawer{
-  top: var(--topbar-h);
-  height: calc(100dvh - var(--topbar-h));
-  inset: auto 0 0 0; /* 上書き：top以外は左右下を0に */
-  z-index: 1300;
-}
-
-/* Overlayは画面全体でOK（topbarの操作を優先するなら下げる） */
-.overlay{
-  z-index: 1200;
-}
-
-/* Drawerの内側padding：safe-area-topはもう不要（topbarで処理済） */
-.drawer__inner{
-  padding-top: 18px;
-}
-
-/* =========================================================
-   Hamburger → X（drawer open時）
-========================================================= */
-
-/* 初期：三本線 */
-.hamburger__lines span{
-  display:block;
-  width:22px;
-  height:1px;
-  background:rgba(17,17,17,.7);
-  transition: transform 180ms ease, opacity 180ms ease;
-  transform-origin: center;
-}
-
-/* open状態：中央線を消して、上下を回転 */
-.hamburger.is-open .hamburger__lines span:nth-child(1){
-  transform: translateY(6px) rotate(45deg);
-}
-.hamburger.is-open .hamburger__lines span:nth-child(2){
-  opacity: 0;
-}
-.hamburger.is-open .hamburger__lines span:nth-child(3){
-  transform: translateY(-6px) rotate(-45deg);
-}
-
-
-/* =========================
-   Topbar / Drawer core fix
-   - topbarは常に最前面
-   - drawerはtopbarの下から出る
-========================= */
-
-/* topbarの実高さ（padding top + 中身44 + padding bottom）を変数化 */
-:root{
-  --topbar-h: calc(
-    (18px + env(safe-area-inset-top, 0px)) + 44px + 14px
-  );
-}
-
-/* topbarは常に最前面 */
-.topbar{
-  z-index: 3000; /* drawerより上にする */
-  background:#fff;
-}
-
-/* overlayはtopbarより下、drawerより下でOK */
-.overlay{
-  z-index: 2000;
-}
-
-/* drawerを「topbarの下」から開始（ここが本命） */
-.drawer{
-  top: var(--topbar-h);
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  z-index: 2500; /* overlayより上、topbarより下 */
-}
-
-/* drawer内のpadding-topは safe-area分だけでOKに戻す（重なり防止） */
-.drawer__inner{
-  padding-top: calc(18px + env(safe-area-inset-top, 0px));
-}
-
-/* =========
-   右上ボタン：三本線→× 変形（ボタンは menuBtn 1つ）
-========= */
-
-/* closeBtnは使わない（消す） */
-.closebtn{ display:none; }
-
-/* menuBtnの状態で変形 */
-#menuBtn.is-open .hamburger__lines span:nth-child(1){
-  transform: translateY(6px) rotate(45deg);
-}
-#menuBtn.is-open .hamburger__lines span:nth-child(2){
-  opacity: 0;
-}
-#menuBtn.is-open .hamburger__lines span:nth-child(3){
-  transform: translateY(-6px) rotate(-45deg);
-}
-
-/* 変形を滑らかに */
-.hamburger__lines span{
-  transition: transform 180ms ease, opacity 180ms ease;
-  transform-origin: center;
-}
+/* もし closebtn を残していたら強制非表示 */
+.closebtn{ display:none !important; }
