@@ -41,8 +41,8 @@
   }
 
   if (overlay) {
-    overlay.classList.toggle("is-open", open); // ←これが本命
-    overlay.hidden = false;                    // ←hidden運用をやめる
+    overlay.classList.toggle("is-open", open);
+    overlay.hidden = !open; // ←これを追加（HTMLに hidden があっても壊れない）
   }
 
   document.body.classList.toggle("is-locked", open);
