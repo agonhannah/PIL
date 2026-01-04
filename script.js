@@ -35,7 +35,7 @@
   const setAriaOpen = (open) => {
   if (menuBtn) {
     menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
-    menuBtn.classList.toggle("is-open", open); // ←これ追加（×に変形）
+    menuBtn.classList.toggle("is-open", open); // ←これ追加（×変形用）
   }
 
   if (drawer) {
