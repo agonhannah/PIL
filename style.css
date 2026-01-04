@@ -286,45 +286,103 @@ body.is-locked{
   opacity:.92;
 }
 
-/* =========================================================
-   Pointer FX
-========================================================= */
-#pointer-fx{
-  position:fixed;
-  top:0;
-  left:0;
-  pointer-events:none;
-  z-index:5000;
+  /* ----------------------------
+     Pointer FX
+  ---------------------------- */
+  const fx = $("#pointer-fx");
+  if (fx) {
+    let x = -9999, y = -9999;
+    let tx = -9999, ty = -9999;
 
-  opacity:0;
-  transform:translate3d(-9999px,-9999px,0);
-  will-change: transform, opacity;
-  transition:opacity 420ms linear;
-}
-#pointer-blob{
-  width:84px;
-  height:84px;
-  border-radius:999px;
-  background:rgba(0,255,90,.85);
-  filter:blur(10px);
-  transform:translate(-50%,-50%);
-}
+    let idleTimer = null;
+    let dimTimer  = null;
 
-@media(pointer:coarse){
-  #lockbox{ display:none !important; }
-}
+    const lockbox = $("#lockbox");
 
-/* top stage title（"2026 dhrma..." 用） */
-.topstage{
-  padding:22px 0 0;
-}
-.topstage__title{
-  margin:0;
-  font-size:12px;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:var(--muted);
-}
+    // POINT HERE をJSで自動生成（HTMLを触らなくてOK）
+    if (lockbox && !lockbox.querySelector(".lockbox__label")) {
+      const label = document.createElement("div");
+      label.className = "lockbox__label";
+      label.textContent = "POINT HERE";
+      lockbox.appendChild(label);
+    }
+
+    // クリック可能判定（必要最低限）
+    const isInteractive = (el) => {
+      if (!el) return false;
+      const hit = el.closest && el.closest(
+        'a[href]:not([href=""]), button, [role="button"], input, textarea, select, label, summary'
+      );
+      return !!hit;
+    };
+
+    const setTransform = (nx, ny) => {
+      x = nx; y = ny;
+      tx = nx; ty = ny;
+      fx.style.transform = `translate3d(${nx}px, ${ny}px, 0)`;
+    };
+
+    const showFull = () => { fx.style.opacity = "1"; };
+
+    const scheduleIdleFade = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      if (dimTimer) clearTimeout(dimTimer);
+
+      showFull();
+
+      dimTimer = setTimeout(() => {
+        fx.style.opacity = isTouch ? "0.72" : "0.65";
+      }, 40);
+
+      const total = isTouch ? 1100 : 1400;
+      idleTimer = setTimeout(() => {
+        fx.style.opacity = "0";
+      }, total);
+    };
+
+    // “今いる場所”の下にある要素を取る（pointer-events:none なのでOK）
+    const updateHot = (clientX, clientY) => {
+      const el = document.elementFromPoint(clientX, clientY);
+      fx.classList.toggle("is-hot", isInteractive(el));
+    };
+
+    // Desktop follow
+    const onDesktopMove = (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+      updateHot(e.clientX, e.clientY);
+      scheduleIdleFade();
+    };
+
+    // Touch spawn only（追従なし）
+    const onTouchSpawn = (e) => {
+      const p = e.touches ? e.touches[0] : e;
+      if (!p) return;
+      setTransform(p.clientX, p.clientY);
+      updateHot(p.clientX, p.clientY);
+      scheduleIdleFade();
+    };
+
+    const tick = () => {
+      if (!isTouch) {
+        // desktopのみ追従（lerp）
+        x += (tx - x) * 0.18;
+        y += (ty - y) * 0.18;
+        fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+      requestAnimationFrame(tick);
+    };
+
+    if (isTouch) {
+      window.addEventListener("touchstart", onTouchSpawn, { passive: true, capture: true });
+      window.addEventListener("pointerdown", onTouchSpawn, { passive: true, capture: true });
+    } else {
+      window.addEventListener("pointermove", onDesktopMove, { passive: true });
+      window.addEventListener("pointerdown", onDesktopMove, { passive: true });
+    }
+
+    requestAnimationFrame(tick);
+  }
 
 /* もし closebtn を残していたら強制非表示 */
 .closebtn{ display:none !important; }
