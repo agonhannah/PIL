@@ -33,7 +33,10 @@
   const drawer  = $("#drawer");
 
   const setAriaOpen = (open) => {
-  if (menuBtn) menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  if (menuBtn) {
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    menuBtn.classList.toggle("is-open", open); // ←これ追加（×に変形）
+  }
 
   if (drawer) {
     drawer.setAttribute("aria-hidden", open ? "false" : "true");
@@ -42,11 +45,10 @@
 
   if (overlay) {
     overlay.classList.toggle("is-open", open);
-    overlay.hidden = !open; // ←これを追加（HTMLに hidden があっても壊れない）
+    overlay.hidden = !open;
   }
 
   document.body.classList.toggle("is-locked", open);
-  document.body.classList.toggle("menu-open", open);
 };
 
   const openDrawer  = () => setAriaOpen(true);
