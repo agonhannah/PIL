@@ -5,20 +5,21 @@ var yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 // ==============================
-// Drawer (history-safe / multi-level)
-// + Preview injection on panel transition
-// + ESC close + focus restore + basic focus trap
+// Drawer (right fullscreen) - minimal
+// - open/close
+// - panel navigation (data-open-panel / data-back)
+// - ESC close + focus restore + basic focus trap
+// - preview injection stays (your current behavior)
 // ==============================
 (function () {
   var menuBtn = document.getElementById("menuBtn");
   var drawer  = document.getElementById("drawer");
   var overlay = document.getElementById("overlay");
   var stack   = document.getElementById("drawerStack");
-
   if (!menuBtn || !drawer || !overlay || !stack) return;
 
   var panelHistory = [];
-  var lastCoverByPanel = {}; // panelName -> url
+  var lastCoverByPanel = {};
   var lastFocusEl = null;
 
   function setExpanded(isOpen) {
@@ -74,15 +75,12 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     }
 
     var panelEl = getPanelByName(name);
-    if (panelEl && lastCoverByPanel[name]) {
-      setPreview(panelEl, lastCoverByPanel[name]);
-    }
+    if (panelEl && lastCoverByPanel[name]) setPreview(panelEl, lastCoverByPanel[name]);
   }
 
   function goPanel(next, coverUrl) {
     var current = getActivePanelName();
     if (current !== next) panelHistory.push(current);
-
     if (coverUrl) lastCoverByPanel[next] = coverUrl;
 
     setPanel(next);
@@ -123,16 +121,11 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     document.body.classList.add("is-locked");
     setExpanded(true);
 
-    requestAnimationFrame(function () {
-      focusFirstFocusable();
-    });
-
-    // ★ここで pointer-fx を殺さない（これが原因）
+    requestAnimationFrame(function () { focusFirstFocusable(); });
   }
 
   function closeDrawer() {
     panelHistory = [];
-
     drawer.classList.remove("is-open");
     overlay.hidden = true;
     document.body.classList.remove("is-locked");
@@ -141,17 +134,16 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     clearAllPreviews();
 
     requestAnimationFrame(function () {
-      if (lastFocusEl && typeof lastFocusEl.focus === "function") {
-        lastFocusEl.focus();
-      } else {
-        menuBtn.focus();
-      }
+      if (lastFocusEl && typeof lastFocusEl.focus === "function") lastFocusEl.focus();
+      else menuBtn.focus();
     });
   }
 
+  // open/close
   menuBtn.addEventListener("click", openDrawer);
   overlay.addEventListener("click", closeDrawer);
 
+  // ESC close
   window.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && drawer.classList.contains("is-open")) {
       e.preventDefault();
@@ -159,6 +151,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     }
   });
 
+  // focus trap
   window.addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
     if (!drawer.classList.contains("is-open")) return;
@@ -175,14 +168,13 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     var last = focusables[focusables.length - 1];
 
     if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault();
-      last.focus();
+      e.preventDefault(); last.focus();
     } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
+      e.preventDefault(); first.focus();
     }
   });
 
+  // panel open
   var openBtns = stack.querySelectorAll("[data-open-panel]");
   for (var i = 0; i < openBtns.length; i++) {
     (function (btn) {
@@ -196,16 +188,15 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     })(openBtns[i]);
   }
 
+  // back
   var backBtns = stack.querySelectorAll("[data-back]");
-  for (var j = 0; j < backBtns.length; j++) {
-    backBtns[j].addEventListener("click", goBack);
-  }
+  for (var j = 0; j < backBtns.length; j++) backBtns[j].addEventListener("click", goBack);
 
+  // close
   var closeBtns = stack.querySelectorAll("[data-close]");
-  for (var k = 0; k < closeBtns.length; k++) {
-    closeBtns[k].addEventListener("click", closeDrawer);
-  }
+  for (var k = 0; k < closeBtns.length; k++) closeBtns[k].addEventListener("click", closeDrawer);
 
+  // hover preview (PC)
   (function bindHoverPreview() {
     var hasMM = typeof window.matchMedia === "function";
     var isFine = hasMM ? window.matchMedia("(pointer: fine)").matches : false;
@@ -228,6 +219,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     }
   })();
 
+  // tap preview (mobile)
   (function bindMobileTapPreview() {
     var hasMM = typeof window.matchMedia === "function";
     var isCoarse = hasMM ? window.matchMedia("(pointer: coarse)").matches : false;
@@ -244,16 +236,15 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
         var panel = el.closest ? el.closest(".drawer__panel") : null;
         if (!panel) return;
 
-        el.addEventListener("pointerdown", function () {
-          setPreview(panel, url);
-        }, { passive: true });
+        el.addEventListener("pointerdown", function () { setPreview(panel, url); }, { passive: true });
       })(items[i3]);
     }
   })();
 })();
 
+
 // ==============================
-// Pointer FX (PC + Mobile) - stable everywhere incl drawer
+// Pointer FX (PC + Mobile) - YOUR CURRENT ONE (as-is)
 // ==============================
 (function () {
   var fx      = document.getElementById("pointer-fx");
@@ -293,9 +284,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     return el.closest(CLICKABLE_SELECTOR);
   }
 
-  // ============================
-  // PC: pointermove（mouse限定）で常に追従
-  // ============================
+  // PC
   if (isFinePointer) {
     fx.style.opacity = "0";
 
@@ -335,9 +324,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     return;
   }
 
-  // ============================
-  // Mobile: drag中だけ表示（drawer内でも拾う）
-  // ============================
+  // Mobile
   if (isCoarsePointer) {
     document.body.classList.add("is-touch");
 
