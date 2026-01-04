@@ -1,8 +1,3 @@
-/* =========================================================
-   Drawer: open/close + accordion（HYKEの“間にニョッ”）
-   Pointer FX: rAFで軽量追従 + すぐ消える
-========================================================= */
-
 (() => {
   const $ = (s, root = document) => root.querySelector(s);
   const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
@@ -16,75 +11,90 @@
   const overlay = $("#overlay");
   const menuBtn = $("#menuBtn");
 
-  function openDrawer() {
+  const openDrawer = () => {
     drawer.classList.add("is-open");
     drawer.setAttribute("aria-hidden", "false");
     overlay.hidden = false;
     menuBtn.setAttribute("aria-expanded", "true");
     document.body.classList.add("is-locked");
-  }
+  };
 
-  function closeDrawer() {
+  const closeDrawer = () => {
     drawer.classList.remove("is-open");
     drawer.setAttribute("aria-hidden", "true");
     overlay.hidden = true;
     menuBtn.setAttribute("aria-expanded", "false");
     document.body.classList.remove("is-locked");
-  }
+  };
 
   menuBtn?.addEventListener("click", openDrawer);
   overlay?.addEventListener("click", closeDrawer);
 
-  // close buttons + “TOP” inside drawer
-  $$("[data-close]").forEach(el => {
-    el.addEventListener("click", () => closeDrawer());
-  });
+  $$("[data-close]").forEach(el => el.addEventListener("click", closeDrawer));
 
-  // ESC close (desktop)
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && drawer.classList.contains("is-open")) closeDrawer();
   });
 
-  // ---------- Accordion ----------
-  function toggleAcc(key) {
-    const btn = $(`[data-acc="${key}"]`);
-    const panel = $(`[data-acc-panel="${key}"]`);
+  // ---------- Accordion helpers ----------
+  function setAccState(btn, panel, open) {
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    panel.hidden = !open;
+    const mark = $(".acc__mark", btn);
+    if (mark) mark.textContent = open ? "−" : "+";
+  }
+
+  // 主アコーディオン（ARCHIVE/SHOP/ORDER）
+  function togglePrimary(key) {
+    const btn = $(`.acc__btn[data-acc="${key}"]`);
+    const panel = $(`.acc__panel[data-acc-panel="${key}"]`);
     if (!btn || !panel) return;
 
     const willOpen = btn.getAttribute("aria-expanded") !== "true";
 
-    // 同階層の他を閉じる（必要なら）
-    // ※SHOP内のgoodsは別扱いにしたいので、ここは「同じ親のacc__panel内」だけ閉じる
-    const parent = btn.closest(".drawer__acc") || btn.parentElement;
-    if (parent) {
-      $$('[data-acc]', parent).forEach(otherBtn => {
-        const otherKey = otherBtn.getAttribute("data-acc");
-        const otherPanel = $(`[data-acc-panel="${otherKey}"]`);
-        if (!otherKey || !otherPanel) return;
-        if (otherBtn === btn) return;
+    // 他のprimaryを閉じる
+    $$(".acc__btn[data-acc]").forEach(otherBtn => {
+      if (otherBtn.classList.contains("acc__subbtn")) return; // subは無視
+      const otherKey = otherBtn.getAttribute("data-acc");
+      if (!otherKey) return;
+      const otherPanel = $(`.acc__panel[data-acc-panel="${otherKey}"]`);
+      if (!otherPanel) return;
+      if (otherBtn === btn) return;
+      setAccState(otherBtn, otherPanel, false);
+    });
 
-        // goodsはSHOPの内側なので、drawer__acc直下の3つだけ閉じる
-        if (btn.classList.contains("acc__subbtn")) return;
-        if (otherBtn.classList.contains("acc__subbtn")) return;
+    setAccState(btn, panel, willOpen);
 
-        otherBtn.setAttribute("aria-expanded", "false");
-        otherPanel.hidden = true;
-        const mk = $(".acc__mark", otherBtn);
-        if (mk) mk.textContent = "+";
-      });
+    // SHOPを閉じたら、goodsも閉じる（中身残るの防止）
+    if (key === "shop" && !willOpen) {
+      const subBtn = $(`.acc__subbtn[data-acc="goods"]`);
+      const subPanel = $(`.acc__subpanel[data-acc-panel="goods"]`);
+      if (subBtn && subPanel) setAccState(subBtn, subPanel, false);
     }
-
-    btn.setAttribute("aria-expanded", String(willOpen));
-    panel.hidden = !willOpen;
-    const mark = $(".acc__mark", btn);
-    if (mark) mark.textContent = willOpen ? "−" : "+";
   }
 
-  $$("[data-acc]").forEach(btn => {
-    btn.addEventListener("click", () => toggleAcc(btn.getAttribute("data-acc")));
+  // サブアコーディオン（goods）
+  function toggleSub(key) {
+    const btn = $(`.acc__subbtn[data-acc="${key}"]`);
+    const panel = $(`.acc__subpanel[data-acc-panel="${key}"]`);
+    if (!btn || !panel) return;
+
+    const willOpen = btn.getAttribute("aria-expanded") !== "true";
+    setAccState(btn, panel, willOpen);
+  }
+
+  // bind primary
+  $$(".acc__btn[data-acc]").forEach(btn => {
+    if (btn.classList.contains("acc__subbtn")) return;
+    btn.addEventListener("click", () => togglePrimary(btn.getAttribute("data-acc")));
   });
 
-  // ---------- Pointer FX (light) ----------
+  // bind sub
+  $$(".acc__subbtn[data-acc]").forEach(btn => {
+    btn.addEventListener("click", () => toggleSub(btn.getAttribute("data-acc")));
+  });
+
+  // ---------- Pointer FX ----------
   const fx = $("#pointer-fx");
   const blob = $("#pointer-blob");
   if (!fx || !blob) return;
@@ -94,43 +104,40 @@
   let curX = -9999, curY = -9999;
   let raf = 0;
 
-  // 追従の“ヌルさ”係数（0.18〜0.28くらいが軽くて気持ち良い）
-  const ease = 0.22;
+  // 追従のヌルさ（軽さ優先で少し上げる）
+  const ease = 0.28;
 
-  function show() {
+  const show = () => {
     if (visible) return;
     visible = true;
     fx.style.opacity = "1";
-  }
+  };
 
-  function hide() {
+  const hide = () => {
     if (!visible) return;
     visible = false;
     fx.style.opacity = "0";
-  }
+  };
 
-  function tick() {
-    // イージング
+  const tick = () => {
     curX += (targetX - curX) * ease;
     curY += (targetY - curY) * ease;
-
     fx.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
-
     raf = requestAnimationFrame(tick);
-  }
+  };
 
-  function start() {
+  const start = () => {
     if (raf) return;
     raf = requestAnimationFrame(tick);
-  }
+  };
 
-  function stop() {
+  const stop = () => {
     if (!raf) return;
     cancelAnimationFrame(raf);
     raf = 0;
-  }
+  };
 
-  // desktop pointer
+  // pointer (desktop)
   window.addEventListener("pointermove", (e) => {
     targetX = e.clientX;
     targetY = e.clientY;
@@ -139,12 +146,11 @@
   }, { passive: true });
 
   window.addEventListener("pointerleave", () => {
-    hide();
-    // 少し待って止める（チラつき防止）
-    setTimeout(() => { if (!visible) stop(); }, 180);
+    hide();                      // 即消す
+    setTimeout(() => { if (!visible) stop(); }, 80); // 止めるのも早く
   });
 
-  // touch（iOSで“ラグい”時はここを軽く）
+  // touch (mobile)
   window.addEventListener("touchstart", (e) => {
     const t = e.touches[0];
     if (!t) return;
@@ -163,8 +169,8 @@
   }, { passive: true });
 
   window.addEventListener("touchend", () => {
-    hide(); // ← “スッと消える”の体感を優先
-    setTimeout(() => { if (!visible) stop(); }, 160);
+    hide();                      // 即消す
+    setTimeout(() => { if (!visible) stop(); }, 70);
   }, { passive: true });
 
 })();
