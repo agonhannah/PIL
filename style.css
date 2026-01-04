@@ -294,7 +294,7 @@ body.is-locked{
   top:0;
   left:0;
   pointer-events:none;
-  z-index:1400;
+  z-index:5000;
 
   opacity:0;
   transform:translate3d(-9999px,-9999px,0);
