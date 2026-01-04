@@ -53,13 +53,10 @@
   // data-close（TOP/×）で閉じる
   if (drawer) {
     drawer.addEventListener("click", (e) => {
-      const t = e.target;
-
-      const closeBtn = t.closest("[data-close]");
+      const closeBtn = e.target.closest("[data-close]");
       if (closeBtn) {
         e.preventDefault();
         closeDrawer();
-        return;
       }
     });
   }
@@ -78,19 +75,18 @@
   ---------------------------- */
   const accButtons = $$("[data-acc]");
 
-  // ぬるっと開閉（max-heightアニメ）
   const openPanel = (btn, panel) => {
     btn.setAttribute("aria-expanded", "true");
     const mark = btn.querySelector(".acc__mark");
     if (mark) mark.textContent = "−";
 
-    // hidden解除→高さ計測→アニメ
     panel.hidden = false;
+
+    // “ぬるっと”開く：max-height + opacity
     panel.style.overflow = "hidden";
     panel.style.maxHeight = "0px";
     panel.style.opacity = "0";
 
-    // 次フレームでscrollHeightへ
     requestAnimationFrame(() => {
       const h = panel.scrollHeight;
       panel.style.transition = "max-height 280ms ease, opacity 220ms ease";
@@ -98,11 +94,10 @@
       panel.style.opacity = "1";
     });
 
-    // アニメ完了後にmax-heightを外して可変に
     const onEnd = (ev) => {
       if (ev.propertyName !== "max-height") return;
       panel.style.transition = "";
-      panel.style.maxHeight = "none";
+      panel.style.maxHeight = "none";   // 可変に戻す
       panel.style.overflow = "visible";
       panel.removeEventListener("transitionend", onEnd);
     };
@@ -114,7 +109,7 @@
     const mark = btn.querySelector(".acc__mark");
     if (mark) mark.textContent = "+";
 
-    // 現在高さを固定→0へ
+    // 現在高さを固定してから閉じる
     panel.style.overflow = "hidden";
     panel.style.maxHeight = panel.scrollHeight + "px";
     panel.style.opacity = "1";
@@ -137,13 +132,11 @@
     panel.addEventListener("transitionend", onEnd);
   };
 
-  // クリックで開閉（同時に複数開いてOK）
   accButtons.forEach((btn) => {
     const name = btn.getAttribute("data-acc");
     const panel = document.querySelector(`[data-acc-panel="${name}"]`);
     if (!panel) return;
 
-    // 初期状態を統一（hiddenの有無に合わせる）
     const expanded = btn.getAttribute("aria-expanded") === "true";
     if (expanded) {
       panel.hidden = false;
@@ -172,7 +165,12 @@
   if (fx) {
     let x = -9999, y = -9999;
     let tx = -9999, ty = -9999;
+
     let idleTimer = null;
+    let fadeRAF = null;
+
+    // touchstart + pointerdown の二重発火対策
+    let lastSpawnAt = 0;
 
     // モバイルは lockbox を消す（Point HERE相当）
     if (isTouch) {
@@ -180,23 +178,34 @@
       if (lockbox) lockbox.style.display = "none";
     }
 
-    const show = () => { fx.style.opacity = "1"; };
+    // ★欠けてた関数：座標を確定して即移動
+    const setTransform = (nx, ny) => {
+      x = nx; y = ny;
+      tx = nx; ty = ny;
+      fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    };
 
-  const scheduleIdleFade = () => {
-  if (idleTimer) clearTimeout(idleTimer);
+    const show = () => {
+      // 連打時に fade の予約が残ってると挙動がブレるので消す
+      if (idleTimer) clearTimeout(idleTimer);
+      if (fadeRAF) cancelAnimationFrame(fadeRAF);
 
-  const total = isTouch ? 1400 : 1600;
+      fx.style.opacity = "1";
+    };
 
-  // ① 発現直後からすぐ薄くなり始める
-  requestAnimationFrame(() => {
-    fx.style.opacity = "0.4";
-  });
+    // 「押した瞬間から薄くなり始める」→ すぐ 0.4 に落としてから 0 に
+    const scheduleIdleFade = () => {
+      const total = isTouch ? 1400 : 1600;
 
-  // ② 同じ時間感覚で完全に消える
-  idleTimer = setTimeout(() => {
-    fx.style.opacity = "0";
-  }, total);
-};
+      // 次フレームで薄まり開始（“押した瞬間”感）
+      fadeRAF = requestAnimationFrame(() => {
+        fx.style.opacity = "0.4";
+      });
+
+      idleTimer = setTimeout(() => {
+        fx.style.opacity = "0";
+      }, total);
+    };
 
     // Desktop follow
     const onDesktopMove = (e) => {
@@ -208,8 +217,13 @@
 
     // Touch spawn only（押した場所で固定）
     const onTouchSpawn = (e) => {
+      const now = Date.now();
+      if (now - lastSpawnAt < 120) return; // 二重発火ガード
+      lastSpawnAt = now;
+
       const p = e.touches ? e.touches[0] : e;
       if (!p) return;
+
       show();
       setTransform(p.clientX, p.clientY);
       scheduleIdleFade();
