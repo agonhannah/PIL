@@ -1,7 +1,3 @@
-/* =========================================================
-   Minimal / Archive-focused layout
-========================================================= */
-
 :root{
   --bg:#ffffff;
   --ink:#111;
@@ -26,9 +22,6 @@ body{
   overflow-x:hidden;
 }
 
-/* ---------------------------------------------------------
-   Reset link / tap highlight
---------------------------------------------------------- */
 a, a:link, a:visited, a:hover, a:active{
   color:inherit;
   text-decoration:none;
@@ -38,13 +31,9 @@ button{
   background:none;
   border:0;
 }
-.drawer, .drawer *{
-  -webkit-tap-highlight-color: transparent;
-}
+.drawer, .drawer *{ -webkit-tap-highlight-color: transparent; }
 
-/* ---------------------------------------------------------
-   Noise (optional)
---------------------------------------------------------- */
+/* noise (optional) */
 body::after{
   content:"";
   position:fixed;
@@ -84,7 +73,6 @@ body::after{
   text-transform:uppercase;
   opacity:.75;
 }
-.toplink:hover{ opacity:1; }
 
 .hamburger{
   width:44px;
@@ -113,30 +101,23 @@ body::after{
   padding:22px var(--gutter) 64px;
 }
 
-/* =========================================================
-   Hero (blank)
-========================================================= */
 .hero{ padding:18px 0 12px; }
-
 .hero__blank{
   height: clamp(200px, 42vw, 360px);
   border:1px solid var(--line);
   border-radius:18px;
   background:rgba(255,255,255,.55);
 }
-
 .hero__lead{
   margin:14px 0 10px;
   font-size:14px;
   color:var(--muted);
 }
-
 .hero__actions{
   display:flex;
   gap:10px;
   margin:10px 0 18px;
 }
-
 .btn{
   height:38px;
   padding:0 14px;
@@ -145,37 +126,15 @@ body::after{
   border:1px solid var(--line);
 }
 
-/* =========================================================
-   Sections
-========================================================= */
-.section{ padding:10px 0 18px; }
-
-.section__head{
-  display:flex;
-  justify-content:space-between;
-  align-items:baseline;
-  margin-bottom:14px;
-}
-
-.section__title{
-  font-size:16px;
-  letter-spacing:.08em;
-}
-.section__sub{
-  font-size:12px;
-  color:var(--muted);
-}
-
-/* Aboutのみ残す rule */
+/* Aboutの上だけ残す rule */
 .rule{
   height:1px;
   background:var(--line);
   margin:18px 0;
 }
 
-/* =========================================================
-   Works grid
-========================================================= */
+.section{ padding:10px 0 18px; }
+
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -190,7 +149,6 @@ body::after{
   background:rgba(255,255,255,.55);
 }
 .card__body{ padding:14px; }
-
 .card__title{
   font-size:14px;
   font-weight:600;
@@ -201,9 +159,7 @@ body::after{
   color:var(--muted);
 }
 
-/* =========================================================
-   About
-========================================================= */
+/* About */
 .aboutbox{
   border:1px solid var(--line);
   border-radius:var(--radius);
@@ -254,73 +210,109 @@ body::after{
   align-items:center;
 }
 
+/* ===== Drawer Typography: ここで統一 ===== */
+.drawer__toplink,
+.acc__btn,
+.drawer__secondary a,
+.acc__link{
+  font-family: Helvetica, Arial, sans-serif;
+  color: var(--ink);
+}
+
+/* TOPは少し大きくして差を出す */
 .drawer__toplink{
-  font-size:12px;
-  letter-spacing:.22em;
-  opacity:.75;
+  font-size:14px;              /* ←大きく */
+  letter-spacing:.30em;
+  text-transform:uppercase;
+  opacity:.80;
+}
+
+/* 右上の× */
+.drawer__close{
+  width:44px;
+  height:44px;
+  font-size:22px;
+  font-weight:300;
+  opacity:.7;
 }
 
 /* =========================================================
-   Accordion (Archive / Shop)
+   Accordion (ARCHIVE / SHOP / ORDER)
 ========================================================= */
-
-/* 見出し：Work Title と同一 */
 .acc__btn{
   width:100%;
-  padding:14px 0;
+  padding:16px 0;
   display:flex;
   justify-content:space-between;
   align-items:center;
 
-  font-size:14px;
-  font-weight:600;
-  letter-spacing:-.01em;
+  font-size:12px;              /* 見出しは小さめ */
+  letter-spacing:.32em;        /* スペース多め */
+  text-transform:uppercase;
+  font-weight:400;             /* 太くしない */
 }
 
 .acc__mark{
-  font-size:18px;
-  font-weight:400;
+  font-size:22px;
+  font-weight:200;
   opacity:.6;
 }
 
-/* 中身 */
+/* パネル */
 .acc__panel{
   padding:6px 0 14px;
 }
 
-/* リスト項目 */
+/* リスト（同フォント/同色/箇条書き） */
 .acc__link{
   display:block;
-  padding:6px 0;
-  font-size:14px;
-  font-weight:600;
-  letter-spacing:-.01em;
+  padding:8px 0;
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  font-weight:400;
+  opacity:.92;
 }
 
-/* 箇条書き */
+/* 箇条書き “・” を1文字分あける */
 .acc__link::before{
   content:"・";
-  margin-right:.6em;
-  opacity:.6;
+  margin-right:1em;
+  opacity:.55;
 }
 
 /* =========================================================
-   Secondary links
+   Divider rules (requested)
+   - ARCHIVE–SHOP 間：なし
+   - SHOP–ABOUT 間：あり
 ========================================================= */
+
+/* まず全部消す */
+.drawer__rule{ display:none; }
+
+/* SHOP–ABOUT の境界だけ作る（secondary の直前） */
 .drawer__secondary{
   margin-top:18px;
+  padding-top:18px;
+  border-top:1px solid var(--line);  /* ←ここが「SHOP–ABOUT間のアンダーバー」 */
+}
+
+/* Secondary links */
+.drawer__secondary{
   display:flex;
   flex-direction:column;
-  gap:14px;
+  gap:12px;
 }
-.sec__link{
-  font-size:14px;
-  letter-spacing:.34em;
+.drawer__secondary .sec__link{
+  font-size:12px;
+  letter-spacing:.32em;
   text-transform:uppercase;
+  font-weight:400;
+  opacity:.92;
 }
 
 /* =========================================================
-   Pointer FX (visual only)
+   Pointer FX
 ========================================================= */
 #pointer-fx{
   position:fixed;
