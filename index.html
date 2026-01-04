@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>dhrma Kazuki Hanamoto</title>
   <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
-  <link rel="stylesheet" href="style.css?v=20260104-2359">
+
+  <!-- キャッシュ対策：数字を更新する -->
+  <link rel="stylesheet" href="style.css?v=20260104-2105">
 </head>
 
 <body>
   <!-- Topbar -->
-  <header class="topbar">
-    <a class="topLink" href="#top" aria-label="Back to top">TOP</a>
+  <header class="topbar" role="banner">
+    <a class="toplink" href="#top" aria-label="Back to top">TOP</a>
 
     <button
       class="hamburger"
@@ -21,175 +23,145 @@
       aria-controls="drawer"
       aria-expanded="false"
     >
-      <span class="hamburger__mid" aria-hidden="true"></span>
+      <span class="hamburger__lines" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </span>
     </button>
   </header>
 
-  <main id="top" class="page">
-    <section class="blankTop" aria-label="Top (placeholder)"></section>
+  <main id="top" class="wrap">
+    <!-- トップは一旦無地（動画枠だけ） -->
+    <section class="hero" aria-label="Top">
+      <div class="hero__blank" aria-hidden="true"></div>
 
-    <section class="belowTop">
-      <p class="lead">ARCHIVE of WORKS by dhrma Kazuki Hanamoto</p>
+      <p class="hero__lead">ARCHIVE of WORKS by dhrma Kazuki Hanamoto</p>
 
-      <div class="actions">
-        <a class="btn" href="#works">View Works</a>
-        <a class="btn" href="#shop">Open Shop</a>
+      <div class="hero__actions">
+        <a class="btn btn--ghost" href="#works">View Works</a>
+        <a class="btn btn--ghost" href="#shop">Open Shop</a>
       </div>
 
       <div class="rule" role="separator" aria-hidden="true"></div>
+    </section>
 
-      <section id="works" class="block">
-        <div class="blockHead">
-          <h2>Works</h2>
-          <p>最新→過去。リンクは後で差し替え。</p>
-        </div>
+    <!-- WORKS -->
+    <section id="works" class="section" aria-labelledby="works-title">
+      <div class="section__head">
+        <h2 class="section__title" id="works-title">Works</h2>
+        <p class="section__sub">最新→過去。リンクは後で差し替え。</p>
+      </div>
 
-        <div class="cards">
-          <article class="card">
-            <div class="thumb" aria-hidden="true"></div>
-            <div class="cardBody">
-              <div class="cardTitle">Work Title 01</div>
-              <div class="cardMeta">2025 · Audio/Visual</div>
-              <a class="cardLink" href="#">Open</a>
-            </div>
-          </article>
-        </div>
+      <div class="grid">
+        <article class="card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="card__body">
+            <h3 class="card__title">Work Title 01</h3>
+            <p class="card__meta">2025 · Audio/Visual</p>
+            <a class="pill" href="#">Open</a>
+          </div>
+        </article>
+      </div>
 
-        <div class="rule" role="separator" aria-hidden="true"></div>
-      </section>
+      <div class="rule" role="separator" aria-hidden="true"></div>
+    </section>
 
-      <section id="shop" class="block" aria-label="Shop (anchor only)"></section>
+    <!-- SHOP anchor -->
+    <section id="shop" class="section" aria-label="Shop"></section>
 
-      <section class="block" id="contact">
-        <div class="about">
-          <p>
-            dhrma Kazuki Hanamoto<br />
-            Contact:
-            <a href="mailto:kazukihanamoto.dhrma@gmail.com">kazukihanamoto.dhrma@gmail.com</a>
-          </p>
-        </div>
+    <!-- ABOUT -->
+    <section id="about" class="section" aria-label="About">
+      <div class="aboutbox">
+        <p class="aboutbox__text">
+          dhrma Kazuki Hanamoto<br />
+          Contact:
+          <a class="inline" href="mailto:kazukihanamoto.dhrma@gmail.com">kazukihanamoto.dhrma@gmail.com</a>
+        </p>
+      </div>
 
-        <footer class="foot">
-          <span>© <span id="year"></span> dhrma</span>
-        </footer>
-      </section>
+      <footer class="footer">
+        <span>© <span id="year"></span> dhrma</span>
+      </footer>
     </section>
   </main>
 
   <!-- Overlay -->
   <div class="overlay" id="overlay" hidden></div>
 
-  <!-- Drawer -->
-  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="drawerInner">
-      <div class="drawerHead">
-        <a class="drawerTop" href="#top" data-close>TOP</a>
-        <button class="drawerClose" type="button" data-close aria-label="Close menu"></button>
+  <!-- Drawer (HYKE風：右から全画面 / 折りたたみで“間にニョッと”出る) -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
+
+      <div class="drawer__head">
+        <a class="drawer__toplink" href="#top" data-close>TOP</a>
+        <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
       </div>
 
-      <div class="panelStack" id="panelStack">
-        <!-- MAIN -->
-        <section class="panel is-active" data-panel="main" aria-label="Menu">
-          <div class="acc">
-            <!-- ARCHIVE -->
-            <div class="accRow">
-              <button class="accBtn" type="button" data-acc="archive">
-                <span class="accLabel">ARCHIVE</span>
-                <span class="accIcon" aria-hidden="true"></span>
+      <div class="drawer__rule" aria-hidden="true"></div>
+
+      <!-- Primary accordion -->
+      <section class="drawer__acc" aria-label="Primary sections">
+        <!-- ARCHIVE -->
+        <div class="acc">
+          <button class="acc__btn" type="button" data-acc="archive" aria-expanded="false">
+            <span class="acc__label">ARCHIVE</span>
+            <span class="acc__mark" aria-hidden="true">+</span>
+          </button>
+          <div class="acc__panel" data-acc-panel="archive" hidden>
+            <nav class="acc__list" aria-label="Archive list">
+              <a class="acc__link" href="#">Work Title 01</a>
+              <a class="acc__link" href="#">Work Title 02</a>
+            </nav>
+          </div>
+        </div>
+
+        <!-- SHOP -->
+        <div class="acc">
+          <button class="acc__btn" type="button" data-acc="shop" aria-expanded="false">
+            <span class="acc__label">SHOP</span>
+            <span class="acc__mark" aria-hidden="true">+</span>
+          </button>
+          <div class="acc__panel" data-acc-panel="shop" hidden>
+            <nav class="acc__list" aria-label="Shop list">
+              <button class="acc__subbtn" type="button" data-acc="goods" aria-expanded="false">
+                <span>Physical Goods</span>
+                <span class="acc__mark" aria-hidden="true">+</span>
               </button>
-              <div class="accBody">
-                <a class="accItem" href="#" data-cover="images/test_01.jpg">Work Title 01</a>
-                <a class="accItem" href="#" data-cover="images/test_02.jpg">Work Title 02</a>
+
+              <div class="acc__subpanel" data-acc-panel="goods" hidden>
+                <a class="acc__link" href="#">Session Collection [2022-24 Bootlegs]</a>
               </div>
-            </div>
+            </nav>
+          </div>
+        </div>
 
-            <!-- SHOP -->
-            <div class="accRow">
-              <button class="accBtn" type="button" data-acc="shop">
-                <span class="accLabel">SHOP</span>
-                <span class="accIcon" aria-hidden="true"></span>
-              </button>
-              <div class="accBody">
-                <button class="accItem is-btn" type="button" data-open-panel="shopPhysical">
-                  Physical Goods
-                </button>
-              </div>
-            </div>
-
-            <!-- ORDER -->
-            <div class="accRow">
-              <button class="accBtn" type="button" data-acc="order">
-                <span class="accLabel">ORDER</span>
-                <span class="accIcon" aria-hidden="true"></span>
-              </button>
-              <div class="accBody">
-                <a class="accItem" href="#contact" data-close>Contact</a>
-                <a class="accItem" href="#works" data-close>Works</a>
-              </div>
+        <!-- ORDER -->
+        <div class="acc">
+          <button class="acc__btn" type="button" data-acc="order" aria-expanded="false">
+            <span class="acc__label">ORDER</span>
+            <span class="acc__mark" aria-hidden="true">+</span>
+          </button>
+          <div class="acc__panel" data-acc-panel="order" hidden>
+            <div class="acc__note">
+              Order / Contact details
             </div>
           </div>
+        </div>
+      </section>
 
-          <div class="miniLinks">
-            <a href="#works" data-close>WORKS</a>
-            <a href="#contact" data-close>CONTACT</a>
-            <a href="#" aria-disabled="true">ACCOUNT</a>
-            <a href="#" aria-disabled="true">BAG (0)</a>
-          </div>
-        </section>
+      <div class="drawer__rule" aria-hidden="true"></div>
 
-        <!-- SHOP PHYSICAL -->
-        <section class="panel" data-panel="shopPhysical" aria-label="Physical Goods">
-          <div class="panelTop">
-            <button class="backBtn" type="button" data-back>Back</button>
-            <button class="xBtn" type="button" data-close aria-label="Close menu"></button>
-          </div>
+      <!-- Secondary links（HYKEの下段っぽく） -->
+      <nav class="drawer__secondary" aria-label="Secondary">
+        <a class="sec__link" href="#works" data-close>WORKS</a>
+        <a class="sec__link" href="#about" data-close>CONTACT</a>
+        <a class="sec__link" href="#" aria-disabled="true">ACCOUNT</a>
+        <a class="sec__link" href="#" aria-disabled="true">BAG (0)</a>
+      </nav>
 
-          <div class="panelTitle">Physical Goods</div>
-
-          <div class="panelList">
-            <button
-              class="panelItem"
-              type="button"
-              data-open-panel="prodSessionCollection"
-              data-cover="images/SessionCollection.JPG"
-            >
-              Session Collection [2022-24 Bootlegs]
-            </button>
-          </div>
-        </section>
-
-        <!-- PRODUCT -->
-        <section class="panel" data-panel="prodSessionCollection" aria-label="Product details">
-          <div class="panelTop">
-            <button class="backBtn" type="button" data-back>Back</button>
-            <button class="xBtn" type="button" data-close aria-label="Close menu"></button>
-          </div>
-
-          <div class="panelTitle">Session Collection [2022-24 Bootlegs]</div>
-
-          <div class="prod">
-            <div class="prodMeta">format : CD</div>
-
-            <div class="prodDesc">
-              SBK と dhrma による初のフルセッション作品。<br />
-              神戸と加古川を拠点にセッションを重ね生まれた全21曲を収録。<br />
-              SQUAL が客演参加、アートワークは QUEST が担当。
-            </div>
-
-            <div class="prodPrice">¥2500</div>
-
-            <a class="prodBuy" href="https://PARADICELONER.SHOP" target="_blank" rel="noopener noreferrer">
-              Buy ↗
-            </a>
-          </div>
-        </section>
-      </div>
-
-      <div class="drawerPreview" id="drawerPreview" aria-hidden="true"></div>
     </div>
   </aside>
 
-  <!-- Pointer FX -->
+  <!-- Pointer FX（既存採用：このDOMは残す） -->
   <div id="pointer-fx" aria-hidden="true">
     <div id="pointer-blob"></div>
 
@@ -197,6 +169,7 @@
       <div class="lockbox__rect">
         <div class="lockbox__cross lockbox__cross--h"></div>
         <div class="lockbox__cross lockbox__cross--v"></div>
+
         <span class="lockbox__tick lockbox__tick--t"></span>
         <span class="lockbox__tick lockbox__tick--r"></span>
         <span class="lockbox__tick lockbox__tick--b"></span>
@@ -206,6 +179,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=20260104-2359" defer></script>
+  <!-- キャッシュ対策：数字を更新する -->
+  <script src="script.js?v=20260104-2105" defer></script>
 </body>
 </html>
