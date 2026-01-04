@@ -114,26 +114,51 @@
           </div>
         </div>
 
-        <!-- SHOP -->
-        <div class="acc">
-          <button class="acc__btn" type="button" data-acc="shop" aria-expanded="false">
-            <span class="acc__label">SHOP</span>
-            <span class="acc__mark" aria-hidden="true">+</span>
-          </button>
-          <div class="acc__panel" data-acc-panel="shop" hidden>
-            <nav class="acc__list" aria-label="Shop list">
-              <button class="acc__subbtn" type="button" data-acc="goods" aria-expanded="false">
-                <span>Physical Goods</span>
-                <span class="acc__mark" aria-hidden="true">+</span>
-              </button>
+        <!-- PANEL: SHOP -->
+<section class="drawer__panel" data-panel="shop" aria-label="Shop">
+  <div class="drawer__top">
+    <button class="drawer__back" type="button" data-back>Back</button>
+    <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
+  </div>
 
-              <div class="acc__subpanel" data-acc-panel="goods" hidden>
-                <a class="acc__link" href="#">Session Collection [2022-24 Bootlegs]</a>
-              </div>
-            </nav>
-          </div>
-        </div>
+  <div class="drawer__listTitle">Shop</div>
 
+  <nav class="drawer__list" aria-label="Shop categories">
+    <button class="drawer__listItem" type="button" data-open-panel="shopAll">All</button>
+    <button class="drawer__listItem" type="button" data-open-panel="shopDigital">Digital</button>
+    <button class="drawer__listItem" type="button" data-open-panel="shopPhysical">Physical</button>
+  </nav>
+</section>
+
+<!-- PANEL: SHOP - ALL -->
+<section class="drawer__panel" data-panel="shopAll" aria-label="Shop All">
+  <div class="drawer__top">
+    <button class="drawer__back" type="button" data-back>Back</button>
+    <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
+  </div>
+  <div class="drawer__listTitle">All</div>
+  <div class="drawer__note">Coming soon</div>
+</section>
+
+<!-- PANEL: SHOP - DIGITAL -->
+<section class="drawer__panel" data-panel="shopDigital" aria-label="Shop Digital">
+  <div class="drawer__top">
+    <button class="drawer__back" type="button" data-back>Back</button>
+    <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
+  </div>
+  <div class="drawer__listTitle">Digital</div>
+  <div class="drawer__note">Coming soon</div>
+</section>
+
+<!-- PANEL: SHOP - PHYSICAL -->
+<section class="drawer__panel" data-panel="shopPhysical" aria-label="Shop Physical">
+  <div class="drawer__top">
+    <button class="drawer__back" type="button" data-back>Back</button>
+    <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
+  </div>
+  <div class="drawer__listTitle">Physical</div>
+  <div class="drawer__note">Coming soon</div>
+</section>
         <!-- ORDER -->
         <div class="acc">
           <button class="acc__btn" type="button" data-acc="order" aria-expanded="false">
