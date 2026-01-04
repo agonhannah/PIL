@@ -198,7 +198,7 @@ body::after{
 }
 
 /* =========================================================
-   Drawer
+   Drawer (root fix: closed = truly gone)
 ========================================================= */
 .overlay{
   position:fixed;
@@ -206,17 +206,49 @@ body::after{
   background:rgba(0,0,0,.06);
   backdrop-filter:blur(2px);
   z-index:1200;
+
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 200ms ease;
 }
 
 .drawer{
   position:fixed;
   inset:0;
-  background:var(--panel);     /* ←不透明 #fff */
+  background:var(--panel); /* #fff */
+
+  /* これが重要：閉じてる時は「存在しない」状態に近づける */
   transform:translateX(105%);
-  transition:transform 240ms ease;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+
+  transition:
+    transform 240ms ease,
+    opacity 200ms ease,
+    visibility 0s linear 240ms;
+
   z-index:1300;
 }
-.drawer.is-open{ transform:translateX(0); }
+
+/* open時だけ有効化 */
+.drawer.is-open{
+  transform:translateX(0);
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+
+  transition:
+    transform 240ms ease,
+    opacity 200ms ease,
+    visibility 0s;
+}
+
+/* overlayも open時だけ */
+.overlay.is-open{
+  opacity:1;
+  pointer-events:auto;
+}
 
 .drawer__inner{
   height:100%;
@@ -235,34 +267,12 @@ body::after{
   border-bottom:1px solid var(--line);
 }
 
-/* Typography unify */
-.drawer__toplink,
-.acc__btn,
-.drawer__secondary a,
-.acc__link{
-  font-family: Helvetica, Arial, sans-serif;
-  color:var(--ink);
-}
-
-.drawer__toplink{
-  font-size:14px;
-  letter-spacing:.30em;
-  text-transform:uppercase;
-  opacity:.80;
-
-  display:inline-flex;
-  align-items:center;
-  height:44px;
-  line-height:1;
-}
-
 .drawer__close{
   width:44px;
   height:44px;
   display:grid;
   place-items:center;
   padding:0;
-
   font-size:22px;
   line-height:1;
   font-weight:300;
