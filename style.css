@@ -146,19 +146,19 @@ body.is-locked{
   position:fixed;
   inset:0;
   z-index:1300;
-
   background:var(--panel);
 
   transform:translateX(105%);
-  transition:transform 240ms ease;
+  transition: transform 240ms ease, visibility 0s linear 240ms; /* ←追加 */
+  will-change: transform;
 
-  /* 閉じてる時にクリックを邪魔しない */
   pointer-events:none;
-  visibility:hidden;
+  visibility:hidden; /* ←ここは残してOK */
 }
 
 .drawer.is-open{
   transform:translateX(0);
+  transition: transform 240ms ease, visibility 0s; /* ←追加 */
   pointer-events:auto;
   visibility:visible;
 }
