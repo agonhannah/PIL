@@ -416,3 +416,21 @@ body::before{
   left: 0;
   opacity: .55;
 }
+
+/* =========================================================
+   REMOVE ALL UNDERLINES (except About rule)
+========================================================= */
+
+/* accordion周りの線を完全に消す */
+.acc,
+.acc__btn,
+.acc__panel,
+.acc__link{
+  border: none !important;
+}
+
+/* 下線系を全部殺す（Aboutのruleだけ別） */
+.acc__link::after,
+.acc__link::before{
+  text-decoration: none;
+}
