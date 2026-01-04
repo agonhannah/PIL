@@ -1,7 +1,7 @@
 /* =========================================================
-   Off-White-ish minimal + noise + slight misalignment
-   - no framework
-   - no heavy animation
+   Minimal (HYKE-ish menu behavior)
+   - Right-top hamburger
+   - Fullscreen drawer from right
 ========================================================= */
 
 :root{
@@ -13,7 +13,6 @@
   --panel2: rgba(255,255,255,0.5);
   --radius: 14px;
 
-  /* Left alignment baseline (Menu + PARAD) */
   --gutter: 20px;
 }
 
@@ -31,14 +30,7 @@ body{
   overflow-x: hidden;
 }
 
-a{ color: inherit; text-decoration: none; }
-
-/* iOS: touch-action none は事故りやすいので縦スクロール許可 */
-body.is-touch{ touch-action: pan-y; }
-
-/* =========================================================
-   PC: hide system cursor (site + drawer)
-========================================================= */
+/* PC: hide system cursor */
 @media (pointer: fine){
   html, body{ cursor: none !important; }
   .overlay, .drawer, .drawer *{ cursor: none !important; }
@@ -68,108 +60,101 @@ body::before{
   z-index: 0;
 }
 
+a{ color: inherit; text-decoration: none; }
+
+/* touch-action */
+body.is-touch{ touch-action: pan-y; }
+
 /* =========================================================
-   Topbar (Menu)
-   - Menu と PARAD の左端を一致
+   Topbar
 ========================================================= */
+
 .topbar{
   position: sticky;
   top: 0;
   z-index: 50;
-
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-
-  /* ★wrap と同じ左余白 */
-  padding:
-    calc(16px + env(safe-area-inset-top, 0px))
-    calc(var(--gutter) + env(safe-area-inset-right, 0px))
-    16px
-    calc(var(--gutter) + env(safe-area-inset-left, 0px));
-
   border-bottom: 1px solid var(--line);
   background: rgba(246,246,244,0.78);
   backdrop-filter: blur(6px);
 }
 
-.topbar__left{
+.topbar__inner{
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding:
+    calc(14px + env(safe-area-inset-top, 0px))
+    calc(var(--gutter) + env(safe-area-inset-right, 0px))
+    14px
+    calc(var(--gutter) + env(safe-area-inset-left, 0px));
 }
 
+/* Left TOP */
+.topLink{
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  font-weight: 300;
+  opacity: 0.75;
+}
+.topLink:hover{ opacity: 1; transform: translateX(1px); }
+
+/* Right hamburger */
 .menuBtn{
   appearance: none;
   -webkit-appearance: none;
-
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10px;
-
-  font-size: 17px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  color: var(--ink);
-
-  background: transparent;
   border: none;
-  padding: 4px 0;
-
-  /* ★中央寄せ要因を殺す */
-  margin: 0 !important;
-  text-align: left !important;
+  background: transparent;
+  padding: 6px;
+  margin: 0;
+  cursor: pointer;
 }
 
-.menuBtn:hover{
-  transform: translateX(1px);
-  opacity: 0.85;
+.menuBtn__icon{
+  display: inline-flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 24px;
+}
+.menuBtn__icon span{
+  display: block;
+  height: 1px;
+  background: var(--ink);
+  opacity: 0.9;
 }
 
 /* =========================================================
-   Wrap (PARAD side)
+   Main layout
 ========================================================= */
+
 .wrap{
   position: relative;
   z-index: 1;
-
-  /* HYKEっぽく：PCは余白広めに見えるけど左基準は固定 */
   max-width: 1120px;
   margin: 0 auto;
-
-  /* ★topbar と同じ左余白 */
-  padding: 48px var(--gutter) 64px;
+  padding: 28px var(--gutter) 64px;
 }
 
-/* =========================================================
-   Hero
-========================================================= */
-.hero{ padding: 32px 0 14px; }
-
-.hero__title{
-  font-size: clamp(52px, 9.5vw, 128px);
-  line-height: 0.92;
-  font-weight: 800;
-  letter-spacing: -0.06em;
-  margin: 0 0 22px 0;
-  text-shadow:
-    1px 0 rgba(0,0,0,0.18),
-   -1px 0 rgba(0,0,0,0.10);
+/* hero placeholder (video later) */
+.hero{ padding: 10px 0 18px; }
+.hero__frame{
+  width: 100%;
+  height: min(56vw, 520px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(0,0,0,0.03);
 }
-
 .hero__lead{
-  margin: 0 0 22px 0;
+  margin: 14px 0 14px 0;
   color: var(--muted);
   max-width: 46ch;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.7;
 }
-
 .hero__actions{
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .btn{
@@ -184,13 +169,11 @@ body::before{
   background: transparent;
   color: var(--ink);
 }
-
 .btn--solid{
   background: #111;
   color: #fff;
   border-color: #111;
 }
-
 .btn--solid:hover,
 .btn--ghost:hover{
   transform: translate(1px, -1px);
@@ -200,14 +183,11 @@ body::before{
 .rule{
   height: 1px;
   background: var(--line);
-  margin: 26px 0;
+  margin: 22px 0;
 }
 
-/* =========================================================
-   Sections
-========================================================= */
+/* sections */
 .section{ padding: 10px 0 18px; }
-
 .section__head{
   display: flex;
   align-items: baseline;
@@ -216,30 +196,28 @@ body::before{
   margin-bottom: 14px;
   flex-wrap: wrap;
 }
-
 .section__title{
   margin: 0;
   font-size: 16px;
   letter-spacing: 0.08em;
 }
-
 .section__sub{
   margin: 0;
   font-size: 12px;
   color: var(--muted);
 }
 
-/* =========================================================
-   Grid + Cards
-========================================================= */
+/* grid/cards */
 .grid{
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
-
-.grid--shop{
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-width: 980px){
+  .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px){
+  .grid{ grid-template-columns: 1fr; }
 }
 
 .card{
@@ -249,12 +227,10 @@ body::before{
   overflow: hidden;
   transform: translateY(-1px);
 }
-
 .card:hover{
   transform: translate(2px, -2px);
   border-color: rgba(17,17,17,0.32);
 }
-
 .thumb{
   height: 120px;
   background:
@@ -268,20 +244,9 @@ body::before{
     );
   border-bottom: 1px solid var(--line);
 }
-
 .card__body{ padding: 14px 14px 16px; }
-
-.card__title{
-  margin: 0 0 6px 0;
-  font-size: 14px;
-  letter-spacing: -0.01em;
-}
-
-.card__meta{
-  margin: 0 0 12px 0;
-  font-size: 12px;
-  color: var(--muted);
-}
+.card__title{ margin: 0 0 6px 0; font-size: 14px; }
+.card__meta{ margin: 0 0 12px 0; font-size: 12px; color: var(--muted); }
 
 .pill{
   display: inline-flex;
@@ -291,96 +256,66 @@ body::before{
   border-radius: 999px;
   border: 1px solid var(--line);
   font-size: 12px;
-  color: var(--ink);
   background: rgba(255,255,255,0.55);
 }
+.pill:hover{ transform: translateX(1px); }
 
-.pill:hover{
-  transform: translateX(1px);
-  border-color: rgba(17,17,17,0.45);
-}
-
-/* =========================================================
-   About
-========================================================= */
+/* about */
 .aboutbox{
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel2);
   padding: 16px;
 }
-
 .aboutbox__text{
-  margin: 0 0 10px 0;
+  margin: 0;
   color: var(--muted);
   line-height: 1.7;
   font-size: 13px;
 }
-
 .inline{
   font-size: 13px;
   border-bottom: 1px solid rgba(17,17,17,0.3);
 }
-
-.inline:hover{
-  border-bottom-color: rgba(17,17,17,0.9);
-  transform: translateX(1px);
-}
-
-.footer{
-  margin-top: 22px;
-  color: var(--muted);
-  font-size: 12px;
-}
+.inline:hover{ border-bottom-color: rgba(17,17,17,0.9); }
+.footer{ margin-top: 22px; color: var(--muted); font-size: 12px; }
 
 /* =========================================================
-   Overlay + Drawer
-   ★ベースを「常にフルスクリーン」にして、PCでだけ細くする
+   Drawer (FULL SCREEN from RIGHT)
 ========================================================= */
+
 .overlay{
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.12);
-  backdrop-filter: blur(2px);
+  background: rgba(0,0,0,0.10);
   z-index: 1200;
 }
-
-/* hidden を確実に効かせる */
-.overlay[hidden]{ display: none !important; }
 
 .drawer{
   position: fixed;
   top: 0;
-  left: 0;
-
-  /* ★まず確実にフルスクリーン */
+  right: 0;
   width: 100vw;
-  height: 100dvh; /* iOS対応 */
-  max-width: none;
-
-  background: rgba(246,246,244,0.95);
-  border-right: none;
+  height: 100dvh; /* iOS safe */
+  background: rgba(246,246,244,0.96);
   z-index: 1300;
 
-  transform: translateX(-105%);
+  transform: translateX(105%);
   transition: transform 260ms ease;
   will-change: transform;
 
+  /* panel側で余白管理 */
   padding: 0;
 }
 
 .drawer.is-open{ transform: translateX(0); }
 
-.drawer__stack{
-  position: relative;
-  height: 100%;
-}
+.drawer__stack{ position: relative; height: 100%; }
 
+/* panels */
 .drawer__panel{
   position: absolute;
   inset: 0;
-
-  /* ★drawer内の余白も gutter で統一 */
   padding:
     calc(18px + env(safe-area-inset-top, 0px))
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
@@ -391,7 +326,6 @@ body::before{
   pointer-events: none;
   transform: translateX(12px);
   transition: opacity 180ms ease, transform 180ms ease;
-  background: transparent;
 }
 
 .drawer__panel.is-active{
@@ -408,62 +342,75 @@ body::before{
 }
 
 .drawer__brand{
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
-.drawer__close{
-  width: 40px;
-  height: 40px;
-  border-radius: 0;
+/* close X */
+.drawer__closeX{
+  appearance: none;
+  -webkit-appearance: none;
   border: none;
   background: transparent;
-  padding: 0;
-  position: relative;
-  cursor: pointer;
-
-  font-size: 0;
+  padding: 6px;
+  font-size: 28px;
   line-height: 1;
-  color: var(--ink);
+  font-weight: 200;
+  cursor: pointer;
+  opacity: 0.85;
 }
+.drawer__closeX:hover{ opacity: 1; transform: translate(1px,-1px); }
 
-.drawer__close::before{
-  content: "−";
-  font-size: 22px;
+/* back */
+.drawer__back{
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background: transparent;
+  padding: 6px 0;
+  font-size: 12px;
+  letter-spacing: 0.14em;
   font-weight: 300;
-  color: var(--ink);
-  opacity: 0.65;
+  opacity: 0.75;
+  cursor: pointer;
 }
+.drawer__back:hover{ opacity: 1; transform: translateX(1px); }
 
-.drawer__close:hover{ transform: translate(1px,-1px); }
-.drawer__close:hover::before{ opacity: 1; }
+.drawer__listTitle{
+  margin-top: 6px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  font-weight: 500;
+  opacity: 0.85;
+}
 
 .drawer__nav{
+  margin-top: 22px;
   display:flex;
   flex-direction: column;
-  gap: 10px;
 }
 
+/* big rows (Archive/Shop/Order) */
 .drawer__item{
   display:flex;
   align-items: baseline;
   justify-content: space-between;
 
+  width: 100%;
+  text-align: left;
+
+  padding: 18px 0;
+  border: none;
+  border-bottom: 1px solid rgba(17,17,17,0.14);
+  background: transparent;
+  cursor: pointer;
+
   font-size: 42px;
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 0.95;
-  padding: 6px 2px;
-
-  border-bottom: 1px solid rgba(17,17,17,0.10);
-  background: transparent;
-  border-left: none;
-  border-right: none;
-  border-top: none;
-
-  text-align: left;
-  cursor: pointer;
 }
+.drawer__item:active{ transform: translateX(1px); }
 
 .plus{
   font-size: 14px;
@@ -472,90 +419,181 @@ body::before{
   margin-left: 10px;
 }
 
-.drawer__back{
-  background: transparent;
-  border: none;
-  padding: 6px 0;
-  font-size: 14px;
-  font-weight: 300;
-  letter-spacing: 0.06em;
-  line-height: 1.2;
-  cursor: pointer;
-  opacity: 0.75;
-  color: var(--ink);
-}
-
-.drawer__listTitle{
-  margin-top: 10px;
-  font-size: 14px;
-  letter-spacing: 0.02em;
-  font-weight: 700;
-  color: var(--ink);
-}
-
+/* list */
 .drawer__list{
   margin-top: 14px;
   display:flex;
   flex-direction: column;
 }
-
 .drawer__listItem{
   display: block;
   width: 100%;
-  text-align: left !important;
+  text-align: left;
+
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(17,17,17,0.12);
+
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
 
   font-size: 28px;
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.05;
-  padding: 14px 2px;
+  color: var(--ink);
+}
+.drawer__listItem:active{ transform: translateX(1px); }
 
-  border-bottom: 1px solid rgba(17,17,17,0.10);
-
-  background: transparent;
-  border-left: none;
-  
-  
-  /* ===== FIX: Menu と PARAD を同じ左端に揃える ===== */
-:root { --gutter: 20px; }
-
-/* wrap（PARAD側）の左余白 */
-.wrap{
-  padding-left: var(--gutter) !important;
-  padding-right: var(--gutter) !important;
+.drawer__note{
+  margin-top: 18px;
+  font-size: 14px;
+  opacity: 0.75;
 }
 
-/* topbar も同じ左余白 */
-.topbar{
-  padding-left:  calc(var(--gutter) + env(safe-area-inset-left, 0px)) !important;
-  padding-right: calc(var(--gutter) + env(safe-area-inset-right, 0px)) !important;
-  justify-content: flex-start !important;
+/* preview layer (optional) */
+.drawer__preview{
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  pointer-events: none;
+
+  background-size: cover;
+  background-position: center;
+  filter: blur(3px);
+  transform: scale(1.08);
+}
+.drawer__preview::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: rgba(246,246,244,0.35);
+}
+.drawer__top,
+.drawer__listTitle,
+.drawer__nav,
+.drawer__list,
+.drawer__note{
+  position: relative;
+  z-index: 1;
 }
 
-/* ★これが重要：navが幅100%で中央寄せになるのを潰す */
-.topbar__left{
-  width: auto !important;
-  flex: 0 0 auto !important;
-  justify-content: flex-start !important;
+body.is-locked{ overflow: hidden; }
+
+/* tap highlight kill */
+.drawer, .drawer *{ -webkit-tap-highlight-color: transparent; }
+
+/* =========================================================
+   Product block
+========================================================= */
+.prod__format{
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+.prod__desc{
+  margin: 0 0 14px 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(17,17,17,0.70);
+}
+.prod__price{
+  margin: 16px 0 18px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.prod__buy{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(17,17,17,0.18);
+  background: rgba(255,255,255,0.55);
+  border-radius: 999px;
+  font-size: 12px;
 }
 
-/* Menuボタン自体のズレも潰す */
-#menuBtn, .menuBtn{
-  margin: 0 !important;
-  padding: 0 !important;
-  text-align: left !important;
-  background: transparent !important;
-  border: 0 !important;
-}
+/* =========================================================
+   Pointer FX (keep your current)
+========================================================= */
 
-/* ===== FIX: iPhoneでdrawerをフルスクリーン ===== */
+#pointer-fx{
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 1400;
+
+  opacity: 0;
+  transform: translate3d(-9999px, -9999px, 0);
+  will-change: transform, opacity;
+}
 @media (pointer: coarse){
-  .drawer{
-    width: 100vw !important;
-    max-width: none !important;
-    height: 100dvh !important;
-    left: 0 !important;
-    right: 0 !important;
-  }
+  #pointer-fx{ transition: opacity 1000ms linear; }
 }
- 
+#pointer-blob{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  background: rgba(0, 255, 90, 0.9);
+  filter: blur(15px);
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+#lockbox{
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+
+  opacity: 0;
+  transition: opacity 120ms ease;
+  will-change: opacity;
+  color: #000;
+}
+#lockbox .lockbox__rect{
+  width: 100px;
+  height: 60px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  position: relative;
+  box-sizing: border-box;
+}
+#lockbox .lockbox__cross{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+#lockbox .lockbox__cross--h{ width: 17px; height: 1px; }
+#lockbox .lockbox__cross--v{ width: 1px; height: 10px; }
+#lockbox .lockbox__tick{ position: absolute; background: currentColor; }
+#lockbox .lockbox__tick--t{ top: 0; left: 50%; width: 1px; height: 5px; transform: translateX(-50%); }
+#lockbox .lockbox__tick--b{ bottom: 0; left: 50%; width: 1px; height: 5px; transform: translateX(-50%); }
+#lockbox .lockbox__tick--l{ left: 0; top: 50%; width: 5px; height: 1px; transform: translateY(-50%); }
+#lockbox .lockbox__tick--r{ right: 0; top: 50%; width: 5px; height: 1px; transform: translateY(-50%); }
+#lockbox .lockbox__label{
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-left: 8px;
+  transform: translate(0, -50%) rotate(90deg);
+  transform-origin: left center;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  color: currentColor;
+  white-space: nowrap;
+}
