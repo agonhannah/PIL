@@ -155,7 +155,8 @@
   });
 
   /* ----------------------------
-     Pointer FX (blob always, lockbox only on desktop "hot")
+     Pointer FX (mobile: tap spawn + 1s fadeout)
+     desktop: follow + hot判定（lockbox表示）
   ---------------------------- */
   const fx = $("#pointer-fx");
   if (fx) {
@@ -178,32 +179,23 @@
       fx.style.transform = `translate3d(${nx}px, ${ny}px, 0)`;
     };
 
-    const scheduleIdleFade = () => {
-  // touchは「タップ起点」だけで制御するので、ここではdesktop用に残す
-  if (isTouch) return;
+    // desktop用：少し薄まり→消える（今まで通り）
+    const scheduleIdleFadeDesktop = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      if (dimTimer) clearTimeout(dimTimer);
 
-  if (idleTimer) clearTimeout(idleTimer);
-  if (dimTimer) clearTimeout(dimTimer);
+      fx.style.opacity = "1";
 
-  fx.style.opacity = "1";
+      dimTimer = setTimeout(() => {
+        fx.style.opacity = "0.65";
+      }, 40);
 
-  dimTimer = setTimeout(() => {
-    fx.style.opacity = "0.65";
-  }, 40);
-
-  idleTimer = setTimeout(() => {
-    fx.style.opacity = "0";
-  }, 1400);
-};
-
-      const total = isTouch ? 1100 : 1400;
       idleTimer = setTimeout(() => {
         fx.style.opacity = "0";
-      }, total);
+      }, 1400);
     };
 
     const updateHot = (clientX, clientY) => {
-      // fx は pointer-events:none なので elementFromPoint が正しく取れる
       const el = document.elementFromPoint(clientX, clientY);
       fx.classList.toggle("is-hot", !isTouch && isInteractive(el));
     };
@@ -212,37 +204,37 @@
       tx = e.clientX;
       ty = e.clientY;
       updateHot(e.clientX, e.clientY);
-      scheduleIdleFade();
+      scheduleIdleFadeDesktop();
     };
 
+    // mobile用：タップした瞬間に出て、1秒で消える（フェードイン無し）
     const onTouchSpawn = (e) => {
-  const p = e.touches ? e.touches[0] : e;
-  if (!p) return;
+      const p = e.touches ? e.touches[0] : e;
+      if (!p) return;
 
-  setTransform(p.clientX, p.clientY);
+      setTransform(p.clientX, p.clientY);
 
-  // touchは lockbox 出さない（blobのみ）
-  fx.classList.remove("is-hot");
+      // touchは lockbox 出さない
+      fx.classList.remove("is-hot");
 
-  // 既存タイマーを止める
-  if (idleTimer) clearTimeout(idleTimer);
-  if (dimTimer) clearTimeout(dimTimer);
+      if (idleTimer) clearTimeout(idleTimer);
+      if (dimTimer) clearTimeout(dimTimer);
 
-  // ★タップした瞬間に発現（transition無しで 1）
-  fx.style.transition = "none";
-  fx.style.opacity = "1";
+      // 即出し（フェードイン無し）
+      fx.style.transition = "none";
+      fx.style.opacity = "1";
 
-  // ★次フレームで 1秒フェード開始（linear）
-  requestAnimationFrame(() => {
-    fx.style.transition = "opacity 1000ms linear";
-    fx.style.opacity = "0";
-  });
+      // 次フレームから 1秒フェードアウト
+      requestAnimationFrame(() => {
+        fx.style.transition = "opacity 1000ms linear";
+        fx.style.opacity = "0";
+      });
 
-  // 1秒後に後始末（次のタップで瞬間発現を確実にする）
-  idleTimer = setTimeout(() => {
-    fx.style.transition = ""; // CSS側に戻すなら ""、固定したいなら "none" でもOK
-  }, 1000);
-};
+      // 後始末（次のタップで確実に即出しにする）
+      idleTimer = setTimeout(() => {
+        fx.style.transition = ""; // CSSに戻す
+      }, 1000);
+    };
 
     const tick = () => {
       if (!isTouch) {
