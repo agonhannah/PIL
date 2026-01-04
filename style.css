@@ -134,7 +134,7 @@ body.is-touch{
   cursor: pointer;
 
   /* ★ズレの原因を完全に殺す */
-  margin-left: 0;
+  margin-left: 0 important!;
 }
 
 .menuBtn:hover{
