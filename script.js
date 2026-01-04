@@ -23,90 +23,84 @@
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
   /* ----------------------------
-     Drawer open/close
-  ---------------------------- */
-  const menuBtn = $("#menuBtn");
-  const overlay = $("#overlay");   // 無ければnullのままでOK
-  const drawer  = $("#drawer");
+   Drawer open/close + HOME reload
+---------------------------- */
+const menuBtn = $("#menuBtn");
+const overlay = $("#overlay");   // 無ければnullのままでOK
+const drawer  = $("#drawer");
 
-  const setAriaOpen = (open) => {
-    if (menuBtn) {
-      menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
-      menuBtn.classList.toggle("is-open", open); // 三本線→×
-    }
-
-    if (drawer) {
-      drawer.setAttribute("aria-hidden", open ? "false" : "true");
-      drawer.classList.toggle("is-open", open);
-    }
-
-    if (overlay) {
-      overlay.classList.toggle("is-open", open);
-      overlay.hidden = !open;
-    }
-
-    document.body.classList.toggle("is-locked", open);
-  };
-
-  const openDrawer  = () => setAriaOpen(true);
-  const closeDrawer = () => setAriaOpen(false);
-
-  // ★TOPは「スクロール」じゃなく「再読み込み」したい
-  const HOME_ANIM_MS = 240; // drawerのtransition 240ms と合わせる
-
-  const reloadHomeAfterClose = () => {
-    closeDrawer();
-    setTimeout(() => {
-      // hash無しで“再更新”っぽくトップへ
-      const url = location.pathname + location.search;
-      location.href = url;
-    }, HOME_ANIM_MS);
-  };
-
+const setAriaOpen = (open) => {
   if (menuBtn) {
-    menuBtn.addEventListener("click", () => {
-      const expanded = menuBtn.getAttribute("aria-expanded") === "true";
-      expanded ? closeDrawer() : openDrawer();
-    });
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    menuBtn.classList.toggle("is-open", open); // 三本線→×
   }
 
-  if (overlay) overlay.addEventListener("click", closeDrawer);
-
-  // drawer内の data-close を踏んだら閉じる
   if (drawer) {
-    drawer.addEventListener("click", (e) => {
-      const closeEl = e.target.closest && e.target.closest("[data-close]");
-      if (!closeEl) return;
-
-      const href = closeEl.getAttribute("href") || "";
-
-      // もし drawer内にTOPリンクが残ってるなら、これで“再更新”
-      if (href === "#top" || closeEl.hasAttribute("data-home")) {
-        e.preventDefault();
-        reloadHomeAfterClose();
-        return;
-      }
-
-      // その他：普通に閉じる（# は止める）
-      if (href === "#") e.preventDefault();
-      closeDrawer();
-    });
+    drawer.setAttribute("aria-hidden", open ? "false" : "true");
+    drawer.classList.toggle("is-open", open);
   }
 
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
-    }
+  if (overlay) {
+    overlay.classList.toggle("is-open", open);
+    overlay.hidden = !open;
+  }
+
+  document.body.classList.toggle("is-locked", open);
+};
+
+const openDrawer  = () => setAriaOpen(true);
+const closeDrawer = () => setAriaOpen(false);
+
+// “再更新っぽく”トップへ（hash無しでリロード）
+const reloadHome = () => {
+  const url = location.pathname + location.search;
+  location.replace(url);
+};
+
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    const expanded = menuBtn.getAttribute("aria-expanded") === "true";
+    expanded ? closeDrawer() : openDrawer();   // ← × はスライドで閉じる
   });
+}
 
-  // TopbarのTOP：常に “再更新”
-  const topLink = $(".toplink");
-  if (topLink) {
-    topLink.addEventListener("click", (e) => {
+if (overlay) overlay.addEventListener("click", closeDrawer);
+
+// drawer内リンク：data-close で閉じる。TOPだけは即リロード（パッと消える）
+if (drawer) {
+  drawer.addEventListener("click", (e) => {
+    const closeEl = e.target.closest && e.target.closest("[data-close]");
+    if (!closeEl) return;
+
+    const href = closeEl.getAttribute("href") || "";
+
+    // Drawer内TOP（data-home）だけは即リロード
+    if (closeEl.hasAttribute("data-home") || href === "#top") {
       e.preventDefault();
-      reloadHomeAfterClose();
-    });
+      reloadHome();     // ← 即リロード（drawerはパッと消える）
+      return;
+    }
+
+    // その他：普通に閉じる（# は止める）
+    if (href === "#") e.preventDefault();
+    closeDrawer();
+  });
+}
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
   }
+});
+
+// TopbarのTOP：常に即リロード（drawer開閉に触らない）
+const topLink = $(".toplink");
+if (topLink) {
+  topLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    reloadHome(); // ← これが“再更新”
+  });
+}
 
   /* ----------------------------
      Accordion
