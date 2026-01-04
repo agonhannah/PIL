@@ -399,3 +399,20 @@ body::before{
 .sec__link{
   font-size: 14px;
   letter-spacing:
+  
+  
+  .acc__link{
+  font-size: 16px;
+  letter-spacing: .04em;
+  padding: 10px 0 10px 1em;   /* ← 1文字分インデント */
+  border-top: 0;             /* ← 区切り線なし */
+  position: relative;
+}
+
+/* “・”っぽい記号（不要ならこの块だけ消してOK） */
+.acc__link::before{
+  content: "·";
+  position: absolute;
+  left: 0;
+  opacity: .55;
+}
