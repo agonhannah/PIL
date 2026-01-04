@@ -6,7 +6,7 @@
   <title>dhrma Kazuki Hanamoto</title>
   <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
 
-  <!-- キャッシュ対策：数字を更新する -->
+  <!-- cache bust -->
   <link rel="stylesheet" href="style.css?v=20260104-2105">
 </head>
 
@@ -30,7 +30,7 @@
   </header>
 
   <main id="top" class="wrap">
-    <!-- トップは一旦無地（動画枠だけ） -->
+    <!-- Top: blank area for future video -->
     <section class="hero" aria-label="Top">
       <div class="hero__blank" aria-hidden="true"></div>
 
@@ -68,7 +68,7 @@
     <!-- SHOP anchor -->
     <section id="shop" class="section" aria-label="Shop"></section>
 
-    <!-- ABOUT -->
+    <!-- ABOUT / CONTACT -->
     <section id="about" class="section" aria-label="About">
       <div class="aboutbox">
         <p class="aboutbox__text">
@@ -87,7 +87,7 @@
   <!-- Overlay -->
   <div class="overlay" id="overlay" hidden></div>
 
-  <!-- Drawer (HYKE風：右から全画面 / 折りたたみで“間にニョッと”出る) -->
+  <!-- Drawer (HYKE-like full screen, accordion “in-between”) -->
   <aside class="drawer" id="drawer" aria-hidden="true">
     <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
 
@@ -100,107 +100,105 @@
 
       <!-- Primary accordion -->
       <section class="drawer__acc" aria-label="Primary sections">
+
         <!-- ARCHIVE -->
         <div class="acc">
           <button class="acc__btn" type="button" data-acc="archive" aria-expanded="false">
             <span class="acc__label">ARCHIVE</span>
             <span class="acc__mark" aria-hidden="true">+</span>
           </button>
+
           <div class="acc__panel" data-acc-panel="archive" hidden>
             <nav class="acc__list" aria-label="Archive list">
-              <a class="acc__link" href="#">Work Title 01</a>
-              <a class="acc__link" href="#">Work Title 02</a>
+              <a class="acc__link" href="#" data-close>Work Title 01</a>
+              <a class="acc__link" href="#" data-close>Work Title 02</a>
             </nav>
           </div>
         </div>
 
-        <!-- PANEL: SHOP -->
-<section class="drawer__panel" data-panel="shop" aria-label="Shop">
-  <div class="drawer__top">
-    <button class="drawer__back" type="button" data-back>Back</button>
-    <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
-  </div>
+        <!-- SHOP -->
+        <div class="acc">
+          <button class="acc__btn" type="button" data-acc="shop" aria-expanded="false">
+            <span class="acc__label">SHOP</span>
+            <span class="acc__mark" aria-hidden="true">+</span>
+          </button>
 
-  <div class="drawer__listTitle">Shop</div>
+          <div class="acc__panel" data-acc-panel="shop" hidden>
+            <!-- nested accordion (All / Digital / Physical) -->
+            <div class="subacc">
 
-  <nav class="drawer__list" aria-label="Shop categories">
-    <button class="drawer__listItem" type="button" data-open-panel="shopAll">All</button>
-    <button class="drawer__listItem" type="button" data-open-panel="shopDigital">Digital</button>
-    <button class="drawer__listItem" type="button" data-open-panel="shopPhysical">Physical</button>
-  </nav>
-</section>
+              <button class="subacc__btn" type="button" data-subacc="shop-all" aria-expanded="false">
+                <span class="subacc__label">All</span>
+                <span class="subacc__mark" aria-hidden="true">+</span>
+              </button>
+              <div class="subacc__panel" data-subacc-panel="shop-all" hidden>
+                <div class="acc__note">Coming soon</div>
+              </div>
 
-<!-- PANEL: SHOP - ALL -->
-<section class="drawer__panel" data-panel="shopAll" aria-label="Shop All">
-  <div class="drawer__top">
-    <button class="drawer__back" type="button" data-back>Back</button>
-    <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
-  </div>
-  <div class="drawer__listTitle">All</div>
-  <div class="drawer__note">Coming soon</div>
-</section>
+              <button class="subacc__btn" type="button" data-subacc="shop-digital" aria-expanded="false">
+                <span class="subacc__label">Digital</span>
+                <span class="subacc__mark" aria-hidden="true">+</span>
+              </button>
+              <div class="subacc__panel" data-subacc-panel="shop-digital" hidden>
+                <div class="acc__note">Coming soon</div>
+              </div>
 
-<!-- PANEL: SHOP - DIGITAL -->
-<section class="drawer__panel" data-panel="shopDigital" aria-label="Shop Digital">
-  <div class="drawer__top">
-    <button class="drawer__back" type="button" data-back>Back</button>
-    <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
-  </div>
-  <div class="drawer__listTitle">Digital</div>
-  <div class="drawer__note">Coming soon</div>
-</section>
+              <button class="subacc__btn" type="button" data-subacc="shop-physical" aria-expanded="false">
+                <span class="subacc__label">Physical</span>
+                <span class="subacc__mark" aria-hidden="true">+</span>
+              </button>
+              <div class="subacc__panel" data-subacc-panel="shop-physical" hidden>
+                <div class="acc__note">Coming soon</div>
+              </div>
 
-<!-- PANEL: SHOP - PHYSICAL -->
-<section class="drawer__panel" data-panel="shopPhysical" aria-label="Shop Physical">
-  <div class="drawer__top">
-    <button class="drawer__back" type="button" data-back>Back</button>
-    <button class="drawer__close" type="button" data-close aria-label="Close menu">−</button>
-  </div>
-  <div class="drawer__listTitle">Physical</div>
-  <div class="drawer__note">Coming soon</div>
-</section>
+            </div>
+          </div>
+        </div>
+
         <!-- ORDER -->
         <div class="acc">
           <button class="acc__btn" type="button" data-acc="order" aria-expanded="false">
             <span class="acc__label">ORDER</span>
             <span class="acc__mark" aria-hidden="true">+</span>
           </button>
+
           <div class="acc__panel" data-acc-panel="order" hidden>
-            <div class="acc__note">
-              Order / Contact details
-            </div>
+            <div class="acc__note">Order / Contact details</div>
           </div>
         </div>
+
       </section>
 
       <div class="drawer__rule" aria-hidden="true"></div>
 
-      <!-- Secondary links（HYKEの下段っぽく） -->
-     <nav class="drawer__secondary" aria-label="Secondary">
-  <a class="sec__link" href="#contact" data-close>CONTACT</a>
-  <a class="sec__link" href="#about" data-close>ABOUT</a>
-</nav>
+      <!-- Secondary -->
+      <nav class="drawer__secondary" aria-label="Secondary">
+        <!-- CONTACTは存在する#aboutに統一 -->
+        <a class="sec__link" href="#about" data-close>CONTACT</a>
+        <a class="sec__link" href="#about" data-close>ABOUT</a>
+      </nav>
 
     </div>
   </aside>
 
-  <!-- Pointer FX（既存採用：このDOMは残す） -->
+  <!-- Pointer FX (DOM keep) -->
   <div id="pointer-fx" aria-hidden="true">
     <div id="pointer-blob"></div>
 
-   <div id="lockbox" aria-hidden="true">
-  <div class="lockbox__rect">
-    <div class="lockbox__cross lockbox__cross--h"></div>
-    <div class="lockbox__cross lockbox__cross--v"></div>
+    <div id="lockbox" aria-hidden="true">
+      <div class="lockbox__rect">
+        <div class="lockbox__cross lockbox__cross--h"></div>
+        <div class="lockbox__cross lockbox__cross--v"></div>
 
-    <span class="lockbox__tick lockbox__tick--t"></span>
-    <span class="lockbox__tick lockbox__tick--r"></span>
-    <span class="lockbox__tick lockbox__tick--b"></span>
-    <span class="lockbox__tick lockbox__tick--l"></span>
+        <span class="lockbox__tick lockbox__tick--t"></span>
+        <span class="lockbox__tick lockbox__tick--r"></span>
+        <span class="lockbox__tick lockbox__tick--b"></span>
+        <span class="lockbox__tick lockbox__tick--l"></span>
+      </div>
+    </div>
   </div>
-</div>
 
-  <!-- キャッシュ対策：数字を更新する -->
+  <!-- cache bust -->
   <script src="script.js?v=20260104-2105" defer></script>
 </body>
 </html>
