@@ -443,3 +443,39 @@ body.is-locked{ overflow:hidden; }
 @media (max-width: 640px){
   .wrap{ padding-top: 18px; }
 }
+
+
+
+/* =========================================================
+   Drawer panel visibility fix (only active panel shows)
+========================================================= */
+
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+}
+
+.drawer.is-open {
+  display: block;
+}
+
+.drawer__stack {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+/* パネルは“1枚だけ”表示。積まれないようにする */
+.drawer__panel {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  display: none;              /* ←重要 */
+}
+
+.drawer__panel.is-active {
+  display: block;             /* ←重要 */
+}
