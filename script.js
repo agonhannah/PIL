@@ -253,3 +253,29 @@
     requestAnimationFrame(tick);
   }
 })();
+
+// data-close（TOP/×）で閉じる（drawer内）
+if (drawer) {
+  drawer.addEventListener("click", (e) => {
+    const t = e.target;
+    const closeBtn = t.closest && t.closest("[data-close]");
+    if (!closeBtn) return;
+
+    const isAnchor = closeBtn.tagName === "A";
+    const href = isAnchor ? (closeBtn.getAttribute("href") || "") : "";
+
+    // 先に閉じる（スクロールロック解除）
+    e.preventDefault();
+    closeDrawer();
+
+    // #top / #about などのアンカーは「閉じた後」にスクロール
+    if (isAnchor && href.startsWith("#")) {
+      requestAnimationFrame(() => {
+        const el = document.querySelector(href);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        else location.hash = href; // 保険
+      });
+    }
+
+  });
+}
