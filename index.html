@@ -1,206 +1,123 @@
-<!DOCTYPE html>
+<!-- index.html -->
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>dhrma Kazuki Hanamoto</title>
-  <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
-  <link rel="stylesheet" href="style.css?v=20260104-2000">
+  <meta name="description" content="dhrma / Kazuki Hanamoto — archive & shop." />
+  <link rel="stylesheet" href="style.css?v=20260104-2100">
 </head>
 
-<body id="top">
-  <!-- Topbar -->
+<body>
+  <!-- Topbar (HYKE-ish: TOP left / burger right) -->
   <header class="topbar">
-    <nav class="topbar__inner" aria-label="Primary">
-      <!-- Left: TOP -->
-      <a class="topLink" href="#top" aria-label="Back to top">TOP</a>
+    <a class="topbar__top" href="/" aria-label="Back to top">TOP</a>
 
-      <!-- Right: Hamburger menu -->
-      <button
-        class="menuBtn"
-        id="menuBtn"
-        type="button"
-        aria-label="Open menu"
-        aria-controls="drawer"
-        aria-expanded="false"
-      >
-        <span class="menuBtn__icon" aria-hidden="true">
-          <span></span><span></span><span></span>
-        </span>
-      </button>
-    </nav>
+    <button
+      class="topbar__menu"
+      id="menuBtn"
+      type="button"
+      aria-label="Open menu"
+      aria-controls="drawer"
+      aria-expanded="false"
+    >
+      <span class="hamburger" aria-hidden="true"></span>
+    </button>
   </header>
 
-  <main class="wrap">
-    <!-- HERO / TOP VISUAL (video will be placed later) -->
-    <section class="hero" aria-label="Hero">
-      <div class="hero__frame" aria-label="Video placeholder">
-        <!-- 後でここに <video> を貼る想定 -->
-      </div>
-      <p class="hero__lead">ARCHIVE of WORKS by dhrma Kazuki Hanamoto</p>
-      <div class="hero__actions">
-        <a class="btn btn--solid" href="#works">View Works</a>
-        <a class="btn btn--ghost" href="#shop">Open Shop</a>
-      </div>
-      <div class="rule" role="separator" aria-hidden="true"></div>
-    </section>
-
-    <!-- WORKS -->
-    <section id="works" class="section" aria-labelledby="works-title">
-      <div class="section__head">
-        <h2 class="section__title" id="works-title">Works</h2>
-        <p class="section__sub">最新→過去。リンクは後で差し替え。</p>
-      </div>
-
-      <div class="grid">
-        <article class="card">
-          <div class="thumb" aria-hidden="true"></div>
-          <div class="card__body">
-            <h3 class="card__title">Work Title 01</h3>
-            <p class="card__meta">2025 · Audio/Visual</p>
-            <a class="pill" href="#">Open</a>
-          </div>
-        </article>
-      </div>
-
-      <div class="rule" role="separator" aria-hidden="true"></div>
-    </section>
-
-    <!-- SHOP anchor (drawer が主導) -->
-    <section id="shop" class="section" aria-label="Shop (anchor)"></section>
-
-    <!-- ABOUT -->
-    <section id="about" class="section" aria-label="About">
-      <div class="aboutbox">
-        <p class="aboutbox__text">
-          dhrma Kazuki Hanamoto<br />
-          Contact:
-          <a class="inline" href="mailto:kazukihanamoto.dhrma@gmail.com">
-            kazukihanamoto.dhrma@gmail.com
-          </a>
-        </p>
-      </div>
-
-      <footer class="footer">
-        <span>© <span id="year"></span> dhrma</span>
-      </footer>
-    </section>
+  <!-- Top is blank for now -->
+  <main class="wrap" aria-label="Main">
+    <section class="blank" aria-label="Blank top area"></section>
   </main>
 
   <!-- Overlay -->
   <div class="overlay" id="overlay" hidden></div>
 
-  <!-- Drawer (FULL SCREEN from RIGHT) -->
-  <aside
-    class="drawer"
-    id="drawer"
-    role="dialog"
-    aria-modal="true"
-    aria-hidden="true"
-  >
-    <div class="drawer__stack" id="drawerStack">
+  <!-- Drawer (right full-screen) -->
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="drawer__inner" id="drawerStack">
 
       <!-- PANEL: MAIN -->
-      <section class="drawer__panel is-active" data-panel="main" aria-label="Main menu">
+      <section class="drawer__panel is-active" data-panel="main" aria-label="Menu">
         <div class="drawer__top">
-          <span class="drawer__brand">dhrma Kazuki Hanamoto</span>
-          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
+          <div class="drawer__brand">dhrma</div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
         </div>
 
-        <nav class="drawer__nav" aria-label="Drawer navigation">
-          <button class="drawer__item" type="button" data-open-panel="archive">
-            Archive <span class="plus">+</span>
+        <!-- primary expandable groups (HYKE-like) -->
+        <nav class="drawer__groups" aria-label="Primary groups">
+          <button class="drawer__row" type="button" data-open-panel="archive">
+            <span class="drawer__rowLabel">ARCHIVE</span>
+            <span class="drawer__rowPlus">+</span>
           </button>
-          <button class="drawer__item" type="button" data-open-panel="shopPanel">
-            Shop <span class="plus">+</span>
+
+          <button class="drawer__row" type="button" data-open-panel="shop">
+            <span class="drawer__rowLabel">SHOP</span>
+            <span class="drawer__rowPlus">+</span>
           </button>
-          <button class="drawer__item" type="button" data-open-panel="order">
-            Order <span class="plus">+</span>
+
+          <button class="drawer__row" type="button" data-open-panel="order">
+            <span class="drawer__rowLabel">ORDER</span>
+            <span class="drawer__rowPlus">+</span>
           </button>
         </nav>
+
+        <!-- secondary plain links -->
+        <nav class="drawer__links" aria-label="Secondary links">
+          <a class="drawer__link" href="#works">WORKS</a>
+          <a class="drawer__link" href="#contact">CONTACT</a>
+        </nav>
+
+        <div class="drawer__meta" aria-label="Meta">
+          <a class="drawer__link" href="#account">ACCOUNT</a>
+          <a class="drawer__link" href="#bag">BAG (0)</a>
+        </div>
       </section>
 
       <!-- PANEL: ARCHIVE -->
       <section class="drawer__panel" data-panel="archive" aria-label="Archive">
         <div class="drawer__top">
-          <button class="drawer__back" type="button" data-back>Back</button>
-          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
+          <div class="drawer__brand">ARCHIVE</div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
         </div>
 
-        <div class="drawer__listTitle">Archive</div>
-        <div class="drawer__preview" aria-hidden="true"></div>
-
         <nav class="drawer__list" aria-label="Archive list">
-          <a class="drawer__listItem" href="#" data-cover="images/test_01.jpg">Work Title 01</a>
-          <a class="drawer__listItem" href="#" data-cover="images/test_02.jpg">Work Title 02</a>
+          <a class="drawer__item" href="#" data-cover="images/test_01.jpg">Work Title 01</a>
+          <a class="drawer__item" href="#" data-cover="images/test_02.jpg">Work Title 02</a>
         </nav>
       </section>
 
       <!-- PANEL: SHOP -->
-      <section class="drawer__panel" data-panel="shopPanel" aria-label="Shop">
+      <section class="drawer__panel" data-panel="shop" aria-label="Shop">
         <div class="drawer__top">
-          <button class="drawer__back" type="button" data-back>Back</button>
-          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
+          <div class="drawer__brand">SHOP</div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
         </div>
 
-        <div class="drawer__listTitle">Shop</div>
-
-        <nav class="drawer__list" aria-label="Shop categories">
-          <button class="drawer__listItem" type="button" data-open-panel="shopPhysical">
-            Physical Goods
-          </button>
-        </nav>
-      </section>
-
-      <!-- PANEL: SHOP PHYSICAL -->
-      <section class="drawer__panel" data-panel="shopPhysical" aria-label="Physical Goods">
-        <div class="drawer__top">
-          <button class="drawer__back" type="button" data-back>Back</button>
-          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
-        </div>
-
-        <div class="drawer__listTitle">Physical Goods</div>
-        <div class="drawer__preview" aria-hidden="true"></div>
-
-        <nav class="drawer__list" aria-label="Physical goods list">
-          <button
-            class="drawer__listItem"
-            type="button"
-            data-open-panel="prodSessionCollection"
-            data-cover="images/SessionCollection.JPG"
-          >
-            Session Collection [2022-24 Bootlegs]
+        <nav class="drawer__list" aria-label="Shop list">
+          <button class="drawer__itemBtn" type="button" data-open-panel="prodSession" data-cover="images/SessionCollection.JPG">
+            Session Collection [CD]
           </button>
         </nav>
       </section>
 
       <!-- PANEL: PRODUCT -->
-      <section class="drawer__panel" data-panel="prodSessionCollection" aria-label="Product details">
+      <section class="drawer__panel" data-panel="prodSession" aria-label="Product">
         <div class="drawer__top">
-          <button class="drawer__back" type="button" data-back>Back</button>
-          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
+          <div class="drawer__brand">Session Collection</div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
         </div>
 
-        <div class="drawer__listTitle">Session Collection [2022-24 Bootlegs]</div>
-        <div class="drawer__preview" aria-hidden="true"></div>
-
-        <div class="drawer__note prod">
-          <p class="prod__format">format : CD</p>
-
+        <div class="drawer__product">
+          <div class="prod__meta">format : CD</div>
           <p class="prod__desc">
             SBK と dhrma による初のフルセッション作品。<br />
             神戸と加古川を拠点にセッションを重ね生まれた全21曲を収録。<br />
             SQUAL が客演参加、アートワークは QUEST が担当。
           </p>
-
           <div class="prod__price">¥2500</div>
-
-          <a
-            class="prod__buy"
-            href="https://PARADICELONER.SHOP"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a class="prod__buy" href="https://PARADICELONER.SHOP" target="_blank" rel="noopener noreferrer">
             Buy ↗
           </a>
         </div>
@@ -209,26 +126,23 @@
       <!-- PANEL: ORDER -->
       <section class="drawer__panel" data-panel="order" aria-label="Order">
         <div class="drawer__top">
-          <button class="drawer__back" type="button" data-back>Back</button>
-          <button class="drawer__closeX" type="button" data-close aria-label="Close menu">×</button>
+          <div class="drawer__brand">ORDER</div>
+          <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
         </div>
 
-        <div class="drawer__listTitle">Order</div>
         <div class="drawer__note">Order / Contact details</div>
       </section>
 
     </div>
   </aside>
 
-  <!-- Pointer FX（HTMLは今のまま採用） -->
+  <!-- Pointer FX (HTMLは残す / JSはあなたの現行を使う) -->
   <div id="pointer-fx" aria-hidden="true">
     <div id="pointer-blob"></div>
-
     <div id="lockbox" aria-hidden="true">
       <div class="lockbox__rect">
         <div class="lockbox__cross lockbox__cross--h"></div>
         <div class="lockbox__cross lockbox__cross--v"></div>
-
         <span class="lockbox__tick lockbox__tick--t"></span>
         <span class="lockbox__tick lockbox__tick--r"></span>
         <span class="lockbox__tick lockbox__tick--b"></span>
@@ -238,6 +152,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=20260104-2000" defer></script>
+  <script src="script.js?v=20260104-2100" defer></script>
 </body>
 </html>
