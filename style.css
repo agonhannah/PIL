@@ -1,3 +1,7 @@
+/* =========================================================
+   Minimal / Archive-focused layout
+========================================================= */
+
 :root{
   --bg:#ffffff;
   --ink:#111;
@@ -22,31 +26,35 @@ body{
   overflow-x:hidden;
 }
 
-/* iOSの勝手な青/ハイライト抑止 */
-a, a:link, a:visited, a:hover, a:active{ color:inherit; text-decoration:none; }
-button{ color:inherit; }
-.drawer, .drawer *{ -webkit-tap-highlight-color: transparent; }
+/* ---------------------------------------------------------
+   Reset link / tap highlight
+--------------------------------------------------------- */
+a, a:link, a:visited, a:hover, a:active{
+  color:inherit;
+  text-decoration:none;
+}
+button{
+  color:inherit;
+  background:none;
+  border:0;
+}
+.drawer, .drawer *{
+  -webkit-tap-highlight-color: transparent;
+}
 
-/* Noise overlay（assets/noise.png が無いならコメントアウト推奨） */
+/* ---------------------------------------------------------
+   Noise (optional)
+--------------------------------------------------------- */
 body::after{
   content:"";
   position:fixed;
   inset:0;
   background-image:url("assets/noise.png");
   background-size:420px 420px;
-  opacity:.10;
+  opacity:.08;
   pointer-events:none;
   mix-blend-mode:overlay;
   z-index:999;
-}
-
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background: radial-gradient(1200px 700px at 30% 0%, rgba(0,0,0,0.06), transparent 55%);
-  pointer-events:none;
-  z-index:0;
 }
 
 /* =========================================================
@@ -57,15 +65,16 @@ body::before{
   top:0;
   z-index:50;
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  align-items:center;
+
   padding:
     calc(14px + env(safe-area-inset-top, 0px))
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
     14px
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
-  border-bottom:1px solid var(--line);
-  background: rgba(246,246,244,0.78);
+
+  background:rgba(246,246,244,.78);
   backdrop-filter: blur(6px);
 }
 
@@ -80,9 +89,6 @@ body::before{
 .hamburger{
   width:44px;
   height:44px;
-  border:0;
-  background:transparent;
-  padding:0;
   display:grid;
   place-items:center;
   cursor:pointer;
@@ -94,7 +100,6 @@ body::before{
   gap:5px;
 }
 .hamburger__lines span{
-  display:block;
   height:1px;
   background:rgba(17,17,17,.7);
 }
@@ -103,140 +108,115 @@ body::before{
    Layout
 ========================================================= */
 .wrap{
-  position:relative;
-  z-index:1;
   max-width:1120px;
   margin:0 auto;
-  padding: 22px var(--gutter) 64px;
+  padding:22px var(--gutter) 64px;
 }
 
 /* =========================================================
-   Hero
+   Hero (blank)
 ========================================================= */
-.hero{ padding: 18px 0 12px; }
+.hero{ padding:18px 0 12px; }
 
 .hero__blank{
-  width:100%;
   height: clamp(200px, 42vw, 360px);
   border:1px solid var(--line);
   border-radius:18px;
-  background: rgba(255,255,255,.55);
+  background:rgba(255,255,255,.55);
 }
 
 .hero__lead{
-  margin: 14px 0 10px 0;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.7;
+  margin:14px 0 10px;
+  font-size:14px;
+  color:var(--muted);
 }
 
 .hero__actions{
   display:flex;
   gap:10px;
-  flex-wrap:wrap;
-  margin: 10px 0 18px;
+  margin:10px 0 18px;
 }
 
 .btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
   height:38px;
   padding:0 14px;
   border-radius:999px;
   font-size:13px;
   border:1px solid var(--line);
-  background:transparent;
-  color:var(--ink);
-}
-
-.btn--ghost:hover{
-  transform: translate(1px,-1px);
-  border-color: rgba(17,17,17,0.5);
-}
-
-.rule{
-  height:1px;
-  background: var(--line);
-  margin: 18px 0;
 }
 
 /* =========================================================
-   Works
+   Sections
 ========================================================= */
-.section{ padding: 10px 0 18px; }
+.section{ padding:10px 0 18px; }
 
 .section__head{
   display:flex;
-  align-items:baseline;
   justify-content:space-between;
-  gap:20px;
+  align-items:baseline;
   margin-bottom:14px;
-  flex-wrap:wrap;
 }
 
-.section__title{ margin:0; font-size:16px; letter-spacing:.08em; }
-.section__sub{ margin:0; font-size:12px; color:var(--muted); }
+.section__title{
+  font-size:16px;
+  letter-spacing:.08em;
+}
+.section__sub{
+  font-size:12px;
+  color:var(--muted);
+}
 
+/* Aboutのみ残す rule */
+.rule{
+  height:1px;
+  background:var(--line);
+  margin:18px 0;
+}
+
+/* =========================================================
+   Works grid
+========================================================= */
 .grid{
   display:grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns:repeat(3,1fr);
   gap:14px;
 }
-@media (max-width: 980px){ .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px){ .grid{ grid-template-columns: 1fr; } }
+@media(max-width:980px){ .grid{ grid-template-columns:repeat(2,1fr);} }
+@media(max-width:640px){ .grid{ grid-template-columns:1fr;} }
 
 .card{
   border:1px solid var(--line);
-  border-radius: var(--radius);
-  background: rgba(255,255,255,.55);
-  overflow:hidden;
-  transform: translateY(-1px);
+  border-radius:var(--radius);
+  background:rgba(255,255,255,.55);
 }
-.card:hover{ transform: translate(2px,-2px); border-color: rgba(17,17,17,0.32); }
+.card__body{ padding:14px; }
 
-.thumb{
-  height:120px;
-  background:
-    linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0.01)),
-    repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 9px);
-  border-bottom:1px solid var(--line);
+.card__title{
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-.01em;
 }
-.card__body{ padding:14px 14px 16px; }
-.card__title{ margin:0 0 6px 0; font-size:14px; letter-spacing:-.01em; }
-.card__meta{ margin:0 0 12px 0; font-size:12px; color:var(--muted); }
-
-.pill{
-  display:inline-flex;
-  align-items:center;
-  height:30px;
-  padding:0 12px;
-  border-radius:999px;
-  border:1px solid var(--line);
+.card__meta{
   font-size:12px;
-  background: rgba(255,255,255,0.55);
+  color:var(--muted);
 }
-.pill:hover{ transform: translateX(1px); border-color: rgba(17,17,17,0.45); }
 
 /* =========================================================
    About
 ========================================================= */
 .aboutbox{
   border:1px solid var(--line);
-  border-radius: var(--radius);
-  background: rgba(246,246,244,.65);
+  border-radius:var(--radius);
+  background:rgba(246,246,244,.65);
   padding:16px;
 }
 .aboutbox__text{
-  margin:0;
-  color: var(--muted);
-  line-height:1.7;
   font-size:13px;
+  color:var(--muted);
 }
-.inline{ border-bottom:1px solid rgba(17,17,17,0.30); }
-.inline:hover{ border-bottom-color: rgba(17,17,17,0.9); }
-
-.footer{ margin-top: 18px; color: var(--muted); font-size:12px; }
+.inline{
+  border-bottom:1px solid rgba(17,17,17,.3);
+}
 
 /* =========================================================
    Drawer
@@ -244,31 +224,23 @@ body::before{
 .overlay{
   position:fixed;
   inset:0;
-  background: rgba(0,0,0,0.06);
-  backdrop-filter: blur(2px);
+  background:rgba(0,0,0,.06);
+  backdrop-filter:blur(2px);
   z-index:1200;
 }
 
 .drawer{
   position:fixed;
-  top:0;
-  right:0;
-  height:100dvh;
-  width:100vw;
-  background: var(--panel);
+  inset:0;
+  background:var(--panel);
+  transform:translateX(105%);
+  transition:transform 240ms ease;
   z-index:1300;
-
-  transform: translateX(105%);
-  transition: transform 240ms ease;
-  will-change: transform;
-  border-left:1px solid var(--line);
 }
-.drawer.is-open{ transform: translateX(0); }
+.drawer.is-open{ transform:translateX(0); }
 
 .drawer__inner{
   height:100%;
-  overflow:auto;
-  -webkit-overflow-scrolling:touch;
   padding:
     calc(18px + env(safe-area-inset-top, 0px))
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
@@ -278,159 +250,95 @@ body::before{
 
 .drawer__head{
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  align-items:center;
 }
 
 .drawer__toplink{
   font-size:12px;
   letter-spacing:.22em;
-  text-transform:uppercase;
   opacity:.75;
-}
-.drawer__toplink:hover{ opacity:1; }
-
-.drawer__close{
-  width:44px;
-  height:44px;
-  border:0;
-  background:transparent;
-  font-size:24px;
-  font-weight:200;
-  opacity:.7;
-}
-.drawer__close:hover{ opacity:1; }
-
-.drawer__rule{
-  height:1px;
-  background: var(--line);
-  margin: 14px 0;
-}
-.drawer__rule--thin{ margin: 10px 0 12px; opacity:.8; }
-
-/* 区切り線を減らす（必要最低限） */
-.acc{ border-top:1px solid var(--line); }
-.acc:last-of-type{ border-bottom:0; }
-
-/* Accordion rows */
-.acc__btn{
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding: 18px 2px;
-  border:0;
-  background:transparent;
-  cursor:pointer;
-
-  font-size: 13px;
-  letter-spacing: .32em;
-  text-transform: uppercase;
-}
-
-.acc__label{ opacity:.92; }
-.acc__mark{
-  font-size: 26px;
-  line-height: 1;
-  font-weight: 200;
-  opacity: .7;
-}
-.acc__btn[aria-expanded="true"] .acc__mark{ opacity:1; }
-
-/* ぬるっと開く：max-height + opacity */
-.acc__panel{
-  padding: 0 2px 12px;
-  overflow:hidden;
-  max-height: 0;
-  opacity: 0;
-  transition: max-height 260ms ease, opacity 220ms ease;
-}
-.acc__panel.is-open{
-  opacity: 1;
-}
-
-.acc__list{
-  display:flex;
-  flex-direction:column;
-  gap: 10px;
-  padding-top: 6px;
-}
-
-.acc__link{
-  font-size: 20px;            /* Work Titleのサイズ寄せ */
-  letter-spacing: .02em;
-  padding: 10px 0;
-  border-top: 1px solid rgba(17,17,17,.10);
-}
-.acc__link:first-child{ border-top: 0; }
-
-.acc__note{
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
-  padding: 6px 0 2px;
-}
-
-/* SHOPの箇条書き（同フォント / 1文字分インデント） */
-.acc__bullets{
-  display:flex;
-  flex-direction:column;
-  gap: 10px;
-  padding-top: 6px;
-}
-.acc__bullet{
-  display:flex;
-  align-items:baseline;
-  gap: 10px; /* “1文字分”相当 */
-  font-size: 20px;
-  letter-spacing: .02em;
-  padding: 10px 0;
-  border-top: 1px solid rgba(17,17,17,.10);
-}
-.acc__bullet:first-child{ border-top:0; }
-.acc__bullets .dot{ width: 1ch; display:inline-block; opacity:.85; }
-
-.drawer__secondary{
-  display:flex;
-  flex-direction:column;
-  gap: 14px;
-  padding-top: 10px;
-}
-.sec__link{
-  font-size: 14px;
-  letter-spacing:
-  
-  
-  .acc__link{
-  font-size: 16px;
-  letter-spacing: .04em;
-  padding: 10px 0 10px 1em;   /* ← 1文字分インデント */
-  border-top: 0;             /* ← 区切り線なし */
-  position: relative;
-}
-
-/* “・”っぽい記号（不要ならこの块だけ消してOK） */
-.acc__link::before{
-  content: "·";
-  position: absolute;
-  left: 0;
-  opacity: .55;
 }
 
 /* =========================================================
-   REMOVE ALL UNDERLINES (except About rule)
+   Accordion (Archive / Shop)
 ========================================================= */
 
-/* accordion周りの線を完全に消す */
-.acc,
-.acc__btn,
-.acc__panel,
-.acc__link{
-  border: none !important;
+/* 見出し：Work Title と同一 */
+.acc__btn{
+  width:100%;
+  padding:14px 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-.01em;
 }
 
-/* 下線系を全部殺す（Aboutのruleだけ別） */
-.acc__link::after,
+.acc__mark{
+  font-size:18px;
+  font-weight:400;
+  opacity:.6;
+}
+
+/* 中身 */
+.acc__panel{
+  padding:6px 0 14px;
+}
+
+/* リスト項目 */
+.acc__link{
+  display:block;
+  padding:6px 0;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-.01em;
+}
+
+/* 箇条書き */
 .acc__link::before{
-  text-decoration: none;
+  content:"・";
+  margin-right:.6em;
+  opacity:.6;
+}
+
+/* =========================================================
+   Secondary links
+========================================================= */
+.drawer__secondary{
+  margin-top:18px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.sec__link{
+  font-size:14px;
+  letter-spacing:.34em;
+  text-transform:uppercase;
+}
+
+/* =========================================================
+   Pointer FX (visual only)
+========================================================= */
+#pointer-fx{
+  position:fixed;
+  top:0; left:0;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 90ms linear;
+  z-index:1400;
+}
+#pointer-blob{
+  width:84px;
+  height:84px;
+  border-radius:999px;
+  background:rgba(0,255,90,.85);
+  filter:blur(10px);
+  transform:translate(-50%,-50%);
+}
+
+@media(pointer:coarse){
+  #lockbox{ display:none !important; }
 }
