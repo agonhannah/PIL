@@ -310,9 +310,17 @@ body.is-locked{
   transform:translate(-50%,-50%);
 }
 
-@media(pointer:coarse){
-  #lockbox{ display:none !important; }
+/* lockbox label（クリックできる所だけ表示） */
+#lockbox{ opacity:.95; }
+#lockbox .lockbox__label{
+  margin-top:10px;
+  font-size:10px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  opacity:0;
+  transition:opacity 120ms ease;
 }
+#pointer-fx.is-hot #lockbox .lockbox__label{ opacity:.9; }
 
 /* top stage title（"2026 dhrma..." 用） */
 .topstage{
