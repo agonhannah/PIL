@@ -9,83 +9,78 @@
 </head>
 
 <body>
-  <!-- Topbar -->
-  <header class="topbar" role="banner">
-    <a class="toplink" href="#top" aria-label="Back to top">TOP</a>
+  <!-- Topbar（常に表示 / HYKE方式） -->
+<header class="topbar" role="banner">
+  <a class="toplink" href="#top" aria-label="Back to top">TOP</a>
 
-    <button
-      class="hamburger"
-      id="menuBtn"
-      type="button"
-      aria-label="Open menu"
-      aria-controls="drawer"
-      aria-expanded="false"
-    >
-      <span class="hamburger__lines" aria-hidden="true">
-        <span></span><span></span><span></span>
-      </span>
-    </button>
-  </header>
+  <!-- 右：三本線（閉じてる時だけ表示） -->
+  <button
+    class="hamburger"
+    id="menuBtn"
+    type="button"
+    aria-label="Open menu"
+    aria-controls="drawer"
+    aria-expanded="false"
+  >
+    <span class="hamburger__lines" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </span>
+  </button>
 
-  <main id="top" class="wrap">
-    <!-- TOPはテキストだけ -->
-    <section class="topstage" aria-label="Top">
-      <p class="topstage__title">2026 dhrma Kazuki Hanamoto</p>
-    </section>
-  </main>
+  <!-- 右：×（開いてる時だけ表示） -->
+  <button class="closebtn" id="closeBtn" type="button" aria-label="Close menu">
+    ×
+  </button>
+</header>
 
-  <!-- Overlay -->
-  <div class="overlay" id="overlay" hidden></div>
+<!-- Drawer（バー下からスライド） -->
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
 
-  <!-- Drawer -->
-  <aside class="drawer" id="drawer" aria-hidden="true">
-    <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
-      <div class="drawer__head">
-        <a class="drawer__toplink" href="#top" data-close>TOP</a>
-        <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
+    <!-- Accordion -->
+    <section class="drawer__acc" aria-label="Menu sections">
+
+      <!-- ARCHIVE -->
+      <div class="acc">
+        <button class="acc__btn" type="button" data-acc="archive" aria-expanded="false">
+          <span class="acc__label">Archive</span>
+          <span class="acc__mark" aria-hidden="true">+</span>
+        </button>
+
+        <div class="acc__panel" data-acc-panel="archive" hidden>
+          <nav class="acc__list" aria-label="Archive list">
+            <a class="acc__link" href="#" data-close>Designs</a>
+            <a class="acc__link" href="#" data-close>Beat Live</a>
+          </nav>
+        </div>
       </div>
 
-      <!-- Accordion -->
-      <section class="drawer__acc" aria-label="Menu sections">
-        <!-- ARCHIVE -->
-        <div class="acc">
-          <button class="acc__btn" type="button" data-acc="archive" aria-expanded="false">
-            <span class="acc__label">Archive</span>
-            <span class="acc__mark" aria-hidden="true">+</span>
-          </button>
+      <!-- SHOP -->
+      <div class="acc">
+        <button class="acc__btn" type="button" data-acc="shop" aria-expanded="false">
+          <span class="acc__label">Shop</span>
+          <span class="acc__mark" aria-hidden="true">+</span>
+        </button>
 
-          <div class="acc__panel" data-acc-panel="archive" hidden>
-            <nav class="acc__list" aria-label="Archive list">
-              <a class="acc__link" href="#" data-close>Designs</a>
-              <a class="acc__link" href="#" data-close>Beat Live</a>
-            </nav>
-          </div>
+        <div class="acc__panel" data-acc-panel="shop" hidden>
+          <nav class="acc__list" aria-label="Shop list">
+            <a class="acc__link" href="#" data-close>All</a>
+            <a class="acc__link" href="#" data-close>Digital</a>
+            <a class="acc__link" href="#" data-close>Physical</a>
+          </nav>
         </div>
+      </div>
 
-        <!-- SHOP -->
-        <div class="acc">
-          <button class="acc__btn" type="button" data-acc="shop" aria-expanded="false">
-            <span class="acc__label">Shop</span>
-            <span class="acc__mark" aria-hidden="true">+</span>
-          </button>
+    </section>
 
-          <div class="acc__panel" data-acc-panel="shop" hidden>
-            <nav class="acc__list" aria-label="Shop list">
-              <a class="acc__link" href="#" data-close>All</a>
-              <a class="acc__link" href="#" data-close>Digital</a>
-              <a class="acc__link" href="#" data-close>Physical</a>
-            </nav>
-          </div>
-        </div>
-      </section>
+    <!-- Secondary（SHOPの下にアンダーバー） -->
+    <nav class="drawer__secondary" aria-label="Secondary">
+      <a class="sec__link" href="#about" data-close>ABOUT</a>
+      <a class="sec__link" href="mailto:kazukihanamoto.dhrma@gmail.com" data-close>CONTACT</a>
+    </nav>
 
-      <!-- Secondary -->
-      <nav class="drawer__secondary" aria-label="Secondary">
-        <a class="sec__link" href="#about" data-close>ABOUT</a>
-        <a class="sec__link" href="mailto:kazukihanamoto.dhrma@gmail.com" data-close>CONTACT</a>
-      </nav>
-    </div>
-  </aside>
+  </div>
+</aside>
 
   <!-- Pointer FX -->
   <div id="pointer-fx" aria-hidden="true">
