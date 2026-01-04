@@ -1,69 +1,170 @@
-(function () {
-  var menuBtn = document.getElementById('menuBtn');
-  var drawer = document.getElementById('drawer');
-  var overlay = document.getElementById('overlay');
-  var badge = document.getElementById('jsBadge');
+/* =========================================================
+   Drawer: open/close + accordion（HYKEの“間にニョッ”）
+   Pointer FX: rAFで軽量追従 + すぐ消える
+========================================================= */
 
-  // JS生存確認（目で分かる）
-  if (badge) badge.textContent = 'JS: ON';
+(() => {
+  const $ = (s, root = document) => root.querySelector(s);
+  const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
 
-  function openDrawer(){
-    if (!drawer) return;
-    drawer.classList.add('is-open');
-    document.body.classList.add('is-locked');
-    if (overlay) overlay.hidden = false;
-    if (menuBtn) menuBtn.setAttribute('aria-expanded','true');
-    drawer.setAttribute('aria-hidden','false');
+  // Year
+  const yearEl = $("#year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  // ---------- Drawer ----------
+  const drawer = $("#drawer");
+  const overlay = $("#overlay");
+  const menuBtn = $("#menuBtn");
+
+  function openDrawer() {
+    drawer.classList.add("is-open");
+    drawer.setAttribute("aria-hidden", "false");
+    overlay.hidden = false;
+    menuBtn.setAttribute("aria-expanded", "true");
+    document.body.classList.add("is-locked");
   }
 
-  function closeDrawer(){
-    if (!drawer) return;
-    drawer.classList.remove('is-open');
-    document.body.classList.remove('is-locked');
-    if (overlay) overlay.hidden = true;
-    if (menuBtn) menuBtn.setAttribute('aria-expanded','false');
-    drawer.setAttribute('aria-hidden','true');
+  function closeDrawer() {
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+    overlay.hidden = true;
+    menuBtn.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("is-locked");
   }
 
-  if (menuBtn) menuBtn.addEventListener('click', openDrawer);
-  if (overlay) overlay.addEventListener('click', closeDrawer);
+  menuBtn?.addEventListener("click", openDrawer);
+  overlay?.addEventListener("click", closeDrawer);
 
-  document.addEventListener('click', function(e){
-    // data-close が押されたら閉じる
-    var t = e.target;
-    while (t && t !== document.body) {
-      if (t.hasAttribute && t.hasAttribute('data-close')) { closeDrawer(); return; }
-      t = t.parentNode;
-    }
-  }, true);
-
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape') closeDrawer();
+  // close buttons + “TOP” inside drawer
+  $$("[data-close]").forEach(el => {
+    el.addEventListener("click", () => closeDrawer());
   });
 
-  // Pointer FX（最低限：動いたら出る）
-  var fx = document.getElementById('pointer-fx');
-  function showFx(){ if (fx) fx.style.opacity = '1'; }
-  function hideFx(){ if (fx) fx.style.opacity = '0'; }
-  function moveFx(x,y){ if (fx) fx.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)'; }
+  // ESC close (desktop)
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && drawer.classList.contains("is-open")) closeDrawer();
+  });
 
-  if (fx) {
-    window.addEventListener('mousemove', function(e){
-      showFx(); moveFx(e.clientX, e.clientY);
-    }, {passive:true});
+  // ---------- Accordion ----------
+  function toggleAcc(key) {
+    const btn = $(`[data-acc="${key}"]`);
+    const panel = $(`[data-acc-panel="${key}"]`);
+    if (!btn || !panel) return;
 
-    window.addEventListener('touchstart', function(e){
-      var t = e.touches && e.touches[0];
-      if (!t) return;
-      showFx(); moveFx(t.clientX, t.clientY);
-      setTimeout(hideFx, 900);
-    }, {passive:true});
+    const willOpen = btn.getAttribute("aria-expanded") !== "true";
 
-    window.addEventListener('touchmove', function(e){
-      var t = e.touches && e.touches[0];
-      if (!t) return;
-      showFx(); moveFx(t.clientX, t.clientY);
-    }, {passive:true});
+    // 同階層の他を閉じる（必要なら）
+    // ※SHOP内のgoodsは別扱いにしたいので、ここは「同じ親のacc__panel内」だけ閉じる
+    const parent = btn.closest(".drawer__acc") || btn.parentElement;
+    if (parent) {
+      $$('[data-acc]', parent).forEach(otherBtn => {
+        const otherKey = otherBtn.getAttribute("data-acc");
+        const otherPanel = $(`[data-acc-panel="${otherKey}"]`);
+        if (!otherKey || !otherPanel) return;
+        if (otherBtn === btn) return;
+
+        // goodsはSHOPの内側なので、drawer__acc直下の3つだけ閉じる
+        if (btn.classList.contains("acc__subbtn")) return;
+        if (otherBtn.classList.contains("acc__subbtn")) return;
+
+        otherBtn.setAttribute("aria-expanded", "false");
+        otherPanel.hidden = true;
+        const mk = $(".acc__mark", otherBtn);
+        if (mk) mk.textContent = "+";
+      });
+    }
+
+    btn.setAttribute("aria-expanded", String(willOpen));
+    panel.hidden = !willOpen;
+    const mark = $(".acc__mark", btn);
+    if (mark) mark.textContent = willOpen ? "−" : "+";
   }
+
+  $$("[data-acc]").forEach(btn => {
+    btn.addEventListener("click", () => toggleAcc(btn.getAttribute("data-acc")));
+  });
+
+  // ---------- Pointer FX (light) ----------
+  const fx = $("#pointer-fx");
+  const blob = $("#pointer-blob");
+  if (!fx || !blob) return;
+
+  let visible = false;
+  let targetX = -9999, targetY = -9999;
+  let curX = -9999, curY = -9999;
+  let raf = 0;
+
+  // 追従の“ヌルさ”係数（0.18〜0.28くらいが軽くて気持ち良い）
+  const ease = 0.22;
+
+  function show() {
+    if (visible) return;
+    visible = true;
+    fx.style.opacity = "1";
+  }
+
+  function hide() {
+    if (!visible) return;
+    visible = false;
+    fx.style.opacity = "0";
+  }
+
+  function tick() {
+    // イージング
+    curX += (targetX - curX) * ease;
+    curY += (targetY - curY) * ease;
+
+    fx.style.transform = `translate3d(${curX}px, ${curY}px, 0)`;
+
+    raf = requestAnimationFrame(tick);
+  }
+
+  function start() {
+    if (raf) return;
+    raf = requestAnimationFrame(tick);
+  }
+
+  function stop() {
+    if (!raf) return;
+    cancelAnimationFrame(raf);
+    raf = 0;
+  }
+
+  // desktop pointer
+  window.addEventListener("pointermove", (e) => {
+    targetX = e.clientX;
+    targetY = e.clientY;
+    show();
+    start();
+  }, { passive: true });
+
+  window.addEventListener("pointerleave", () => {
+    hide();
+    // 少し待って止める（チラつき防止）
+    setTimeout(() => { if (!visible) stop(); }, 180);
+  });
+
+  // touch（iOSで“ラグい”時はここを軽く）
+  window.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    if (!t) return;
+    targetX = t.clientX;
+    targetY = t.clientY;
+    show();
+    start();
+  }, { passive: true });
+
+  window.addEventListener("touchmove", (e) => {
+    const t = e.touches[0];
+    if (!t) return;
+    targetX = t.clientX;
+    targetY = t.clientY;
+    show();
+  }, { passive: true });
+
+  window.addEventListener("touchend", () => {
+    hide(); // ← “スッと消える”の体感を優先
+    setTimeout(() => { if (!visible) stop(); }, 160);
+  }, { passive: true });
 
 })();
