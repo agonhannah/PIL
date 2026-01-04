@@ -185,20 +185,17 @@
   const scheduleIdleFade = () => {
   if (idleTimer) clearTimeout(idleTimer);
 
-  // 全体の消失時間（体感）
   const total = isTouch ? 1400 : 1600;
-  const half = total / 2;
 
-  // ① すぐ薄まる
+  // ① 発現直後からすぐ薄くなり始める
+  requestAnimationFrame(() => {
+    fx.style.opacity = "0.4";
+  });
+
+  // ② 同じ時間感覚で完全に消える
   idleTimer = setTimeout(() => {
-    fx.style.opacity = "0.35";
-
-    // ② 同じ時間で完全に消える
-    idleTimer = setTimeout(() => {
-      fx.style.opacity = "0";
-    }, half);
-
-  }, half);
+    fx.style.opacity = "0";
+  }, total);
 };
 
     // Desktop follow
