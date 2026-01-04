@@ -372,3 +372,11 @@ body.is-locked{
 
 /* もし closebtn を残していたら強制非表示 */
 .closebtn{ display:none !important; }
+
+/* =========================
+   Mobile: blobは即出し（フェードイン無し）
+   1秒で消えるのはJS側でやる
+========================= */
+body.is-touch #pointer-fx{
+  transition: none;  /* ←フェードインを消す */
+}
