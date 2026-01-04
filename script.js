@@ -104,6 +104,68 @@
   }
 })();
 
+// year
+(() => {
+  const y = document.getElementById("year");
+  if (y) y.textContent = new Date().getFullYear();
+})();
+
+// drawer
+(() => {
+  const menuBtn = document.getElementById("menuBtn");
+  const drawer  = document.getElementById("drawer");
+  const overlay = document.getElementById("overlay");
+  if (!menuBtn || !drawer || !overlay) return;
+
+  const closeBtn = drawer.querySelector("[data-close]");
+
+  function setExpanded(isOpen){
+    menuBtn.setAttribute("aria-expanded", String(isOpen));
+    drawer.setAttribute("aria-hidden", String(!isOpen));
+  }
+
+  function openDrawer(){
+    drawer.classList.add("is-open");
+    overlay.hidden = false;
+    document.body.classList.add("is-locked");
+    setExpanded(true);
+  }
+
+  function closeDrawer(){
+    drawer.classList.remove("is-open");
+    overlay.hidden = true;
+    document.body.classList.remove("is-locked");
+    setExpanded(false);
+  }
+
+  menuBtn.addEventListener("click", openDrawer);
+  overlay.addEventListener("click", closeDrawer);
+  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && drawer.classList.contains("is-open")){
+      e.preventDefault();
+      closeDrawer();
+    }
+  });
+
+  // accordion
+  const rows = drawer.querySelectorAll("[data-acc]");
+  rows.forEach((row) => {
+    row.addEventListener("click", () => {
+      const key = row.getAttribute("data-acc");
+      const sub = drawer.querySelector(`[data-sub="${key}"]`);
+      if (!sub) return;
+
+      const isOpen = row.getAttribute("aria-expanded") === "true";
+      row.setAttribute("aria-expanded", String(!isOpen));
+      sub.hidden = isOpen;
+    });
+  });
+})();
+
+/* ここに、あなたの PointerFX のJS全文をそのまま貼り付けてOK */
+
 /*
   ==============================
   Pointer FX
