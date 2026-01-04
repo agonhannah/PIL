@@ -80,21 +80,26 @@ if (overlay) overlay.addEventListener("click", closeDrawer);
 // drawer内の data-close を踏んだら閉じる
 if (drawer) {
   drawer.addEventListener("click", (e) => {
-    const t = e.target;
-
-    const closeEl = t.closest && t.closest("[data-close]");
+    const closeEl = e.target.closest && e.target.closest("[data-close]");
     if (!closeEl) return;
 
     const href = closeEl.getAttribute("href") || "";
 
-    // TOPだけは「閉じる→トップへ戻す」を強制
+    // TOP：閉じる → 先頭へ → “再更新っぽく” ハッシュを付け直す
     if (href === "#top") {
       e.preventDefault();
-      goTopAfterClose();
+      closeDrawer();
+
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+        // hashを一回消して付け直す（iOSで効きやすい）
+        history.replaceState(null, "", " ");
+        location.hash = "#top";
+      });
       return;
     }
 
-    // それ以外は通常：リンクは生かしつつ閉じる
+    // その他：普通に閉じる（# は止める）
     if (href === "#") e.preventDefault();
     closeDrawer();
   });
