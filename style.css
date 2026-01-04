@@ -327,4 +327,19 @@ body.is-touch{
 }
 
 @media (max-width: 640px){
-  .wrap{ padding-top: 
+  :root{ --gutter: var(--gutter-sm); } /* ★スマホでも同じ基準 */
+
+  .wrap{ padding-top: 26px; }
+
+  .topbar{
+    padding:
+      calc(14px + env(safe-area-inset-top, 0px))
+      calc(var(--gutter) + env(safe-area-inset-right, 0px))
+      14px
+      calc(var(--gutter) + env(safe-area-inset-left, 0px));
+  }
+
+  .grid{ grid-template-columns: 1fr; }
+  .grid--shop{ grid-template-columns: 1fr; }
+  .hero__lead{ font-size: 14px; }
+}
