@@ -6,8 +6,7 @@
   <title>dhrma Kazuki Hanamoto</title>
   <meta name="description" content="dhrma / Kazuki Hanamoto — audio & visual works, archive, and shop." />
 
-  <!-- cache bust -->
-  <link rel="stylesheet" href="style.css?v=20260104-2105">
+  <link rel="stylesheet" href="style.css?v=20260104-2200">
 </head>
 
 <body>
@@ -30,7 +29,7 @@
   </header>
 
   <main id="top" class="wrap">
-    <!-- Top: blank area for future video -->
+    <!-- トップ：無地（後で動画差し替え） -->
     <section class="hero" aria-label="Top">
       <div class="hero__blank" aria-hidden="true"></div>
 
@@ -68,7 +67,7 @@
     <!-- SHOP anchor -->
     <section id="shop" class="section" aria-label="Shop"></section>
 
-    <!-- ABOUT / CONTACT -->
+    <!-- ABOUT -->
     <section id="about" class="section" aria-label="About">
       <div class="aboutbox">
         <p class="aboutbox__text">
@@ -87,10 +86,9 @@
   <!-- Overlay -->
   <div class="overlay" id="overlay" hidden></div>
 
-  <!-- Drawer (HYKE-like full screen, accordion “in-between”) -->
+  <!-- Drawer (右から全画面 / accordionで“間にニョッと”出す) -->
   <aside class="drawer" id="drawer" aria-hidden="true">
     <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
-
       <div class="drawer__head">
         <a class="drawer__toplink" href="#top" data-close>TOP</a>
         <button class="drawer__close" type="button" data-close aria-label="Close menu">×</button>
@@ -98,7 +96,7 @@
 
       <div class="drawer__rule" aria-hidden="true"></div>
 
-      <!-- Primary accordion -->
+      <!-- ACCORDION -->
       <section class="drawer__acc" aria-label="Primary sections">
 
         <!-- ARCHIVE -->
@@ -107,7 +105,6 @@
             <span class="acc__label">ARCHIVE</span>
             <span class="acc__mark" aria-hidden="true">+</span>
           </button>
-
           <div class="acc__panel" data-acc-panel="archive" hidden>
             <nav class="acc__list" aria-label="Archive list">
               <a class="acc__link" href="#" data-close>Work Title 01</a>
@@ -124,33 +121,28 @@
           </button>
 
           <div class="acc__panel" data-acc-panel="shop" hidden>
-            <!-- nested accordion (All / Digital / Physical) -->
+            <!-- sub accordion -->
             <div class="subacc">
-
-              <button class="subacc__btn" type="button" data-subacc="shop-all" aria-expanded="false">
-                <span class="subacc__label">All</span>
-                <span class="subacc__mark" aria-hidden="true">+</span>
+              <button class="acc__subbtn" type="button" data-subacc="shopAll" aria-expanded="false">
+                <span>All</span><span class="submark" aria-hidden="true">+</span>
               </button>
-              <div class="subacc__panel" data-subacc-panel="shop-all" hidden>
+              <div class="acc__subpanel" data-subacc-panel="shopAll" hidden>
                 <div class="acc__note">Coming soon</div>
               </div>
 
-              <button class="subacc__btn" type="button" data-subacc="shop-digital" aria-expanded="false">
-                <span class="subacc__label">Digital</span>
-                <span class="subacc__mark" aria-hidden="true">+</span>
+              <button class="acc__subbtn" type="button" data-subacc="shopDigital" aria-expanded="false">
+                <span>Digital</span><span class="submark" aria-hidden="true">+</span>
               </button>
-              <div class="subacc__panel" data-subacc-panel="shop-digital" hidden>
+              <div class="acc__subpanel" data-subacc-panel="shopDigital" hidden>
                 <div class="acc__note">Coming soon</div>
               </div>
 
-              <button class="subacc__btn" type="button" data-subacc="shop-physical" aria-expanded="false">
-                <span class="subacc__label">Physical</span>
-                <span class="subacc__mark" aria-hidden="true">+</span>
+              <button class="acc__subbtn" type="button" data-subacc="shopPhysical" aria-expanded="false">
+                <span>Physical</span><span class="submark" aria-hidden="true">+</span>
               </button>
-              <div class="subacc__panel" data-subacc-panel="shop-physical" hidden>
+              <div class="acc__subpanel" data-subacc-panel="shopPhysical" hidden>
                 <div class="acc__note">Coming soon</div>
               </div>
-
             </div>
           </div>
         </div>
@@ -161,7 +153,6 @@
             <span class="acc__label">ORDER</span>
             <span class="acc__mark" aria-hidden="true">+</span>
           </button>
-
           <div class="acc__panel" data-acc-panel="order" hidden>
             <div class="acc__note">Order / Contact details</div>
           </div>
@@ -171,17 +162,14 @@
 
       <div class="drawer__rule" aria-hidden="true"></div>
 
-      <!-- Secondary -->
       <nav class="drawer__secondary" aria-label="Secondary">
-        <!-- CONTACTは存在する#aboutに統一 -->
-        <a class="sec__link" href="#about" data-close>CONTACT</a>
         <a class="sec__link" href="#about" data-close>ABOUT</a>
+        <a class="sec__link" href="#about" data-close>CONTACT</a>
       </nav>
-
     </div>
   </aside>
 
-  <!-- Pointer FX (DOM keep) -->
+  <!-- Pointer FX（DOMは残す） -->
   <div id="pointer-fx" aria-hidden="true">
     <div id="pointer-blob"></div>
 
@@ -195,10 +183,10 @@
         <span class="lockbox__tick lockbox__tick--b"></span>
         <span class="lockbox__tick lockbox__tick--l"></span>
       </div>
+      <div class="lockbox__label">Point HERE</div>
     </div>
   </div>
 
-  <!-- cache bust -->
-  <script src="script.js?v=20260104-2105" defer></script>
+  <script src="script.js?v=20260104-2200" defer></script>
 </body>
 </html>
