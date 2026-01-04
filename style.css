@@ -12,6 +12,10 @@
   --panel: rgba(255,255,255,0.65);
   --panel2: rgba(255,255,255,0.5);
   --radius: 14px;
+
+  /* ★追加：左揃え基準を統一 */
+  --gutter: 20px;
+  --gutter-sm: 20px; /* ←スマホもPARAとMenuを同じ左にする */
 }
 
 *{ box-sizing: border-box; }
