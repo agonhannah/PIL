@@ -65,6 +65,8 @@ body::after{
 
   background:rgba(246,246,244,.78);
   backdrop-filter: blur(6px);
+
+  border-bottom:1px solid var(--line); /* ← 追加 */
 }
 
 .toplink{
@@ -98,7 +100,7 @@ body::after{
 .wrap{
   max-width:1120px;
   margin:0 auto;
-  padding:22px var(--gutter) 64px;
+  padding:0 var(--gutter) 64px; /* ← 上を0に変更（フルブリード優先） */
 }
 
 /* Hero: full-bleed stage (video will be injected later) */
@@ -111,12 +113,19 @@ body::after{
 .hero__blank{
   width: 100vw;
   height: 100vh;               /* まずは1画面 */
-  margin-left: calc(var(--gutter) * -1);
-  margin-right: calc(var(--gutter) * -1);
+
+  /* 安定フルブリード（横ズレ/横スク回避） */
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+
   background: transparent;
   border: 0;
   border-radius: 0;
 }
+
 .hero__lead{
   margin:14px 0 10px;
   font-size:14px;
@@ -217,7 +226,7 @@ body::after{
   display:flex;
   justify-content:space-between;
   align-items:center;
-    padding-bottom: 14px;
+  padding-bottom: 14px;
   border-bottom: 1px solid var(--line); /* ← これがTOPとARCHIVEの間のアンダーバー */
 }
 
@@ -334,7 +343,7 @@ body::after{
   opacity:0;
   transform: translate3d(-9999px,-9999px,0);
   will-change: transform, opacity;
-  transition: opacity 420ms ease-out;
+  transition: opacity 420ms linear; /* ← linear に変更 */
 }
 #pointer-blob{
   width:84px;
@@ -373,5 +382,3 @@ body::after{
   display:none !important;
 }
 */
-
-
