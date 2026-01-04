@@ -313,3 +313,18 @@ body.is-locked{
   text-transform:uppercase;
   color:var(--muted);
 }
+
+/* 三重線 -> × 変形（drawerが開いている時） */
+.drawer.is-open ~ .topbar #menuBtn .hamburger__lines span{
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.drawer.is-open ~ .topbar #menuBtn .hamburger__lines span:nth-child(1){
+  transform: translateY(6px) rotate(45deg);
+}
+.drawer.is-open ~ .topbar #menuBtn .hamburger__lines span:nth-child(2){
+  opacity: 0;
+}
+.drawer.is-open ~ .topbar #menuBtn .hamburger__lines span:nth-child(3){
+  transform: translateY(-6px) rotate(-45deg);
+}
