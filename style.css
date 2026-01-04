@@ -13,9 +13,8 @@
   --panel2: rgba(255,255,255,0.5);
   --radius: 14px;
 
-  /* 左揃え基準（MenuとPARADの左端を統一） */
+  /* Left alignment baseline (Menu + PARAD) */
   --gutter: 20px;
-  --gutter-sm: 20px;
 }
 
 *{ box-sizing: border-box; }
@@ -32,23 +31,18 @@ body{
   overflow-x: hidden;
 }
 
+a{ color: inherit; text-decoration: none; }
+
+/* iOS: touch-action none は事故りやすいので縦スクロール許可 */
+body.is-touch{ touch-action: pan-y; }
+
 /* =========================================================
-   PC: システムカーソルを完全に消す（サイト本体 + drawer 含む）
+   PC: hide system cursor (site + drawer)
 ========================================================= */
 @media (pointer: fine){
   html, body{ cursor: none !important; }
-
-  .overlay,
-  .drawer,
-  .drawer *{
-    cursor: none !important;
-  }
-
-  a:hover,
-  button:hover,
-  [role="button"]:hover{
-    cursor: none !important;
-  }
+  .overlay, .drawer, .drawer *{ cursor: none !important; }
+  a:hover, button:hover, [role="button"]:hover{ cursor: none !important; }
 }
 
 /* Noise overlay */
@@ -74,24 +68,20 @@ body::before{
   z-index: 0;
 }
 
-a{ color: inherit; text-decoration: none; }
-
-/* ここ重要：touch-action:none は不安定になりやすい → pan-y */
-body.is-touch{ touch-action: pan-y; }
-
 /* =========================================================
-   Layout
+   Topbar (Menu)
+   - Menu と PARAD の左端を一致
 ========================================================= */
-
-/* Menu と PARAD の左端を揃える：topbar も --gutter 基準 */
 .topbar{
   position: sticky;
   top: 0;
   z-index: 50;
+
   display: flex;
   align-items: center;
   justify-content: flex-start;
 
+  /* ★wrap と同じ左余白 */
   padding:
     calc(16px + env(safe-area-inset-top, 0px))
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
@@ -109,28 +99,26 @@ body.is-touch{ touch-action: pan-y; }
   gap: 12px;
 }
 
-/* PARAD 側（wrap）も同じ gutter */
-.wrap{
-  position: relative;
-  z-index: 1;
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 48px var(--gutter) 64px;
-}
-
-/* Menu button */
 .menuBtn{
+  appearance: none;
+  -webkit-appearance: none;
+
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+
   font-size: 17px;
   font-weight: 900;
   letter-spacing: 0.08em;
   color: var(--ink);
+
   background: transparent;
   border: none;
   padding: 4px 0;
-  cursor: pointer;
 
-  /* ここが最重要：ズレ要因を完全に消す */
-  margin-left: 0 !important;
+  /* ★中央寄せ要因を殺す */
+  margin: 0 !important;
+  text-align: left !important;
 }
 
 .menuBtn:hover{
@@ -139,9 +127,23 @@ body.is-touch{ touch-action: pan-y; }
 }
 
 /* =========================================================
+   Wrap (PARAD side)
+========================================================= */
+.wrap{
+  position: relative;
+  z-index: 1;
+
+  /* HYKEっぽく：PCは余白広めに見えるけど左基準は固定 */
+  max-width: 1120px;
+  margin: 0 auto;
+
+  /* ★topbar と同じ左余白 */
+  padding: 48px var(--gutter) 64px;
+}
+
+/* =========================================================
    Hero
 ========================================================= */
-
 .hero{ padding: 32px 0 14px; }
 
 .hero__title{
@@ -202,9 +204,8 @@ body.is-touch{ touch-action: pan-y; }
 }
 
 /* =========================================================
-   Sections / Grid / About（ここはそのまま）
+   Sections
 ========================================================= */
-
 .section{ padding: 10px 0 18px; }
 
 .section__head{
@@ -228,13 +229,18 @@ body.is-touch{ touch-action: pan-y; }
   color: var(--muted);
 }
 
+/* =========================================================
+   Grid + Cards
+========================================================= */
 .grid{
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
 
-.grid--shop{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid--shop{
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 
 .card{
   border: 1px solid var(--line);
@@ -294,6 +300,9 @@ body.is-touch{ touch-action: pan-y; }
   border-color: rgba(17,17,17,0.45);
 }
 
+/* =========================================================
+   About
+========================================================= */
 .aboutbox{
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -325,9 +334,9 @@ body.is-touch{ touch-action: pan-y; }
 }
 
 /* =========================================================
-   Drawer
+   Overlay + Drawer
+   ★ベースを「常にフルスクリーン」にして、PCでだけ細くする
 ========================================================= */
-
 .overlay{
   position: fixed;
   inset: 0;
@@ -336,21 +345,27 @@ body.is-touch{ touch-action: pan-y; }
   z-index: 1200;
 }
 
+/* hidden を確実に効かせる */
+.overlay[hidden]{ display: none !important; }
+
 .drawer{
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
-  width: min(78vw, 360px);
+
+  /* ★まず確実にフルスクリーン */
+  width: 100vw;
+  height: 100dvh; /* iOS対応 */
+  max-width: none;
+
   background: rgba(246,246,244,0.95);
-  border-right: 1px solid var(--line);
+  border-right: none;
   z-index: 1300;
 
   transform: translateX(-105%);
   transition: transform 260ms ease;
   will-change: transform;
 
-  /* 外側は0にして、中のpanelで余白管理（モバイルで楽） */
   padding: 0;
 }
 
@@ -364,7 +379,14 @@ body.is-touch{ touch-action: pan-y; }
 .drawer__panel{
   position: absolute;
   inset: 0;
-  padding: 18px 16px;
+
+  /* ★drawer内の余白も gutter で統一 */
+  padding:
+    calc(18px + env(safe-area-inset-top, 0px))
+    calc(var(--gutter) + env(safe-area-inset-right, 0px))
+    calc(18px + env(safe-area-inset-bottom, 0px))
+    calc(var(--gutter) + env(safe-area-inset-left, 0px));
+
   opacity: 0;
   pointer-events: none;
   transform: translateX(12px);
@@ -397,8 +419,8 @@ body.is-touch{ touch-action: pan-y; }
   border: none;
   background: transparent;
   padding: 0;
-  cursor: pointer;
   position: relative;
+  cursor: pointer;
 
   font-size: 0;
   line-height: 1;
@@ -434,7 +456,6 @@ body.is-touch{ touch-action: pan-y; }
   padding: 6px 2px;
 
   border-bottom: 1px solid rgba(17,17,17,0.10);
-
   background: transparent;
   border-left: none;
   border-right: none;
@@ -493,133 +514,4 @@ body.is-touch{ touch-action: pan-y; }
 
   background: transparent;
   border-left: none;
-  border-right: none;
-  border-top: none;
-
-  cursor: pointer;
-  color: var(--ink);
-}
-
-.drawer__note{
-  margin-top: 18px;
-  font-size: 14px;
-  opacity: 0.75;
-}
-
-.drawer__preview{
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  opacity: 0;
-  transition: opacity 180ms ease;
-  pointer-events: none;
-
-  background-size: cover;
-  background-position: center;
-  filter: blur(3px);
-  transform: scale(1.08);
-}
-
-.drawer__preview::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: rgba(246,246,244,0.35);
-}
-
-.drawer__top,
-.drawer__listTitle,
-.drawer__list,
-.drawer__note{
-  position: relative;
-  z-index: 1;
-}
-
-body.is-locked{ overflow: hidden; }
-
-/* iOS tap highlight kill */
-.drawer,
-.drawer *{ -webkit-tap-highlight-color: transparent; }
-
-.drawer button{
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  color: var(--ink) !important;
-}
-
-.drawer a,
-.drawer a:link,
-.drawer a:visited,
-.drawer a:hover,
-.drawer a:active{
-  color: var(--ink) !important;
-}
-
-/* =========================================================
-   Pointer FX
-========================================================= */
-
-#pointer-fx{
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 1400;
-  opacity: 0;
-  transform: translate3d(-9999px, -9999px, 0);
-  will-change: transform, opacity;
-}
-
-@media (pointer: coarse){
-  #pointer-fx{ transition: opacity 1000ms linear; }
-}
-
-#pointer-blob{
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 92px;
-  height: 92px;
-  border-radius: 999px;
-  background: rgba(0, 255, 90, 0.9);
-  filter: blur(15px);
-  transform: translate(-50%, -50%);
-  z-index: 1;
-}
-
-/* =========================================================
-   Responsive
-========================================================= */
-
-@media (max-width: 980px){
-  .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-/* スマホ */
-@media (max-width: 640px){
-  :root{ --gutter: var(--gutter-sm); }
-
-  .wrap{ padding-top: 26px; }
-  .grid{ grid-template-columns: 1fr; }
-  .grid--shop{ grid-template-columns: 1fr; }
-  .hero__lead{ font-size: 14px; }
-
-  /* panelの左右余白も gutter に揃える */
-  .drawer__panel{
-    padding-left: var(--gutter);
-    padding-right: var(--gutter);
-    padding-top: calc(18px + env(safe-area-inset-top, 0px));
-    padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
-  }
-}
-
-/* モバイル確実判定（iPhoneはこっちが効くことが多い） */
-@media (pointer: coarse){
-  .drawer{
-    width: 100vw !important;
-    max-width: none !important;
-    height: 100dvh !important;
-    border-right: none !important;
-  }
-}
+ 
