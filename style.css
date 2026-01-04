@@ -287,21 +287,25 @@ body.is-locked{
 }
 
 /* =========================================================
-   Pointer FX
+   Pointer FX + Lockbox（最前面 / drawer内でも見える）
 ========================================================= */
 #pointer-fx{
   position:fixed;
   top:0;
   left:0;
   pointer-events:none;
-  z-index:1400;
 
+  z-index:5000; /* ←最前面（topbar3000 / drawer2500 より上） */
   opacity:0;
   transform:translate3d(-9999px,-9999px,0);
   will-change: transform, opacity;
   transition:opacity 420ms linear;
 }
+
 #pointer-blob{
+  position:absolute;
+  left:0;
+  top:0;
   width:84px;
   height:84px;
   border-radius:999px;
@@ -310,29 +314,64 @@ body.is-locked{
   transform:translate(-50%,-50%);
 }
 
-/* lockbox label（クリックできる所だけ表示） */
-#lockbox{ opacity:.95; }
-#lockbox .lockbox__label{
-  margin-top:10px;
+/* lockbox本体：中心合わせ */
+#lockbox{
+  position:absolute;
+  left:0;
+  top:0;
+  transform:translate(-50%,-50%);
+  opacity:0; /* ←普段は消す（クリック可能な所だけ出す） */
+  transition:opacity 120ms ease;
+}
+
+/* JSで #pointer-fx に is-hot が付いた時だけ表示 */
+#pointer-fx.is-hot #lockbox{
+  opacity:1;
+}
+
+.lockbox__rect{
+  width:110px;
+  height:110px;
+  border:1px solid rgba(17,17,17,.28);
+  border-radius:14px;
+  position:relative;
+}
+
+/* cross */
+.lockbox__cross{
+  position:absolute;
+  left:50%;
+  top:50%;
+  background:rgba(17,17,17,.25);
+  transform:translate(-50%,-50%);
+}
+.lockbox__cross--h{ width:64px; height:1px; }
+.lockbox__cross--v{ width:1px; height:64px; }
+
+/* ticks */
+.lockbox__tick{ position:absolute; background:rgba(17,17,17,.35); }
+.lockbox__tick--t{ top:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
+.lockbox__tick--b{ bottom:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
+.lockbox__tick--l{ left:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
+.lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
+
+/* POINT HERE */
+.lockbox__rect::after{
+  content:"POINT HERE";
+  position:absolute;
+  left:50%;
+  bottom:-18px;
+  transform:translateX(-50%);
   font-size:10px;
   letter-spacing:.22em;
   text-transform:uppercase;
-  opacity:0;
-  transition:opacity 120ms ease;
-}
-#pointer-fx.is-hot #lockbox .lockbox__label{ opacity:.9; }
-
-/* top stage title（"2026 dhrma..." 用） */
-.topstage{
-  padding:22px 0 0;
-}
-.topstage__title{
-  margin:0;
-  font-size:12px;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:var(--muted);
+  color:rgba(17,17,17,.55);
+  white-space:nowrap;
 }
 
+/* モバイルは緑blobだけ（必要なら外してOK） */
+@media (pointer:coarse){
+  #lockbox{ display:none; }
+}
 /* もし closebtn を残していたら強制非表示 */
 .closebtn{ display:none !important; }
