@@ -9,76 +9,108 @@
 </head>
 
 <body>
-  <!-- Topbar（常に表示 / HYKE方式） -->
-    
-<header class="topbar" role="banner">
-<a class="toplink" href="./" data-home aria-label="Back to top">TOP</a>
+  <!-- Topbar -->
+  <header class="topbar" role="banner">
+    <a class="toplink" href="./" data-home aria-label="Back to top">TOP</a>
 
-  <!-- 右：三重線↔×（同じボタンで切替） -->
-  <button
-    class="hamburger"
-    id="menuBtn"
-    type="button"
-    aria-label="Open menu"
-    aria-controls="drawer"
-    aria-expanded="false"
-  >
-    <span class="hamburger__lines" aria-hidden="true">
-      <span></span><span></span><span></span>
-    </span>
-  </button>
-</header>
+    <button
+      class="hamburger"
+      id="menuBtn"
+      type="button"
+      aria-label="Open menu"
+      aria-controls="drawer"
+      aria-expanded="false"
+    >
+      <span class="hamburger__lines" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </span>
+    </button>
+  </header>
 
-<div class="overlay" id="overlay" hidden></div>
+  <div class="overlay" id="overlay" hidden></div>
 
-<!-- Drawer（バー下からスライド） -->
-<aside class="drawer" id="drawer" aria-hidden="true">
-  <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
-    <!-- Accordion -->
-    
-    <section class="drawer__acc" aria-label="Menu sections">
+  <!-- Drawer -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
 
-      <!-- ARCHIVE -->
-      <div class="acc">
-        <button class="acc__btn" type="button" data-acc="archive" aria-expanded="false">
-          <span class="acc__label">Archive</span>
-          <span class="acc__mark" aria-hidden="true">+</span>
-        </button>
+      <section class="drawer__acc" aria-label="Menu sections">
 
-        <div class="acc__panel" data-acc-panel="archive" hidden>
-          <nav class="acc__list" aria-label="Archive list">
-            <a class="acc__link" href="#" data-close>Design</a>
-            <a class="acc__link" href="#" data-close>Beat Live</a>
-          </nav>
+        <!-- ARCHIVE -->
+        <div class="acc">
+          <button class="acc__btn" type="button" data-acc="archive" aria-expanded="false">
+            <span class="acc__label">Archive</span>
+            <span class="acc__mark" aria-hidden="true">+</span>
+          </button>
+
+          <div class="acc__panel" data-acc-panel="archive" hidden>
+            <nav class="acc__list" aria-label="Archive list">
+              <a class="acc__link" href="#" data-close>Design</a>
+              <a class="acc__link" href="#" data-close>Beat Live</a>
+            </nav>
+          </div>
         </div>
-      </div>
 
-      <!-- SHOP -->
-      <div class="acc">
-        <button class="acc__btn" type="button" data-acc="shop" aria-expanded="false">
-          <span class="acc__label">Shop</span>
-          <span class="acc__mark" aria-hidden="true">+</span>
-        </button>
+        <!-- SHOP -->
+        <div class="acc">
+          <button class="acc__btn" type="button" data-acc="shop" aria-expanded="true">
+            <span class="acc__label">Shop</span>
+            <span class="acc__mark" aria-hidden="true">−</span>
+          </button>
 
-        <div class="acc__panel" data-acc-panel="shop" hidden>
-          <nav class="acc__list" aria-label="Shop list">
-            <a class="acc__link" href="#" data-close>All</a>
-            <a class="acc__link" href="#" data-close>Digital</a>
-            <a class="acc__link" href="#" data-close>Physical</a>
-          </nav>
+          <div class="acc__panel" data-acc-panel="shop">
+            <nav class="acc__list" aria-label="Shop list">
+              <a class="acc__link" href="#" data-close>All</a>
+              <a class="acc__link" href="#" data-close>Digital</a>
+              <a class="acc__link" href="#" data-close>Physical</a>
+            </nav>
+          </div>
         </div>
-      </div>
 
+      </section>
+
+      <nav class="drawer__secondary" aria-label="Secondary">
+        <a class="sec__link" href="#about" data-close>ABOUT</a>
+        <a class="sec__link" href="mailto:kazukihanamoto.dhrma@gmail.com" data-close>CONTACT</a>
+      </nav>
+
+    </div>
+  </aside>
+
+  <!-- =========================================================
+       MAIN : SHOP → ALL
+  ========================================================== -->
+  <main class="page" id="shop-all">
+
+    <section class="shop">
+      <header class="shop__head">
+        <div class="shop__meta">
+          <div class="shop__count">1 item</div>
+        </div>
+      </header>
+
+      <div class="shop__grid">
+
+        <!-- Session Collection -->
+        <article class="shop-card">
+          <a class="shop-card__link" href="#session-collection">
+            <div class="shop-card__media">
+              <img
+                src="image/SessionCollection.JPG"
+                alt="Session Collection"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+
+            <h3 class="shop-card__title">Session Collection</h3>
+            <div class="shop-card__price">2750 yen (tax in)</div>
+          </a>
+        </article>
+
+      </div>
     </section>
 
-    <!-- Secondary（SHOPの下にアンダーバー） -->
-    <nav class="drawer__secondary" aria-label="Secondary">
-      <a class="sec__link" href="#about" data-close>ABOUT</a>
-      <a class="sec__link" href="mailto:kazukihanamoto.dhrma@gmail.com" data-close>CONTACT</a>
-    </nav>
-
-  </div>
-</aside>
+  </main>
 
   <!-- Pointer FX -->
   <div id="pointer-fx" aria-hidden="true">
