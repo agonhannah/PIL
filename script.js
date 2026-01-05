@@ -67,7 +67,6 @@
   // TOPは「再更新」：data-home が付いたリンクを全部これにする
   const goHome = (e) => {
     e.preventDefault();
-    // GitHub Pagesでも安全に “hash無し”で戻す
     const url = location.pathname + location.search;
     location.replace(url);
   };
@@ -145,9 +144,9 @@
 
     // 初期
     const expanded = btn.getAttribute("aria-expanded") === "true";
-    const markを見る = btn.querySelector(".acc__mark");
+    const mark = btn.querySelector(".acc__mark");
     panel.hidden = !expanded;
-    if (markを見る) markを見る.textContent = expanded ? "−" : "+";
+    if (mark) mark.textContent = expanded ? "−" : "+";
 
     btn.addEventListener("click", (e) => {
       e.preventDefault();
@@ -208,8 +207,8 @@
       tx = e.clientX;
       ty = e.clientY;
 
-      hardShow();            // 常時表示（復帰）
-      updateHot(tx, ty);     // hot判定
+      hardShow();        // 常時表示（復帰）
+      updateHot(tx, ty); // hot判定
     };
 
     // mobile: tap spawn + 1s fadeout（フェードイン無し）
@@ -254,11 +253,17 @@
       // ブラウザ外へ出たら即消す（確実版）
       window.addEventListener("mouseleave", hardHide, { passive: true });
       window.addEventListener("blur", hardHide, { passive: true });
+
+      // ★最重要：ウィンドウ外へ抜けた時に強い（relatedTarget が null）
+      document.addEventListener("mouseout", (e) => {
+        if (!e.relatedTarget && !e.toElement) hardHide();
+      });
+
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) hardHide();
       });
 
-      // 戻ったら復帰（showだけ。位置は次のmoveで更新）
+      // 戻ったら復帰（位置は次のmoveで更新）
       window.addEventListener("mouseenter", hardShow, { passive: true });
       window.addEventListener("focus", hardShow, { passive: true });
 
