@@ -18,12 +18,18 @@
   document.body.classList.toggle("is-touch", !!isTouch);
 
   /* ----------------------------
-     Drawer
+     Elements
   ---------------------------- */
   const menuBtn = $("#menuBtn");
   const overlay = $("#overlay"); // 無ければ null
   const drawer  = $("#drawer");
 
+  const modal = $("#shopModal");
+  const modalOverlay = $("#modalOverlay");
+
+  /* ----------------------------
+     Drawer
+  ---------------------------- */
   const setOpen = (open) => {
     if (menuBtn) {
       menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
@@ -38,27 +44,32 @@
       overlay.hidden = !open;
     }
 
-    // drawer を開いてる間だけ body lock
-    // ※ modal側でも lock するが、両方開いてる時も lock 維持でOK
-    if (open) document.body.classList.add("is-locked");
-    else {
-      // modal が開いていたら lock を維持
-      const modal = $("#shopModal");
-      const modalOpen = modal && modal.classList.contains("is-open");
-      if (!modalOpen) document.body.classList.remove("is-locked");
-    }
+    // drawer / modal のどちらかが開いてる間は body lock
+    const modalOpen = modal && modal.classList.contains("is-open");
+    if (open || modalOpen) document.body.classList.add("is-locked");
+    else document.body.classList.remove("is-locked");
   };
 
   const openDrawer  = () => setOpen(true);
   const closeDrawer = () => setOpen(false);
 
   if (menuBtn) {
-    menuBtn.addEventListener("click", () => {
+    // ★重要：ボタンのクリックを“ここで止める”
+    // これで hash(#session-collection) の挙動や他クリック処理に食われるのを防ぐ
+    menuBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
       const expanded = menuBtn.getAttribute("aria-expanded") === "true";
       expanded ? closeDrawer() : openDrawer();
-    });
+    }, { capture: true });
   }
-  if (overlay) overlay.addEventListener("click", closeDrawer);
+
+  if (overlay) overlay.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    closeDrawer();
+  });
 
   // drawer 内の data-close は閉じるだけ（ページ遷移はさせない）
   if (drawer) {
@@ -68,6 +79,7 @@
 
       const href = closeEl.getAttribute("href") || "";
       if (href === "#") e.preventDefault();
+
       closeDrawer();
     });
   }
@@ -80,21 +92,12 @@
   };
   $$("[data-home]").forEach((el) => el.addEventListener("click", goHome));
 
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
-    }
-  });
-
   /* ----------------------------
      Shop Modal (open/close)
      - drawer の All/Digital/Physical から開く
      - overlay / Esc で閉じる
-     ※ 重要：modal開閉で drawer を勝手に閉じない（開く時だけ閉じる）
+     ※ modal開閉で drawer を勝手に閉じない（開く時だけ閉じる）
   ---------------------------- */
-  const modal = $("#shopModal");
-  const modalOverlay = $("#modalOverlay");
-
   const closeModal = () => {
     if (!modal) return;
 
@@ -143,7 +146,9 @@
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest("[data-open-modal]");
     if (!a) return;
+
     e.preventDefault();
+    e.stopPropagation();
 
     const view = a.getAttribute("data-open-modal");
     if (!view) return;
@@ -151,7 +156,11 @@
   });
 
   // modal overlay click
-  if (modalOverlay) modalOverlay.addEventListener("click", closeModal);
+  if (modalOverlay) modalOverlay.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    closeModal();
+  });
 
   // Esc：drawer優先、次にmodal
   window.addEventListener("keydown", (e) => {
@@ -232,6 +241,8 @@
 
     btn.addEventListener("click", (e) => {
       e.preventDefault();
+      e.stopPropagation();
+
       const isOpen = btn.getAttribute("aria-expanded") === "true";
       isOpen ? closePanel(btn, panel) : openPanel(btn, panel);
     });
