@@ -61,11 +61,11 @@ body::after{
    - TOPBARは常に最前面
    - Drawer/Modalはその下から
 ========================================================= */
-.topbar{ z-index: 6000; }
-.drawer{ z-index: 5500; }
-.modal{ z-index: 5400; }
-.modal-overlay{ z-index: 5300; }
-#pointer-fx{ z-index: 6500; } /* pointerをtopbarより上にしたければ 6500 に */
+.topbar{ z-index: 7000; }
+.drawer{ z-index: 6500; }
+.modal{ z-index: 6000; }
+.modal-overlay{ z-index: 5900; }
+#pointer-fx{ z-index: 8000; } /* pointerをtopbarより上にしたければ 6500 に */
 
 /* =========================================================
    Topbar
@@ -453,6 +453,7 @@ body.is-touch #pointer-fx{ transition:none; }
   left:0;
   right:0;
   top: var(--topbar-h);
+  left:0; right:0; bottom:0;
   height: calc(100dvh - var(--topbar-h));
 
   background:#fff;
