@@ -2,7 +2,7 @@
    script.js
    - Drawer open/close + HOME reload
    - Accordion
-   - Shop Modal (Shop → All/Digital/Physical opens modal)
+   - Shop Modal (open/close)
    - Pointer FX
 ========================================================= */
 
@@ -27,7 +27,7 @@
   const setOpen = (open) => {
     if (menuBtn) {
       menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
-      menuBtn.classList.toggle("is-open", open); // ← Drawerのときだけ×にする
+      menuBtn.classList.toggle("is-open", open);
     }
     if (drawer) {
       drawer.setAttribute("aria-hidden", open ? "false" : "true");
@@ -37,104 +37,30 @@
       overlay.classList.toggle("is-open", open);
       overlay.hidden = !open;
     }
-    document.body.classList.toggle("is-locked", open);
+
+    // drawer を開いてる間だけ body lock
+    // ※ modal側でも lock するが、両方開いてる時も lock 維持でOK
+    if (open) document.body.classList.add("is-locked");
+    else {
+      // modal が開いていたら lock を維持
+      const modal = $("#shopModal");
+      const modalOpen = modal && modal.classList.contains("is-open");
+      if (!modalOpen) document.body.classList.remove("is-locked");
+    }
   };
 
   const openDrawer  = () => setOpen(true);
   const closeDrawer = () => setOpen(false);
 
-  /* ----------------------------
-     Shop Modal (single implementation)
-  ---------------------------- */
-  const modal = $("#shopModal");
-  const modalOverlay = $("#modalOverlay");
-
-  const isModalOpen = () => !!(modal && modal.classList.contains("is-open"));
-
-  const closeModal = () => {
-    if (!modal) return;
-    modal.classList.remove("is-open");
-    modal.setAttribute("aria-hidden", "true");
-
-    if (modalOverlay) {
-      modalOverlay.classList.remove("is-open");
-      modalOverlay.hidden = true;
-    }
-
-    // view全隠し
-    modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
-
-    document.body.classList.remove("is-modal");
-
-    // drawerが開いてなければスクロールロック解除
-    if (!drawer || !drawer.classList.contains("is-open")) {
-      document.body.classList.remove("is-locked");
-    }
-  };
-
-  const openModal = (viewName) => {
-    if (!modal) return;
-
-    // drawerを閉じる（×も戻る）
-    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
-
-    // 表示ビュー切り替え
-    modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
-    const view = modal.querySelector(`[data-modal-view="${viewName}"]`);
-    if (view) view.hidden = false;
-
-    if (modalOverlay) {
-      modalOverlay.hidden = false;
-      // reflow
-      modalOverlay.offsetHeight;
-      modalOverlay.classList.add("is-open");
-    }
-
-    modal.classList.add("is-open");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("is-modal");
-
-    // モーダル表示中もスクロール止める
-    document.body.classList.add("is-locked");
-  };
-
-  // Drawer内リンク：data-open-modal で起動
-  document.addEventListener("click", (e) => {
-    const a = e.target.closest && e.target.closest("[data-open-modal]");
-    if (!a) return;
-    e.preventDefault();
-
-    const view = a.getAttribute("data-open-modal");
-    if (!view) return;
-
-    openModal(view);
-  });
-
-  // overlay clickで閉じる
-  if (modalOverlay) modalOverlay.addEventListener("click", closeModal);
-
-  /* ----------------------------
-     menuBtn click behavior
-     - modal open中：drawerではなく modal を閉じる（見た目はハンバーガーのまま）
-     - それ以外：drawer toggle
-  ---------------------------- */
   if (menuBtn) {
-    menuBtn.addEventListener("click", (e) => {
-      if (isModalOpen()) {
-        // モーダルを閉じる。ハンバーガー表示のまま。
-        e.preventDefault();
-        closeModal();
-        return;
-      }
-
+    menuBtn.addEventListener("click", () => {
       const expanded = menuBtn.getAttribute("aria-expanded") === "true";
       expanded ? closeDrawer() : openDrawer();
     });
   }
-
-  // Drawer内の data-close
   if (overlay) overlay.addEventListener("click", closeDrawer);
 
+  // drawer 内の data-close は閉じるだけ（ページ遷移はさせない）
   if (drawer) {
     drawer.addEventListener("click", (e) => {
       const closeEl = e.target.closest && e.target.closest("[data-close]");
@@ -146,7 +72,7 @@
     });
   }
 
-  // TOP (HOME reload)
+  // TOP は “スクロールトップ” 的にリロード（今の挙動維持）
   const goHome = (e) => {
     e.preventDefault();
     const url = location.pathname + location.search;
@@ -154,11 +80,85 @@
   };
   $$("[data-home]").forEach((el) => el.addEventListener("click", goHome));
 
-  // Esc: drawer優先 → modal
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+    }
+  });
+
+  /* ----------------------------
+     Shop Modal (open/close)
+     - drawer の All/Digital/Physical から開く
+     - overlay / Esc で閉じる
+     ※ 重要：modal開閉で drawer を勝手に閉じない（開く時だけ閉じる）
+  ---------------------------- */
+  const modal = $("#shopModal");
+  const modalOverlay = $("#modalOverlay");
+
+  const closeModal = () => {
+    if (!modal) return;
+
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+
+    if (modalOverlay) {
+      modalOverlay.classList.remove("is-open");
+      modalOverlay.hidden = true;
+    }
+
+    // view 非表示
+    modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
+
+    // drawer が開いてなければ body lock 解除
+    const drawerOpen = drawer && drawer.classList.contains("is-open");
+    if (!drawerOpen) document.body.classList.remove("is-locked");
+  };
+
+  const openModal = (viewName) => {
+    if (!modal) return;
+
+    // drawer は閉じる（menu の見た目優先）
+    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+
+    // view 切替
+    modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
+    const view = modal.querySelector(`[data-modal-view="${viewName}"]`);
+    if (view) view.hidden = false;
+
+    // overlay
+    if (modalOverlay) {
+      modalOverlay.hidden = false;
+      modalOverlay.offsetHeight; // reflow
+      modalOverlay.classList.add("is-open");
+    }
+
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+
+    // modal中は body lock
+    document.body.classList.add("is-locked");
+  };
+
+  // drawer のリンク（data-open-modal）で modal を開く
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest("[data-open-modal]");
+    if (!a) return;
+    e.preventDefault();
+
+    const view = a.getAttribute("data-open-modal");
+    if (!view) return;
+    openModal(view);
+  });
+
+  // modal overlay click
+  if (modalOverlay) modalOverlay.addEventListener("click", closeModal);
+
+  // Esc：drawer優先、次にmodal
   window.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
+
     if (drawer && drawer.classList.contains("is-open")) closeDrawer();
-    else if (isModalOpen()) closeModal();
+    else if (modal && modal.classList.contains("is-open")) closeModal();
   });
 
   /* ----------------------------
@@ -285,7 +285,9 @@
       fx.classList.toggle("is-hot", !isTouch && isInteractive(el));
     };
 
-    const inViewport = (cx, cy) => cx >= 0 && cy >= 0 && cx <= window.innerWidth && cy <= window.innerHeight;
+    const inViewport = (cx, cy) => {
+      return cx >= 0 && cy >= 0 && cx <= window.innerWidth && cy <= window.innerHeight;
+    };
 
     const onDesktopMove = (e) => {
       tx = e.clientX;
