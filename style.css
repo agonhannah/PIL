@@ -380,3 +380,9 @@ body.is-locked{
 body.is-touch #pointer-fx{
   transition: none;  /* ←フェードインを消す */
 }
+
+/* Desktopだけ：OSカーソル（矢印/手）を消す */
+@media (pointer:fine){
+  html, body { cursor: none; }
+  a, button, [role="button"], input, textarea, select, label, summary { cursor: none; }
+}
