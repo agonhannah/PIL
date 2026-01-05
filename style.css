@@ -604,9 +604,9 @@ body.is-touch #pointer-fx{
 ========================================================= */
 @media (max-width: 600px){
   .modal .shop-card__title{
-    display:block;
-    -webkit-line-clamp: initial;
-    -webkit-box-orient: initial;
+    display:block !important;
+    -webkit-line-clamp: unset;
+    -webkit-box-orient: unset;
     overflow: visible;
     white-space: normal;
   }
