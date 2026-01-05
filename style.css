@@ -294,14 +294,20 @@ body.is-locked{
   top:0;
   left:0;
   pointer-events:none;
+  z-index:5000;
 
-  z-index:5000; /* ←最前面（topbar3000 / drawer2500 より上） */
-  opacity:0; /* mobileはJSで出す / desktopは下のmediaで常時ONにする */
+  /* デスクトップは常時表示はJSでやる前提なので、
+     CSS側は “0固定” をやめておく（初期は0のままでもOKだが、消える原因になりやすい） */
+  opacity:1;
+
   transform:translate3d(-9999px,-9999px,0);
   will-change: transform, opacity;
-  transition:opacity 420ms linear; /* desktopでフェードさせたい場合用（desktop常時ONなら下で無効化） */
+
+  /* desktopは常時表示運用なので、CSS側のopacityトランジションは基本切る */
+  transition:none;
 }
 
+/* 緑blobは背面 */
 #pointer-blob{
   position:absolute;
   left:0;
@@ -312,16 +318,18 @@ body.is-locked{
   background:rgba(0,255,90,.85);
   filter:blur(10px);
   transform:translate(-50%,-50%);
+  z-index:0;
 }
 
-/* lockbox本体：中心合わせ */
+/* lockboxは前面 */
 #lockbox{
   position:absolute;
   left:0;
   top:0;
   transform:translate(-50%,-50%);
-  opacity:0; /* ←普段は消す（クリック可能な所だけ出す） */
+  opacity:0;               /* 普段は消す */
   transition:opacity 120ms ease;
+  z-index:2;
 }
 
 /* JSで #pointer-fx に is-hot が付いた時だけ表示 */
@@ -335,6 +343,8 @@ body.is-locked{
   border:1px solid rgba(17,17,17,.28);
   border-radius:14px;
   position:relative;
+  background:rgba(255,255,255,.25); /* 文字が埋もれないように薄く敷く */
+  backdrop-filter: blur(2px);
 }
 
 /* cross */
@@ -353,4 +363,38 @@ body.is-locked{
 .lockbox__tick--t{ top:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
 .lockbox__tick--b{ bottom:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
 .lockbox__tick--l{ left:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
-.lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%
+.lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
+
+/* POINT HERE（確実に前に出す） */
+.lockbox__rect::after{
+  content:"POINT HERE";
+  position:absolute;
+  left:50%;
+  bottom:-18px;
+  transform:translateX(-50%);
+  font-size:10px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:rgba(17,17,17,.55);
+  white-space:nowrap;
+  z-index:3;
+}
+
+/* もし closebtn を残していたら強制非表示 */
+.closebtn{ display:none !important; }
+
+/* =========================
+   Mobile: blobは即出し（フェードイン無し）
+   1秒で消えるのはJS側でやる
+========================= */
+body.is-touch #pointer-fx{
+  transition: none !important;
+}
+
+/* =========================
+   Desktop: OSカーソル（矢印/手）を確実に消す
+========================= */
+@media (pointer:fine){
+  html, body, * { cursor: none !important; }
+  a, button, [role="button"], input, textarea, select, label, summary { cursor: none !important; }
+}
