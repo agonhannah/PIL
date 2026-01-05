@@ -154,9 +154,10 @@
     });
   });
 
-  /* ----------------------------
-     Pointer FX (mobile: tap spawn + 1s fadeout)
-     desktop: follow + hot判定（lockbox表示）
+    /* ----------------------------
+     Pointer FX
+     mobile: tap spawn + 1s fadeout
+     desktop: follow (low lag) + outside hide + hot判定
   ---------------------------- */
   const fx = $("#pointer-fx");
   if (fx) {
@@ -165,6 +166,9 @@
 
     let idleTimer = null;
     let dimTimer  = null;
+
+    // ★ラグ調整：0.18 → 0.42（速め）。もっと速くしたければ 0.55 くらいまで
+    const FOLLOW = 0.42;
 
     const isInteractive = (el) => {
       if (!el) return false;
@@ -179,7 +183,7 @@
       fx.style.transform = `translate3d(${nx}px, ${ny}px, 0)`;
     };
 
-    // desktop用：少し薄まり→消える（今まで通り）
+    // desktop用：薄まり→消える（任意。常時表示運用なら不要だけど残してOK）
     const scheduleIdleFadeDesktop = () => {
       if (idleTimer) clearTimeout(idleTimer);
       if (dimTimer) clearTimeout(dimTimer);
@@ -195,16 +199,42 @@
       }, 1400);
     };
 
+    const hardHide = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      if (dimTimer) clearTimeout(dimTimer);
+
+      // ★パッと消す（transition殺す）
+      fx.style.transition = "none";
+      fx.style.opacity = "0";
+      fx.classList.remove("is-hot");
+    };
+
     const updateHot = (clientX, clientY) => {
       const el = document.elementFromPoint(clientX, clientY);
       fx.classList.toggle("is-hot", !isTouch && isInteractive(el));
     };
 
+    // desktop: move
     const onDesktopMove = (e) => {
       tx = e.clientX;
       ty = e.clientY;
+
       updateHot(e.clientX, e.clientY);
+
+      // 常時表示運用：ここで必ず復帰
       fx.style.opacity = "1";
+
+      // CSS側で desktopは transition:none にしてる想定だけど、
+      // もし残ってても move時に戻す
+      fx.style.transition = "none";
+
+      // もし「薄まり→消える」も併用したいならコメント解除
+      // scheduleIdleFadeDesktop();
+    };
+
+    // desktop: click でも確実に位置更新
+    const onDesktopDown = (e) => {
+      onDesktopMove(e);
     };
 
     // mobile用：タップした瞬間に出て、1秒で消える（フェードイン無し）
@@ -213,24 +243,19 @@
       if (!p) return;
 
       setTransform(p.clientX, p.clientY);
-
-      // touchは lockbox 出さない
       fx.classList.remove("is-hot");
 
       if (idleTimer) clearTimeout(idleTimer);
       if (dimTimer) clearTimeout(dimTimer);
 
-      // 即出し（フェードイン無し）
       fx.style.transition = "none";
       fx.style.opacity = "1";
 
-      // 次フレームから 1秒フェードアウト
       requestAnimationFrame(() => {
         fx.style.transition = "opacity 1000ms linear";
         fx.style.opacity = "0";
       });
 
-      // 後始末（次のタップで確実に即出しにする）
       idleTimer = setTimeout(() => {
         fx.style.transition = ""; // CSSに戻す
       }, 1000);
@@ -238,8 +263,9 @@
 
     const tick = () => {
       if (!isTouch) {
-        x += (tx - x) * 0.18;
-        y += (ty - y) * 0.18;
+        // ★追従（ラグ減らしたいなら FOLLOW を上げる）
+        x += (tx - x) * FOLLOW;
+        y += (ty - y) * FOLLOW;
         fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       }
       requestAnimationFrame(tick);
@@ -249,8 +275,15 @@
       window.addEventListener("touchstart", onTouchSpawn, { passive: true, capture: true });
       window.addEventListener("pointerdown", onTouchSpawn, { passive: true, capture: true });
     } else {
+      // ★ブラウザ外に出たら即消す
+      window.addEventListener("mouseleave", hardHide);
+      window.addEventListener("blur", hardHide);
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) hardHide();
+      });
+
       window.addEventListener("pointermove", onDesktopMove, { passive: true });
-      window.addEventListener("pointerdown", onDesktopMove, { passive: true });
+      window.addEventListener("pointerdown", onDesktopDown, { passive: true });
     }
 
     requestAnimationFrame(tick);
