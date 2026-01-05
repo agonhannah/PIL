@@ -2,6 +2,7 @@
    script.js
    - Drawer open/close + HOME reload
    - Accordion
+   - Shop Modal (open/close)
    - Pointer FX
      mobile: tap spawn + 1s fadeout
      desktop: follow (NO lag) + outside hide + hot判定
@@ -63,6 +64,7 @@
     });
   }
 
+  // TOPは「再更新」：data-home が付いたリンクを全部これにする
   const goHome = (e) => {
     e.preventDefault();
     const url = location.pathname + location.search;
@@ -70,31 +72,29 @@
   };
   $$("[data-home]").forEach((el) => el.addEventListener("click", goHome));
 
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
-    }
-  });
-
   /* ----------------------------
      Shop Modal (open/close)
      - drawer の All/Digital/Physical から開く
      - overlay / × / Esc で閉じる
   ---------------------------- */
-  const modal = document.querySelector("#shopModal");
-  const modalOverlay = document.querySelector("#modalOverlay");
-  const modalCloseBtn = document.querySelector("[data-modal-close]");
+  const modal = $("#shopModal");
+  const modalOverlay = $("#modalOverlay");
+  const modalCloseBtn = $("[data-modal-close]");
 
   const closeModal = () => {
     if (!modal) return;
+
     modal.classList.remove("is-open");
     modal.setAttribute("aria-hidden", "true");
+
     if (modalOverlay) {
       modalOverlay.classList.remove("is-open");
       modalOverlay.hidden = true;
     }
+
     // 表示中ビューを隠す
     modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
+
     // body lock は drawer が開いてない時だけ解除
     if (!drawer || !drawer.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
@@ -104,7 +104,7 @@
   const openModal = (viewName) => {
     if (!modal) return;
 
-    // drawer は閉じる（既存関数を優先）
+    // drawer は閉じる
     if (drawer && drawer.classList.contains("is-open")) closeDrawer();
 
     // 対象ビューだけ出す
@@ -114,7 +114,7 @@
 
     if (modalOverlay) {
       modalOverlay.hidden = false;
-      // reflow
+      // reflow してから open クラス
       modalOverlay.offsetHeight;
       modalOverlay.classList.add("is-open");
     }
@@ -126,25 +126,18 @@
     document.body.classList.add("is-locked");
   };
 
-  // drawer から起動
+  // drawer から起動（イベント委譲）
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest("[data-open-modal]");
     if (!a) return;
+
     e.preventDefault();
     const view = a.getAttribute("data-open-modal");
-    openModal(view);
+    if (view) openModal(view);
   });
 
   if (modalOverlay) modalOverlay.addEventListener("click", closeModal);
   if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeModal);
-
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      // drawer優先、次にmodal
-      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
-      else if (modal && modal.classList.contains("is-open")) closeModal();
-    }
-  });
 
   /* ----------------------------
      Accordion
@@ -280,7 +273,6 @@
       tx = e.clientX;
       ty = e.clientY;
 
-      // ビューポート外に出た瞬間も確実に消す
       if (!inViewport(tx, ty)) {
         hardHide();
         return;
@@ -315,7 +307,7 @@
       }, 1000);
     };
 
-    // desktop: NO lag follow（=tx/tyに即一致）
+    // desktop: NO lag follow
     const tick = () => {
       if (!isTouch) {
         x = tx;
@@ -329,11 +321,9 @@
       window.addEventListener("touchstart", onTouchSpawn, { passive: true, capture: true });
       window.addEventListener("pointerdown", onTouchSpawn, { passive: true, capture: true });
     } else {
-      // ブラウザ外へ出たら即消す（取りこぼし潰し）
       document.addEventListener("pointerleave", hardHide, { passive: true });
       document.addEventListener("mouseleave", hardHide, { passive: true });
 
-      // relatedTarget=null は「ウィンドウ外へ」
       document.addEventListener("pointerout", (e) => {
         if (!e.relatedTarget) hardHide();
       }, { passive: true });
@@ -347,7 +337,6 @@
         if (document.hidden) hardHide();
       });
 
-      // 戻ったら復帰（位置は次のmoveで更新）
       window.addEventListener("focus", hardShow, { passive: true });
 
       window.addEventListener("pointermove", onDesktopMove, { passive: true });
@@ -356,68 +345,15 @@
 
     requestAnimationFrame(tick);
   }
-  
-    /* ----------------------------
-     Shop Modal
+
+  /* ----------------------------
+     ESC（まとめて一箇所で管理）
   ---------------------------- */
-  const shopModal   = $("#shopModal");
-  const modalOverlay = $("#modalOverlay");
-
-  const openModalView = (viewName) => {
-    if (!shopModal) return;
-
-    // view切替
-    $$("[data-modal-view]").forEach(v => {
-      v.hidden = (v.getAttribute("data-modal-view") !== viewName);
-    });
-
-    // open
-    shopModal.classList.add("is-open");
-    shopModal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("is-modal");
-
-    if (modalOverlay) modalOverlay.hidden = false;
-  };
-
-  const closeModal = () => {
-    if (!shopModal) return;
-
-    shopModal.classList.remove("is-open");
-    shopModal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("is-modal");
-
-    if (modalOverlay) modalOverlay.hidden = true;
-  };
-
-  // Drawer内リンク：data-open-modal
-  $$("[data-open-modal]").forEach((a) => {
-    a.addEventListener("click", (e) => {
-      e.preventDefault();
-      const view = a.getAttribute("data-open-modal");
-      if (!view) return;
-
-      // drawerは閉じる（既存挙動を壊さない）
-      // ※ closeDrawer はこのスコープ内にある前提
-      closeDrawer();
-
-      // モーダル開く
-      openModalView(view);
-    });
-  });
-
-  // close button
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest && e.target.closest("[data-modal-close]");
-    if (btn) closeModal();
-  });
-
-  // overlay click
-  if (modalOverlay) modalOverlay.addEventListener("click", closeModal);
-
-  // ESC
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && shopModal && shopModal.classList.contains("is-open")) {
-      closeModal();
-    }
+    if (e.key !== "Escape") return;
+
+    // drawer優先、次にmodal
+    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+    else if (modal && modal.classList.contains("is-open")) closeModal();
   });
 })();
