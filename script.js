@@ -154,12 +154,14 @@
 
   /* ----------------------------
      Pointer FX
-     mobile: tap spawn + 1s fadeout
-     desktop: follow (NO lag) + outside hide + hot判定
   ---------------------------- */
   const fx = $("#pointer-fx");
   if (fx) {
+    let x = -9999, y = -9999;
+    let tx = -9999, ty = -9999;
+
     let idleTimer = null;
+    let dimTimer  = null;
 
     const isInteractive = (el) => {
       if (!el) return false;
@@ -168,19 +170,24 @@
       ));
     };
 
-    const setPos = (clientX, clientY) => {
-      fx.style.transform = `translate3d(${clientX}px, ${clientY}px, 0)`;
+    const setTransform = (nx, ny) => {
+      x = nx; y = ny;
+      tx = nx; ty = ny;
+      fx.style.transform = `translate3d(${nx}px, ${ny}px, 0)`;
     };
 
     const hardHide = () => {
       if (idleTimer) clearTimeout(idleTimer);
+      if (dimTimer) clearTimeout(dimTimer);
 
-      // 完全に残らないように「見えなくする + 画面外へ退避」
+      // 位置も飛ばして「残像」を消す
+      tx = ty = x = y = -9999;
+      fx.style.transform = "translate3d(-9999px,-9999px,0)";
+
       fx.style.transition = "none";
       fx.style.opacity = "0";
       fx.style.visibility = "hidden";
       fx.classList.remove("is-hot");
-      fx.style.transform = "translate3d(-9999px,-9999px,0)";
     };
 
     const hardShow = () => {
@@ -194,11 +201,23 @@
       fx.classList.toggle("is-hot", !isTouch && isInteractive(el));
     };
 
-    // desktop: move（ラグ0。ここで即座に追従）
+    const inViewport = (cx, cy) => {
+      return cx >= 0 && cy >= 0 && cx <= window.innerWidth && cy <= window.innerHeight;
+    };
+
+    // desktop: move
     const onDesktopMove = (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+
+      // ビューポート外に出た瞬間も確実に消す
+      if (!inViewport(tx, ty)) {
+        hardHide();
+        return;
+      }
+
       hardShow();
-      setPos(e.clientX, e.clientY);
-      updateHot(e.clientX, e.clientY);
+      updateHot(tx, ty);
     };
 
     // mobile: tap spawn + 1s fadeout（フェードイン無し）
@@ -206,13 +225,15 @@
       const p = e.touches ? e.touches[0] : e;
       if (!p) return;
 
-      if (idleTimer) clearTimeout(idleTimer);
-
+      setTransform(p.clientX, p.clientY);
       fx.classList.remove("is-hot");
+
+      if (idleTimer) clearTimeout(idleTimer);
+      if (dimTimer) clearTimeout(dimTimer);
+
       fx.style.visibility = "visible";
       fx.style.transition = "none";
       fx.style.opacity = "1";
-      setPos(p.clientX, p.clientY);
 
       requestAnimationFrame(() => {
         fx.style.transition = "opacity 1000ms linear";
@@ -220,41 +241,49 @@
       });
 
       idleTimer = setTimeout(() => {
-        // 次のタップで確実に即出しさせる
-        fx.style.transition = "";
+        fx.style.transition = ""; // CSSに戻す
       }, 1000);
+    };
+
+    // desktop: NO lag follow（=tx/tyに即一致）
+    const tick = () => {
+      if (!isTouch) {
+        x = tx;
+        y = ty;
+        fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+      requestAnimationFrame(tick);
     };
 
     if (isTouch) {
       window.addEventListener("touchstart", onTouchSpawn, { passive: true, capture: true });
       window.addEventListener("pointerdown", onTouchSpawn, { passive: true, capture: true });
     } else {
-      // ★「ブラウザ外へ出た」取りこぼし潰し（確実版）
-      // 1) ウィンドウ外へ出た典型
-      window.addEventListener("blur", hardHide, { passive: true });
+      // ブラウザ外へ出たら即消す（取りこぼし潰し）
+      document.addEventListener("pointerleave", hardHide, { passive: true });
+      document.addEventListener("mouseleave", hardHide, { passive: true });
 
-      // 2) タブ切替/最小化など
+      // relatedTarget=null は「ウィンドウ外へ」
+      document.addEventListener("pointerout", (e) => {
+        if (!e.relatedTarget) hardHide();
+      }, { passive: true });
+
+      document.addEventListener("mouseout", (e) => {
+        if (!e.relatedTarget) hardHide();
+      }, { passive: true });
+
+      window.addEventListener("blur", hardHide, { passive: true });
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) hardHide();
       });
 
-      // 3) 画面外へ出た時の取りこぼし（OS/ブラウザ差を吸収）
-      document.addEventListener("mouseleave", hardHide, { passive: true });
-      document.documentElement.addEventListener("mouseleave", hardHide, { passive: true });
-      document.addEventListener("pointerleave", hardHide, { passive: true });
-
-      // 4) relatedTarget が null ＝ window 外へ
-      window.addEventListener("mouseout", (e) => {
-        const to = e.relatedTarget || e.toElement;
-        if (!to) hardHide();
-      }, { passive: true });
-
-      // 戻ったら表示（位置は次の move で確定）
+      // 戻ったら復帰（位置は次のmoveで更新）
       window.addEventListener("focus", hardShow, { passive: true });
-      window.addEventListener("mouseenter", hardShow, { passive: true });
 
       window.addEventListener("pointermove", onDesktopMove, { passive: true });
       window.addEventListener("pointerdown", onDesktopMove, { passive: true });
     }
+
+    requestAnimationFrame(tick);
   }
 })();
