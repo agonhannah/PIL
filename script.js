@@ -262,14 +262,13 @@
     };
 
     const tick = () => {
-      if (!isTouch) {
-        // ★追従（ラグ減らしたいなら FOLLOW を上げる）
-        x += (tx - x) * FOLLOW;
-        y += (ty - y) * FOLLOW;
-        fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      }
-      requestAnimationFrame(tick);
-    };
+  if (!isTouch) {
+    x = tx;
+    y = ty;
+    fx.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  }
+  requestAnimationFrame(tick);
+};
 
     if (isTouch) {
       window.addEventListener("touchstart", onTouchSpawn, { passive: true, capture: true });
