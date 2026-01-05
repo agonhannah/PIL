@@ -8,7 +8,6 @@
   --radius:14px;
   --gutter:20px;
 
-  /* topbarの実高さ（padding-top + 中身44 + padding-bottom） */
   --topbar-h: calc((18px + env(safe-area-inset-top, 0px)) + 44px + 14px);
 }
 
@@ -24,8 +23,6 @@ body{
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   overflow-x:hidden;
-
-  /* topbar分だけ下げる（重要） */
   padding-top: var(--topbar-h);
 }
 
@@ -38,9 +35,10 @@ button{
   background:none;
   border:0;
 }
+
 .drawer, .drawer *{ -webkit-tap-highlight-color: transparent; }
 
-/* noise (optional) */
+/* noise */
 body::after{
   content:"";
   position:fixed;
@@ -54,7 +52,7 @@ body::after{
 }
 
 /* =========================================================
-   Topbar（常時固定 / 最前面）
+   Topbar
 ========================================================= */
 .topbar{
   position:fixed;
@@ -74,7 +72,6 @@ body::after{
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
 
   background:#fff;
-  border-bottom:0;
 }
 
 .toplink{
@@ -82,11 +79,9 @@ body::after{
   letter-spacing:.30em;
   text-transform:uppercase;
   opacity:.80;
-
-  line-height:1;
+  height:44px;
   display:inline-flex;
   align-items:center;
-  height:44px;
 }
 
 .hamburger{
@@ -94,9 +89,6 @@ body::after{
   height:44px;
   display:grid;
   place-items:center;
-  cursor:pointer;
-  padding:0;
-  margin-left:auto;
 }
 
 .hamburger__lines{
@@ -106,16 +98,11 @@ body::after{
   gap:5px;
 }
 .hamburger__lines span{
-  display:block;
-  width:22px;
   height:1px;
   background:rgba(17,17,17,.7);
-
   transition: transform 180ms ease, opacity 180ms ease;
-  transform-origin:center;
 }
 
-/* menuBtn が open のとき：三本線→× */
 #menuBtn.is-open .hamburger__lines span:nth-child(1){
   transform: translateY(6px) rotate(45deg);
 }
@@ -127,58 +114,20 @@ body::after{
 }
 
 /* =========================================================
-   Layout（mainが増えてもOK）
-========================================================= */
-.wrap{
-  max-width:1120px;
-  margin:0 auto;
-  padding:0 var(--gutter) 64px;
-}
-
-/* =========================================================
-   Overlay（ある場合）
-========================================================= */
-.overlay{
-  position:fixed;
-  inset:0;
-  z-index:2000; /* drawerより下 / topbarより下 */
-
-  background:rgba(0,0,0,.06);
-  backdrop-filter:blur(2px);
-
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 200ms ease;
-}
-.overlay.is-open{
-  opacity:1;
-  pointer-events:auto;
-}
-
-body.is-locked{
-  overflow:hidden;
-  touch-action:none;
-}
-
-/* =========================================================
-   Drawer（topbarの下から / 閉じる時もスライド）
+   Drawer
 ========================================================= */
 .drawer{
   position:fixed;
   top:var(--topbar-h);
-  left:0;
-  right:0;
+  inset-inline:0;
   bottom:0;
-
-  z-index:2500; /* overlayより上 / topbarより下 */
+  z-index:2500;
   background:var(--panel);
 
   transform:translateX(105%);
-  will-change:transform;
-
-  /* 重要：visibilityは240ms後に切る */
   visibility:hidden;
   pointer-events:none;
+
   transition:
     transform 240ms ease,
     visibility 0s linear 240ms;
@@ -189,7 +138,6 @@ body.is-locked{
   visibility:visible;
   pointer-events:auto;
 
-  /* 開く時はvisibility即反映 */
   transition:
     transform 240ms ease,
     visibility 0s;
@@ -204,90 +152,13 @@ body.is-locked{
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
 }
 
-/* =========================================================
-   Typography unify
-========================================================= */
-.drawer__toplink,
-.acc__btn,
-.drawer__secondary a,
-.acc__link{
-  font-family: Helvetica, Arial, sans-serif;
-  color:var(--ink);
-}
-
-.drawer__toplink{
-  font-size:14px;
-  letter-spacing:.30em;
-  text-transform:uppercase;
-  opacity:.80;
-
-  display:inline-flex;
-  align-items:center;
-  height:44px;
-  line-height:1;
+body.is-locked{
+  overflow:hidden;
+  touch-action:none;
 }
 
 /* =========================================================
-   Accordion
-========================================================= */
-.acc__btn{
-  width:100%;
-  padding:16px 0;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-
-  font-size:12px;
-  letter-spacing:.32em;
-  text-transform:uppercase;
-  font-weight:400;
-}
-
-.acc__mark{
-  font-size:22px;
-  font-weight:200;
-  opacity:.6;
-}
-
-.acc__panel{
-  padding:6px 0 14px;
-}
-
-.acc__link{
-  display:block;
-  padding:8px 0;
-  font-size:12px;
-  letter-spacing:.32em;
-  text-transform:uppercase;
-  font-weight:400;
-  opacity:.92;
-}
-.acc__link::before{
-  content:"・";
-  margin-right:1em;
-  opacity:.55;
-}
-
-/* SHOP–ABOUT の境界だけ */
-.drawer__secondary{
-  margin-top:18px;
-  padding-top:18px;
-  border-top:1px solid var(--line);
-
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-.drawer__secondary .sec__link{
-  font-size:12px;
-  letter-spacing:.32em;
-  text-transform:uppercase;
-  font-weight:400;
-  opacity:.92;
-}
-
-/* =========================================================
-   Pointer FX + Lockbox（最前面 / drawer内でも見える）
+   Pointer FX
 ========================================================= */
 #pointer-fx{
   position:fixed;
@@ -296,43 +167,29 @@ body.is-locked{
   pointer-events:none;
   z-index:5000;
 
-  /* デスクトップは常時表示はJSでやる前提なので、
-     CSS側は “0固定” をやめておく（初期は0のままでもOKだが、消える原因になりやすい） */
-  opacity:1;
-
   transform:translate3d(-9999px,-9999px,0);
-  will-change: transform, opacity;
-
-  /* desktopは常時表示運用なので、CSS側のopacityトランジションは基本切る */
-  transition:none;
+  will-change:transform;
 }
 
-/* 緑blobは背面 */
+/* blob */
 #pointer-blob{
   position:absolute;
-  left:0;
-  top:0;
   width:84px;
   height:84px;
   border-radius:999px;
   background:rgba(0,255,90,.85);
   filter:blur(10px);
   transform:translate(-50%,-50%);
-  z-index:0;
 }
 
-/* lockboxは前面 */
+/* lockbox */
 #lockbox{
   position:absolute;
-  left:0;
-  top:0;
   transform:translate(-50%,-50%);
-  opacity:0;               /* 普段は消す */
+  opacity:0;
   transition:opacity 120ms ease;
-  z-index:2;
 }
 
-/* JSで #pointer-fx に is-hot が付いた時だけ表示 */
 #pointer-fx.is-hot #lockbox{
   opacity:1;
 }
@@ -343,11 +200,8 @@ body.is-locked{
   border:1px solid rgba(17,17,17,.28);
   border-radius:14px;
   position:relative;
-  background:rgba(255,255,255,.25); /* 文字が埋もれないように薄く敷く */
-  backdrop-filter: blur(2px);
 }
 
-/* cross */
 .lockbox__cross{
   position:absolute;
   left:50%;
@@ -358,14 +212,12 @@ body.is-locked{
 .lockbox__cross--h{ width:64px; height:1px; }
 .lockbox__cross--v{ width:1px; height:64px; }
 
-/* ticks */
 .lockbox__tick{ position:absolute; background:rgba(17,17,17,.35); }
 .lockbox__tick--t{ top:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
 .lockbox__tick--b{ bottom:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
 .lockbox__tick--l{ left:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
 .lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
 
-/* POINT HERE（確実に前に出す） */
 .lockbox__rect::after{
   content:"POINT HERE";
   position:absolute;
@@ -374,27 +226,37 @@ body.is-locked{
   transform:translateX(-50%);
   font-size:10px;
   letter-spacing:.22em;
-  text-transform:uppercase;
   color:rgba(17,17,17,.55);
   white-space:nowrap;
-  z-index:3;
 }
 
-/* もし closebtn を残していたら強制非表示 */
-.closebtn{ display:none !important; }
-
-/* =========================
-   Mobile: blobは即出し（フェードイン無し）
-   1秒で消えるのはJS側でやる
-========================= */
+/* =========================================================
+   Mobile
+========================================================= */
 body.is-touch #pointer-fx{
-  transition: none !important;
+  transition:none;
 }
 
-/* =========================
-   Desktop: OSカーソル（矢印/手）を確実に消す
-========================= */
+/* =========================================================
+   Desktop
+========================================================= */
 @media (pointer:fine){
-  html, body, * { cursor: none !important; }
-  a, button, [role="button"], input, textarea, select, label, summary { cursor: none !important; }
+  html, body,
+  a, button, [role="button"], input, textarea, select, label, summary{
+    cursor:none;
+  }
+
+  /* 常時表示 */
+  #pointer-fx{
+    opacity:1 !important;
+    transition:none;
+  }
+
+  /* ブラウザ外に出たら即消す */
+  body:not(:hover) #pointer-fx{
+    opacity:0 !important;
+  }
 }
+
+/* closebtn 残骸対策 */
+.closebtn{ display:none !important; }
