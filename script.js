@@ -204,7 +204,7 @@
       tx = e.clientX;
       ty = e.clientY;
       updateHot(e.clientX, e.clientY);
-      scheduleIdleFadeDesktop();
+      fx.style.opacity = "1";
     };
 
     // mobile用：タップした瞬間に出て、1秒で消える（フェードイン無し）
