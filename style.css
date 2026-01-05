@@ -252,8 +252,8 @@ body.is-touch #pointer-fx{
     transition:none;
   }
 
-  /* ブラウザ外に出たら即消す */
-  body:not(:hover) #pointer-fx{
+  /* ブラウザ外（=pointer-fxがhover外）で即消す */
+  #pointer-fx:not(:hover){
     opacity:0 !important;
   }
 }
