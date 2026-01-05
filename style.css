@@ -131,7 +131,7 @@ body::after{
   top:var(--topbar-h);
   inset-inline:0;
   bottom:0;
-  z-index:8500;
+  z-index:4600;
   background:var(--panel);
 
   transform:translateX(105%);
