@@ -62,7 +62,7 @@ body::after{
   left:0;
   right:0;
   top:0;
-  z-index:3000;
+  z-index:9000;
 
   display:flex;
   justify-content:space-between;
@@ -234,7 +234,7 @@ body.is-locked{
   top:0;
   left:0;
   pointer-events:none;
-  z-index:5000;
+  z-index:9100;
 
   /* JSが transform を書く前提なのでここは固定 */
   transform:translate3d(-9999px,-9999px,0);
