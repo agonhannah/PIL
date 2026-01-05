@@ -26,8 +26,6 @@ body{
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   overflow-x:hidden;
-
-  /* topbar分を常に確保 */
   padding-top: var(--topbar-h);
 }
 
@@ -57,17 +55,6 @@ body::after{
 }
 
 /* =========================================================
-   Layer order (重要)
-   - TOPBARは常に最前面
-   - Drawer/Modalはその下から
-========================================================= */
-.topbar{ z-index: 7000; }
-.drawer{ z-index: 6500; }
-.modal{ z-index: 6000; }
-.modal-overlay{ z-index: 5900; }
-#pointer-fx{ z-index: 8000; } /* pointerをtopbarより上にしたければ 6500 に */
-
-/* =========================================================
    Topbar
 ========================================================= */
 .topbar{
@@ -75,6 +62,7 @@ body::after{
   left:0;
   right:0;
   top:0;
+  z-index:3000;
 
   display:flex;
   justify-content:space-between;
@@ -125,7 +113,6 @@ body::after{
   transform-origin:center;
 }
 
-/* drawer open時だけ×にする（modal中はJSでis-openを付けない運用） */
 #menuBtn.is-open .hamburger__lines span:nth-child(1){
   transform: translateY(6px) rotate(45deg);
 }
@@ -144,6 +131,7 @@ body::after{
   top:var(--topbar-h);
   inset-inline:0;
   bottom:0;
+  z-index:2500;
   background:var(--panel);
 
   transform:translateX(105%);
@@ -180,7 +168,7 @@ body.is-locked{
 }
 
 /* =========================================================
-   Accordion
+   Accordion (表示の“横並び揺れ”防止で block 指定を明示)
 ========================================================= */
 .acc__btn{
   width:100%;
@@ -206,7 +194,7 @@ body.is-locked{
 }
 
 .acc__link{
-  display:block;
+  display:block;           /* ←これが無いと横並びになりやすい */
   padding:8px 0;
   font-size:12px;
   letter-spacing:.32em;
@@ -246,7 +234,9 @@ body.is-locked{
   top:0;
   left:0;
   pointer-events:none;
+  z-index:5000;
 
+  /* JSが transform を書く前提なのでここは固定 */
   transform:translate3d(-9999px,-9999px,0);
   will-change:transform;
 }
@@ -260,6 +250,7 @@ body.is-locked{
   background:rgba(0,255,90,.85);
   filter:blur(10px);
 
+  /* translate は保持したまま scale を足す */
   transform:translate(-50%,-50%) scale(var(--fx-scale));
   transform-origin:center;
 }
@@ -314,10 +305,21 @@ body.is-locked{
   white-space:nowrap;
 }
 
-/* Mobile */
-body.is-touch #pointer-fx{ transition:none; }
+/* =========================================================
+   Mobile
+   - 1秒フェードアウトはJS側で制御
+   - フェードインはしない
+========================================================= */
+body.is-touch #pointer-fx{
+  transition:none;
+}
 
-/* Desktop */
+/* =========================================================
+   Desktop
+   - OSカーソルを消す
+   - pointerFX縮小（0.5）
+   ※ ブラウザ外へ出たら消すのはCSSではなくJSでやる（hoverは使わない）
+========================================================= */
 @media (pointer:fine){
   :root{ --fx-scale: 0.5; }
 
@@ -335,7 +337,8 @@ body.is-touch #pointer-fx{ transition:none; }
 .closebtn{ display:none !important; }
 
 /* =========================================================
-   SHOP GRID (base)
+   SHOP GRID (ParadiCeloner unified)
+   - non-invasive: all styles scoped under .shop
 ========================================================= */
 .shop{
   padding: 28px 0 64px;
@@ -355,6 +358,7 @@ body.is-touch #pointer-fx{ transition:none; }
   opacity:.70;
 }
 
+/* grid: mobile 2 columns like screenshot */
 .shop__grid{
   display:grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -368,21 +372,31 @@ body.is-touch #pointer-fx{ transition:none; }
   .shop__grid{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
-.shop-card{ min-width:0; }
-.shop-card__link{ display:block; }
+/* card */
+.shop-card{
+  min-width:0;
+}
 
+.shop-card__link{
+  display:block;
+}
+
+/* image frame */
 .shop-card__media{
-  position:relative;
+  position:relative; /* ★必須：absolute img の基準 */
   width:100%;
   background: rgba(17,17,17,.06);
-  border-radius: 0;
+  border-radius: 0; /* HYKEっぽく角なし。角欲しければ var(--radius) に */
   overflow:hidden;
 }
+
+/* square-ish */
 .shop-card__media::before{
   content:"";
   display:block;
   padding-top: 100%;
 }
+
 .shop-card__media img{
   position:absolute;
   inset:0;
@@ -392,6 +406,7 @@ body.is-touch #pointer-fx{ transition:none; }
   display:block;
 }
 
+/* title & price typography (unified with your drawer/toplink style) */
 .shop-card__title{
   margin: 12px 0 6px;
   font-size:12px;
@@ -400,6 +415,7 @@ body.is-touch #pointer-fx{ transition:none; }
   font-weight:400;
   line-height:1.35;
 
+  /* 2行までで止める（長いタイトルが崩れない） */
   display:-webkit-box;
   -webkit-line-clamp:2;
   -webkit-box-orient:vertical;
@@ -414,7 +430,10 @@ body.is-touch #pointer-fx{ transition:none; }
   line-height:1.2;
 }
 
-.shop-card.is-soldout .shop-card__price{ opacity:.35; }
+/* soldout用（あとで在庫0にしたら付ける） */
+.shop-card.is-soldout .shop-card__price{
+  opacity:.35;
+}
 .shop-card__soldout{
   margin-top:6px;
   font-size:11px;
@@ -424,23 +443,18 @@ body.is-touch #pointer-fx{ transition:none; }
 }
 
 /* =========================================================
-   Shop Modal
-   - topbar を絶対に隠さない（最重要）
-   - modalは topbar の下から始める
-   - SHOP表記/×は出さない（TOPとハンバーガー運用）
+   Shop Modal (append-only)
+   ※既存に干渉しないよう modal 内だけに限定
 ========================================================= */
 
 .modal-overlay{
   position:fixed;
-  left:0;
-  right:0;
-  top: var(--topbar-h);
-  height: calc(100dvh - var(--topbar-h));
-
+  inset:0;
   background:rgba(0,0,0,.08);
   opacity:0;
   pointer-events:none;
   transition: opacity 180ms ease;
+  z-index:4200; /* drawer(2500)より上 / pointer-fx(5000)より下 */
 }
 
 .modal-overlay.is-open{
@@ -450,13 +464,9 @@ body.is-touch #pointer-fx{ transition:none; }
 
 .modal{
   position:fixed;
-  left:0;
-  right:0;
-  top: var(--topbar-h);
-  left:0; right:0; bottom:0;
-  height: calc(100dvh - var(--topbar-h));
-
+  inset:0;
   background:#fff;
+  z-index:4300;
 
   opacity:0;
   visibility:hidden;
@@ -475,11 +485,49 @@ body.is-touch #pointer-fx{ transition:none; }
   transition: opacity 180ms ease, transform 180ms ease, visibility 0s;
 }
 
-/* Shop画面ではバー不要（TOP/HAMBURGERがあるため） */
-.modal__bar{ display:none; }
-.modal__title{ display:none; }
-.modal__close{ display:none; }
+/* 上部バー：TOPBARと同じ余白感 */
+.modal__bar{
+  position:sticky;
+  top:0;
+  z-index:1;
 
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:
+    calc(18px + env(safe-area-inset-top, 0px))
+    calc(var(--gutter) + env(safe-area-inset-right, 0px))
+    14px
+    calc(var(--gutter) + env(safe-area-inset-left, 0px));
+
+  background:#fff;
+}
+
+.modal__title{
+  font-size:14px;
+  letter-spacing:.30em;
+  text-transform:uppercase;
+  opacity:.80;
+  height:44px;
+  display:inline-flex;
+  align-items:center;
+  line-height:1;
+}
+
+.modal__close{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  font-size:22px;
+  line-height:1;
+  opacity:.75;
+  padding:0;
+  margin-left:auto;
+}
+
+/* 本文 */
 .modal__body{
   padding:
     18px
@@ -488,30 +536,43 @@ body.is-touch #pointer-fx{ transition:none; }
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
 }
 
-/* ===== モーダル内だけ shop を微調整（スコープ） ===== */
-.modal .shop__head{ margin-bottom:16px; }
-.modal .shop__count{ opacity:.65; }
+/* ===== モーダル内の shop view（★ここから .modal でスコープ） ===== */
+.modal .shop__head{
+  margin-bottom:16px;
+}
 
+.modal .shop__count{
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  opacity:.65;
+}
+
+/* HYKEっぽい2カラム寄り */
 .modal .shop__grid{
   display:grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap:18px 14px;
 }
 
-/* 小さい画面では1カラム（必要なら外してOK） */
+/* 小さい画面では1カラム */
 @media (max-width: 420px){
-  .modal .shop__grid{ grid-template-columns: 1fr; }
+  .modal .shop__grid{
+    grid-template-columns: 1fr;
+  }
+}
+
+.modal .shop-card__link{
+  display:block;
 }
 
 .modal .shop-card__media{
-  position:relative;
+  position:relative; /* 念のため */
   width:100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 1; /* 正方形 */
   background:rgba(17,17,17,.06);
   overflow:hidden;
 }
-
-.modal .shop-card__media::before{ display:none; }
 
 .modal .shop-card__media img{
   width:100%;
@@ -535,4 +596,18 @@ body.is-touch #pointer-fx{ transition:none; }
   text-transform:uppercase;
   opacity:.65;
   line-height:1.2;
+}
+
+/* =========================================================
+   FIX: Mobileでタイトルを省略しない（… をやめて改行でフル表示）
+   ※ いちばん下に置く（勝たせる）
+========================================================= */
+@media (max-width: 600px){
+  .modal .shop-card__title{
+    display:block;
+    -webkit-line-clamp: initial;
+    -webkit-box-orient: initial;
+    overflow: visible;
+    white-space: normal;
+  }
 }
