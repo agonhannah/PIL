@@ -65,7 +65,7 @@ body::after{
 .drawer{ z-index: 5500; }
 .modal{ z-index: 5400; }
 .modal-overlay{ z-index: 5300; }
-#pointer-fx{ z-index: 5000; } /* pointerをtopbarより上にしたければ 6500 に */
+#pointer-fx{ z-index: 6500; } /* pointerをtopbarより上にしたければ 6500 に */
 
 /* =========================================================
    Topbar
