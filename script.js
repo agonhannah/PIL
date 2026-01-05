@@ -286,4 +286,68 @@
 
     requestAnimationFrame(tick);
   }
+  
+    /* ----------------------------
+     Shop Modal
+  ---------------------------- */
+  const shopModal   = $("#shopModal");
+  const modalOverlay = $("#modalOverlay");
+
+  const openModalView = (viewName) => {
+    if (!shopModal) return;
+
+    // view切替
+    $$("[data-modal-view]").forEach(v => {
+      v.hidden = (v.getAttribute("data-modal-view") !== viewName);
+    });
+
+    // open
+    shopModal.classList.add("is-open");
+    shopModal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("is-modal");
+
+    if (modalOverlay) modalOverlay.hidden = false;
+  };
+
+  const closeModal = () => {
+    if (!shopModal) return;
+
+    shopModal.classList.remove("is-open");
+    shopModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("is-modal");
+
+    if (modalOverlay) modalOverlay.hidden = true;
+  };
+
+  // Drawer内リンク：data-open-modal
+  $$("[data-open-modal]").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const view = a.getAttribute("data-open-modal");
+      if (!view) return;
+
+      // drawerは閉じる（既存挙動を壊さない）
+      // ※ closeDrawer はこのスコープ内にある前提
+      closeDrawer();
+
+      // モーダル開く
+      openModalView(view);
+    });
+  });
+
+  // close button
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest && e.target.closest("[data-modal-close]");
+    if (btn) closeModal();
+  });
+
+  // overlay click
+  if (modalOverlay) modalOverlay.addEventListener("click", closeModal);
+
+  // ESC
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && shopModal && shopModal.classList.contains("is-open")) {
+      closeModal();
+    }
+  });
 })();
