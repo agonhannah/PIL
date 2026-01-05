@@ -60,6 +60,7 @@
           <div class="acc__panel" data-acc-panel="shop">
             <nav class="acc__list" aria-label="Shop list">
               <!-- ★TOPに出さず、モーダルを開く -->
+              <!-- data-close は Drawer を閉じるために残す（JS側で e.preventDefault される） -->
               <a class="acc__link" href="#" data-close data-open-modal="shop-all">All</a>
               <a class="acc__link" href="#" data-close data-open-modal="shop-digital">Digital</a>
               <a class="acc__link" href="#" data-close data-open-modal="shop-physical">Physical</a>
@@ -78,16 +79,13 @@
   </aside>
 
   <!-- =========================================================
-       SHOP MODAL (Shop → All を押したらここが出る)
+       SHOP MODAL
+       - ここは「Topbarを使う」前提なので、モーダル内バー（SHOP/×）は置かない
+       - close は menuBtn で行う（見た目はハンバーガー）
   ========================================================== -->
   <div class="modal-overlay" id="modalOverlay" hidden></div>
 
   <section class="modal" id="shopModal" aria-hidden="true" aria-label="Shop">
-    <header class="modal__bar">
-      <div class="modal__title">SHOP</div>
-      <button class="modal__close" type="button" data-modal-close aria-label="Close">×</button>
-    </header>
-
     <div class="modal__body">
 
       <!-- ===== SHOP: ALL ===== -->
@@ -102,13 +100,13 @@
               <div class="shop-card__media">
                 <img
                   src="images/SessionCollection.JPG"
-                  alt="【CD】Session Collection[2022-24 Bootleg]"
+                  alt="【CD】Session Collection [2022-24 Bootleg]"
                   loading="lazy"
                   decoding="async"
                 />
               </div>
 
-              <h3 class="shop-card__title">【CD】Session Collection[2022-24 Bootleg]</h3>
+              <h3 class="shop-card__title">【CD】Session Collection [2022-24 Bootleg]</h3>
               <div class="shop-card__price">2750 YEN (TAX IN)</div>
             </a>
           </article>
