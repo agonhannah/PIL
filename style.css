@@ -167,6 +167,7 @@ body.is-locked{
   pointer-events:none;
   z-index:5000;
 
+  /* JSが transform を書く前提なのでここは固定 */
   transform:translate3d(-9999px,-9999px,0);
   will-change:transform;
 }
@@ -232,6 +233,8 @@ body.is-locked{
 
 /* =========================================================
    Mobile
+   - 1秒フェードアウトはJS側で制御
+   - フェードインはしない
 ========================================================= */
 body.is-touch #pointer-fx{
   transition:none;
@@ -239,6 +242,9 @@ body.is-touch #pointer-fx{
 
 /* =========================================================
    Desktop
+   - OSカーソルを消して pointerFX を常時表示
+   - ブラウザ外へ出たら即消す
+   - pointerFXは半分サイズ（JSのtranslateを壊さないよう「子要素」をscale）
 ========================================================= */
 @media (pointer:fine){
   html, body,
@@ -246,7 +252,7 @@ body.is-touch #pointer-fx{
     cursor:none;
   }
 
-  /* 常時表示 */
+  /* 常時表示（JSがopacity触っても勝つ） */
   #pointer-fx{
     opacity:1 !important;
     transition:none;
@@ -255,6 +261,30 @@ body.is-touch #pointer-fx{
   /* ブラウザ外（=pointer-fxがhover外）で即消す */
   #pointer-fx:not(:hover){
     opacity:0 !important;
+  }
+
+  /* Desktop: 半分サイズ（transformはJSが使うので触らない） */
+  #pointer-blob,
+  #lockbox{
+    transform: translate(-50%,-50%) scale(0.5);
+    transform-origin:center;
+  }
+
+  /* lockboxの線類も視認性を揃える（任意だけどズレ防止） */
+  .lockbox__rect{
+    width:55px;
+    height:55px;
+    border-radius:10px;
+  }
+  .lockbox__cross--h{ width:32px; }
+  .lockbox__cross--v{ height:32px; }
+
+  .lockbox__tick--t, .lockbox__tick--b{ width:8px; }
+  .lockbox__tick--l, .lockbox__tick--r{ height:8px; }
+
+  .lockbox__rect::after{
+    bottom:-14px;
+    font-size:9px;
   }
 }
 
