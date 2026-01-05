@@ -324,8 +324,12 @@ body.is-touch #pointer-fx{
   :root{ --fx-scale: 0.5; }
 
   html, body,
-  a, button, [role="button"], input, textarea, select, label, summary{
-    cursor:none;
+  a, button, [role="button"],
+  input, textarea, select, label, summary,
+  #menuBtn,
+  .hamburger,
+  .hamburger *{
+    cursor:none !important;
   }
 }
 
