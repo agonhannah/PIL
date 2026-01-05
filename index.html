@@ -59,9 +59,10 @@
 
           <div class="acc__panel" data-acc-panel="shop">
             <nav class="acc__list" aria-label="Shop list">
-              <a class="acc__link" href="#" data-close>All</a>
-              <a class="acc__link" href="#" data-close>Digital</a>
-              <a class="acc__link" href="#" data-close>Physical</a>
+              <!-- ★TOPに出さず、モーダルを開く -->
+              <a class="acc__link" href="#" data-close data-open-modal="shop-all">All</a>
+              <a class="acc__link" href="#" data-close data-open-modal="shop-digital">Digital</a>
+              <a class="acc__link" href="#" data-close data-open-modal="shop-physical">Physical</a>
             </nav>
           </div>
         </div>
@@ -77,40 +78,59 @@
   </aside>
 
   <!-- =========================================================
-       MAIN : SHOP → ALL
+       SHOP MODAL (Shop → All を押したらここが出る)
   ========================================================== -->
-  <main class="page" id="shop-all">
+  <div class="modal-overlay" id="modalOverlay" hidden></div>
 
-    <section class="shop">
-      <header class="shop__head">
-        <div class="shop__meta">
+  <section class="modal" id="shopModal" aria-hidden="true" aria-label="Shop">
+    <header class="modal__bar">
+      <div class="modal__title">SHOP</div>
+      <button class="modal__close" type="button" data-modal-close aria-label="Close">×</button>
+    </header>
+
+    <div class="modal__body">
+
+      <!-- ===== SHOP: ALL ===== -->
+      <div class="shopview" data-modal-view="shop-all" hidden>
+        <div class="shop__head">
           <div class="shop__count">1 item</div>
         </div>
-      </header>
 
-      <div class="shop__grid">
+        <div class="shop__grid">
+          <article class="shop-card">
+            <a class="shop-card__link" href="#session-collection">
+              <div class="shop-card__media">
+                <img
+                  src="image/SessionCollection.JPG"
+                  alt="Session Collection"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
 
-        <!-- Session Collection -->
-        <article class="shop-card">
-          <a class="shop-card__link" href="#session-collection">
-            <div class="shop-card__media">
-              <img
-                src="image/SessionCollection.JPG"
-                alt="Session Collection"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-
-            <h3 class="shop-card__title">Session Collection</h3>
-            <div class="shop-card__price">2750 yen (tax in)</div>
-          </a>
-        </article>
-
+              <h3 class="shop-card__title">SESSION COLLECTION</h3>
+              <div class="shop-card__price">2750 YEN (TAX IN)</div>
+            </a>
+          </article>
+        </div>
       </div>
-    </section>
 
-  </main>
+      <!-- ===== SHOP: DIGITAL ===== -->
+      <div class="shopview" data-modal-view="shop-digital" hidden>
+        <div class="shop__head">
+          <div class="shop__count">0 item</div>
+        </div>
+      </div>
+
+      <!-- ===== SHOP: PHYSICAL ===== -->
+      <div class="shopview" data-modal-view="shop-physical" hidden>
+        <div class="shop__head">
+          <div class="shop__count">0 item</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
 
   <!-- Pointer FX -->
   <div id="pointer-fx" aria-hidden="true">
