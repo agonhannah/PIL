@@ -2,7 +2,7 @@
    script.js
    - Drawer open/close + HOME reload
    - Accordion
-   - Shop Modal (open/close)
+   - Shop Modal (single source of truth)
    - Pointer FX
      mobile: tap spawn + 1s fadeout
      desktop: follow (NO lag) + outside hide + hot判定
@@ -64,7 +64,6 @@
     });
   }
 
-  // TOPは「再更新」：data-home が付いたリンクを全部これにする
   const goHome = (e) => {
     e.preventDefault();
     const url = location.pathname + location.search;
@@ -73,13 +72,12 @@
   $$("[data-home]").forEach((el) => el.addEventListener("click", goHome));
 
   /* ----------------------------
-     Shop Modal (open/close)
+     Shop Modal (open/close)  ※ここだけ1系統に統一
      - drawer の All/Digital/Physical から開く
      - overlay / × / Esc で閉じる
   ---------------------------- */
   const modal = $("#shopModal");
   const modalOverlay = $("#modalOverlay");
-  const modalCloseBtn = $("[data-modal-close]");
 
   const closeModal = () => {
     if (!modal) return;
@@ -95,7 +93,7 @@
     // 表示中ビューを隠す
     modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
 
-    // body lock は drawer が開いてない時だけ解除
+    // drawerが開いてないならロック解除
     if (!drawer || !drawer.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
     }
@@ -104,7 +102,7 @@
   const openModal = (viewName) => {
     if (!modal) return;
 
-    // drawer は閉じる
+    // drawer は閉じる（既存挙動維持）
     if (drawer && drawer.classList.contains("is-open")) closeDrawer();
 
     // 対象ビューだけ出す
@@ -114,7 +112,7 @@
 
     if (modalOverlay) {
       modalOverlay.hidden = false;
-      // reflow してから open クラス
+      // reflow（transition確実化）
       modalOverlay.offsetHeight;
       modalOverlay.classList.add("is-open");
     }
@@ -126,18 +124,27 @@
     document.body.classList.add("is-locked");
   };
 
-  // drawer から起動（イベント委譲）
+  // drawer から起動（data-open-modal を持つリンク）
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest("[data-open-modal]");
     if (!a) return;
-
     e.preventDefault();
     const view = a.getAttribute("data-open-modal");
-    if (view) openModal(view);
+    if (!view) return;
+    openModal(view);
   });
 
+  // ×ボタン（data-modal-close）で閉じる
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest && e.target.closest("[data-modal-close]");
+    if (btn) {
+      e.preventDefault();
+      closeModal();
+    }
+  });
+
+  // overlay で閉じる
   if (modalOverlay) modalOverlay.addEventListener("click", closeModal);
-  if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeModal);
 
   /* ----------------------------
      Accordion
@@ -307,7 +314,7 @@
       }, 1000);
     };
 
-    // desktop: NO lag follow
+    // desktop: NO lag follow（=tx/tyに即一致）
     const tick = () => {
       if (!isTouch) {
         x = tx;
@@ -321,6 +328,7 @@
       window.addEventListener("touchstart", onTouchSpawn, { passive: true, capture: true });
       window.addEventListener("pointerdown", onTouchSpawn, { passive: true, capture: true });
     } else {
+      // ブラウザ外へ出たら即消す（取りこぼし潰し）
       document.addEventListener("pointerleave", hardHide, { passive: true });
       document.addEventListener("mouseleave", hardHide, { passive: true });
 
@@ -337,6 +345,7 @@
         if (document.hidden) hardHide();
       });
 
+      // 戻ったら復帰（位置は次のmoveで更新）
       window.addEventListener("focus", hardShow, { passive: true });
 
       window.addEventListener("pointermove", onDesktopMove, { passive: true });
@@ -347,13 +356,18 @@
   }
 
   /* ----------------------------
-     ESC（まとめて一箇所で管理）
+     Escape key (single)
+     - drawer優先 → modal
   ---------------------------- */
   window.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
 
-    // drawer優先、次にmodal
-    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
-    else if (modal && modal.classList.contains("is-open")) closeModal();
+    if (drawer && drawer.classList.contains("is-open")) {
+      closeDrawer();
+      return;
+    }
+    if (modal && modal.classList.contains("is-open")) {
+      closeModal();
+    }
   });
 })();
