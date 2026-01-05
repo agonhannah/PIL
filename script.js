@@ -2,11 +2,8 @@
    script.js
    - Drawer open/close + HOME reload
    - Accordion
+   - Shop Modal (Shop → All/Digital/Physical opens modal)
    - Pointer FX
-     mobile: tap spawn + 1s fadeout
-     desktop: follow (NO lag) + outside hide + hot判定
-   - Shop Modal
-     open from drawer links / close by menuBtn or overlay or Esc
 ========================================================= */
 
 (() => {
@@ -30,7 +27,7 @@
   const setOpen = (open) => {
     if (menuBtn) {
       menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
-      menuBtn.classList.toggle("is-open", open); // これが×表示
+      menuBtn.classList.toggle("is-open", open); // ← Drawerのときだけ×にする
     }
     if (drawer) {
       drawer.setAttribute("aria-hidden", open ? "false" : "true");
@@ -47,50 +44,43 @@
   const closeDrawer = () => setOpen(false);
 
   /* ----------------------------
-     Shop Modal
-     ※Topbarは維持 / menuBtnは「閉じる」優先にする
+     Shop Modal (single implementation)
   ---------------------------- */
-  const shopModal    = $("#shopModal");
+  const modal = $("#shopModal");
   const modalOverlay = $("#modalOverlay");
 
-  const isModalOpen = () => !!(shopModal && shopModal.classList.contains("is-open"));
+  const isModalOpen = () => !!(modal && modal.classList.contains("is-open"));
 
   const closeModal = () => {
-    if (!shopModal) return;
-
-    shopModal.classList.remove("is-open");
-    shopModal.setAttribute("aria-hidden", "true");
-
-    // viewを全部隠す（安全）
-    shopModal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
+    if (!modal) return;
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
 
     if (modalOverlay) {
       modalOverlay.classList.remove("is-open");
       modalOverlay.hidden = true;
     }
 
-    // menuBtnはハンバーガー表示に戻す（×にしない）
-    if (menuBtn) {
-      menuBtn.classList.remove("is-open");
-      menuBtn.setAttribute("aria-expanded", "false");
-      menuBtn.setAttribute("aria-label", "Open menu");
-    }
+    // view全隠し
+    modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
 
-    // drawerが開いてない時だけロック解除
+    document.body.classList.remove("is-modal");
+
+    // drawerが開いてなければスクロールロック解除
     if (!drawer || !drawer.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
     }
   };
 
   const openModal = (viewName) => {
-    if (!shopModal) return;
+    if (!modal) return;
 
-    // drawerを確実に閉じる（×を消してハンバーガーに戻す）
+    // drawerを閉じる（×も戻る）
     if (drawer && drawer.classList.contains("is-open")) closeDrawer();
 
-    // view切替：対象だけ表示
-    shopModal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
-    const view = shopModal.querySelector(`[data-modal-view="${viewName}"]`);
+    // 表示ビュー切り替え
+    modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
+    const view = modal.querySelector(`[data-modal-view="${viewName}"]`);
     if (view) view.hidden = false;
 
     if (modalOverlay) {
@@ -100,52 +90,51 @@
       modalOverlay.classList.add("is-open");
     }
 
-    shopModal.classList.add("is-open");
-    shopModal.setAttribute("aria-hidden", "false");
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("is-modal");
 
-    // モーダル表示中はスクロール止める
+    // モーダル表示中もスクロール止める
     document.body.classList.add("is-locked");
-
-    // menuBtnは「ハンバーガー表示のまま」＆役割だけ Close にする
-    if (menuBtn) {
-      menuBtn.classList.remove("is-open"); // ←×にしない
-      menuBtn.setAttribute("aria-expanded", "false");
-      menuBtn.setAttribute("aria-label", "Close shop");
-    }
   };
 
-  // Drawer内リンク：data-open-modal="all" などで起動
+  // Drawer内リンク：data-open-modal で起動
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest("[data-open-modal]");
     if (!a) return;
     e.preventDefault();
+
     const view = a.getAttribute("data-open-modal");
     if (!view) return;
+
     openModal(view);
   });
 
+  // overlay clickで閉じる
   if (modalOverlay) modalOverlay.addEventListener("click", closeModal);
 
   /* ----------------------------
-     menuBtn click
-     優先順位：
-       1) modal open → close modal（ハンバーガーのまま閉じる）
-       2) 通常 → drawer toggle（×表示）
+     menuBtn click behavior
+     - modal open中：drawerではなく modal を閉じる（見た目はハンバーガーのまま）
+     - それ以外：drawer toggle
   ---------------------------- */
   if (menuBtn) {
-    menuBtn.addEventListener("click", () => {
+    menuBtn.addEventListener("click", (e) => {
       if (isModalOpen()) {
+        // モーダルを閉じる。ハンバーガー表示のまま。
+        e.preventDefault();
         closeModal();
         return;
       }
+
       const expanded = menuBtn.getAttribute("aria-expanded") === "true";
       expanded ? closeDrawer() : openDrawer();
     });
   }
 
+  // Drawer内の data-close
   if (overlay) overlay.addEventListener("click", closeDrawer);
 
-  // drawer内の data-close は閉じる（リンクは生かす / # は止める）
   if (drawer) {
     drawer.addEventListener("click", (e) => {
       const closeEl = e.target.closest && e.target.closest("[data-close]");
@@ -157,7 +146,7 @@
     });
   }
 
-  // TOPは「再更新」
+  // TOP (HOME reload)
   const goHome = (e) => {
     e.preventDefault();
     const url = location.pathname + location.search;
@@ -165,12 +154,11 @@
   };
   $$("[data-home]").forEach((el) => el.addEventListener("click", goHome));
 
+  // Esc: drawer優先 → modal
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      // drawer優先、次にmodal
-      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
-      else if (isModalOpen()) closeModal();
-    }
+    if (e.key !== "Escape") return;
+    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+    else if (isModalOpen()) closeModal();
   });
 
   /* ----------------------------
@@ -297,9 +285,7 @@
       fx.classList.toggle("is-hot", !isTouch && isInteractive(el));
     };
 
-    const inViewport = (cx, cy) => {
-      return cx >= 0 && cy >= 0 && cx <= window.innerWidth && cy <= window.innerHeight;
-    };
+    const inViewport = (cx, cy) => cx >= 0 && cy >= 0 && cx <= window.innerWidth && cy <= window.innerHeight;
 
     const onDesktopMove = (e) => {
       tx = e.clientX;
