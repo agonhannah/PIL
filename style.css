@@ -296,10 +296,10 @@ body.is-locked{
   pointer-events:none;
 
   z-index:5000; /* ←最前面（topbar3000 / drawer2500 より上） */
-  opacity:0;
+  opacity:0; /* mobileはJSで出す / desktopは下のmediaで常時ONにする */
   transform:translate3d(-9999px,-9999px,0);
   will-change: transform, opacity;
-  transition:opacity 420ms linear;
+  transition:opacity 420ms linear; /* desktopでフェードさせたい場合用（desktop常時ONなら下で無効化） */
 }
 
 #pointer-blob{
@@ -353,36 +353,4 @@ body.is-locked{
 .lockbox__tick--t{ top:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
 .lockbox__tick--b{ bottom:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
 .lockbox__tick--l{ left:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
-.lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
-
-/* POINT HERE */
-.lockbox__rect::after{
-  content:"POINT HERE";
-  position:absolute;
-  left:50%;
-  bottom:-18px;
-  transform:translateX(-50%);
-  font-size:10px;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:rgba(17,17,17,.55);
-  white-space:nowrap;
-}
-
-
-/* もし closebtn を残していたら強制非表示 */
-.closebtn{ display:none !important; }
-
-/* =========================
-   Mobile: blobは即出し（フェードイン無し）
-   1秒で消えるのはJS側でやる
-========================= */
-body.is-touch #pointer-fx{
-  transition: none;  /* ←フェードインを消す */
-}
-
-/* Desktopだけ：OSカーソル（矢印/手）を消す */
-@media (pointer:fine){
-  html, body { cursor: none; }
-  a, button, [role="button"], input, textarea, select, label, summary { cursor: none; }
-}
+.lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%
