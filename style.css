@@ -440,3 +440,158 @@ body.is-touch #pointer-fx{
   text-transform:uppercase;
   opacity:.35;
 }
+
+/* =========================================================
+   Shop Modal (append-only)
+   ※既存に干渉しないよう class を modal- 系に限定
+========================================================= */
+
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.08);
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 180ms ease;
+  z-index:4200; /* drawer(2500)より上 / pointer-fx(5000)より下 */
+}
+
+.modal-overlay.is-open{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:#fff;
+  z-index:4300;
+
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+
+  transform: translate3d(0, 8px, 0);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 0s linear 180ms;
+}
+
+.modal.is-open{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+
+  transform: translate3d(0, 0, 0);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 0s;
+}
+
+/* 上部バー：TOPBARと同じ余白感 */
+.modal__bar{
+  position:sticky;
+  top:0;
+  z-index:1;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:
+    calc(18px + env(safe-area-inset-top, 0px))
+    calc(var(--gutter) + env(safe-area-inset-right, 0px))
+    14px
+    calc(var(--gutter) + env(safe-area-inset-left, 0px));
+
+  background:#fff;
+}
+
+.modal__title{
+  font-size:14px;
+  letter-spacing:.30em;
+  text-transform:uppercase;
+  opacity:.80;
+  height:44px;
+  display:inline-flex;
+  align-items:center;
+  line-height:1;
+}
+
+.modal__close{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  font-size:22px;
+  line-height:1;
+  opacity:.75;
+  padding:0;
+  margin-left:auto;
+}
+
+/* 本文 */
+.modal__body{
+  padding:
+    18px
+    calc(var(--gutter) + env(safe-area-inset-right, 0px))
+    calc(18px + env(safe-area-inset-bottom, 0px))
+    calc(var(--gutter) + env(safe-area-inset-left, 0px));
+}
+
+/* shop view */
+.shop__head{
+  margin-bottom:16px;
+}
+
+.shop__count{
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  opacity:.65;
+}
+
+/* HYKEっぽい2カラム寄り */
+.shop__grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:18px 14px;
+}
+
+/* 小さい画面では1カラム */
+@media (max-width: 420px){
+  .shop__grid{
+    grid-template-columns: 1fr;
+  }
+}
+
+.shop-card__link{
+  display:block;
+}
+
+.shop-card__media{
+  width:100%;
+  aspect-ratio: 1 / 1; /* 正方形 */
+  background:rgba(17,17,17,.06);
+  overflow:hidden;
+}
+
+.shop-card__media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.shop-card__title{
+  margin:12px 0 6px;
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  font-weight:400;
+  line-height:1.2;
+}
+
+.shop-card__price{
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  opacity:.65;
+  line-height:1.2;
+}
