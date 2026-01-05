@@ -383,6 +383,7 @@ body.is-touch #pointer-fx{
 
 /* image frame */
 .shop-card__media{
+  position:relative; /* ★必須：absolute img の基準 */
   width:100%;
   background: rgba(17,17,17,.06);
   border-radius: 0; /* HYKEっぽく角なし。角欲しければ var(--radius) に */
@@ -443,7 +444,7 @@ body.is-touch #pointer-fx{
 
 /* =========================================================
    Shop Modal (append-only)
-   ※既存に干渉しないよう class を modal- 系に限定
+   ※既存に干渉しないよう modal 内だけに限定
 ========================================================= */
 
 .modal-overlay{
@@ -535,12 +536,12 @@ body.is-touch #pointer-fx{
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
 }
 
-/* shop view */
-.shop__head{
+/* ===== モーダル内の shop view（★ここから .modal でスコープ） ===== */
+.modal .shop__head{
   margin-bottom:16px;
 }
 
-.shop__count{
+.modal .shop__count{
   font-size:12px;
   letter-spacing:.32em;
   text-transform:uppercase;
@@ -548,7 +549,7 @@ body.is-touch #pointer-fx{
 }
 
 /* HYKEっぽい2カラム寄り */
-.shop__grid{
+.modal .shop__grid{
   display:grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap:18px 14px;
@@ -556,30 +557,31 @@ body.is-touch #pointer-fx{
 
 /* 小さい画面では1カラム */
 @media (max-width: 420px){
-  .shop__grid{
+  .modal .shop__grid{
     grid-template-columns: 1fr;
   }
 }
 
-.shop-card__link{
+.modal .shop-card__link{
   display:block;
 }
 
-.shop-card__media{
+.modal .shop-card__media{
+  position:relative; /* 念のため */
   width:100%;
   aspect-ratio: 1 / 1; /* 正方形 */
   background:rgba(17,17,17,.06);
   overflow:hidden;
 }
 
-.shop-card__media img{
+.modal .shop-card__media img{
   width:100%;
   height:100%;
   object-fit:cover;
   display:block;
 }
 
-.shop-card__title{
+.modal .shop-card__title{
   margin:12px 0 6px;
   font-size:12px;
   letter-spacing:.32em;
@@ -588,7 +590,7 @@ body.is-touch #pointer-fx{
   line-height:1.2;
 }
 
-.shop-card__price{
+.modal .shop-card__price{
   font-size:11px;
   letter-spacing:.22em;
   text-transform:uppercase;
