@@ -77,6 +77,76 @@
   });
 
   /* ----------------------------
+     Shop Modal (open/close)
+     - drawer の All/Digital/Physical から開く
+     - overlay / × / Esc で閉じる
+  ---------------------------- */
+  const modal = document.querySelector("#shopModal");
+  const modalOverlay = document.querySelector("#modalOverlay");
+  const modalCloseBtn = document.querySelector("[data-modal-close]");
+
+  const closeModal = () => {
+    if (!modal) return;
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    if (modalOverlay) {
+      modalOverlay.classList.remove("is-open");
+      modalOverlay.hidden = true;
+    }
+    // 表示中ビューを隠す
+    modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
+    // body lock は drawer が開いてない時だけ解除
+    if (!drawer || !drawer.classList.contains("is-open")) {
+      document.body.classList.remove("is-locked");
+    }
+  };
+
+  const openModal = (viewName) => {
+    if (!modal) return;
+
+    // drawer は閉じる（既存関数を優先）
+    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+
+    // 対象ビューだけ出す
+    modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
+    const view = modal.querySelector(`[data-modal-view="${viewName}"]`);
+    if (view) view.hidden = false;
+
+    if (modalOverlay) {
+      modalOverlay.hidden = false;
+      // reflow
+      modalOverlay.offsetHeight;
+      modalOverlay.classList.add("is-open");
+    }
+
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+
+    // モーダル表示中はスクロール止める
+    document.body.classList.add("is-locked");
+  };
+
+  // drawer から起動
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest("[data-open-modal]");
+    if (!a) return;
+    e.preventDefault();
+    const view = a.getAttribute("data-open-modal");
+    openModal(view);
+  });
+
+  if (modalOverlay) modalOverlay.addEventListener("click", closeModal);
+  if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeModal);
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      // drawer優先、次にmodal
+      if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+      else if (modal && modal.classList.contains("is-open")) closeModal();
+    }
+  });
+
+  /* ----------------------------
      Accordion
   ---------------------------- */
   const accButtons = $$("[data-acc]");
