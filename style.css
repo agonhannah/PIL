@@ -331,3 +331,158 @@ body.is-locked{
   :root{ --fx-scale:0.5; }
   html,body,a,button{ cursor:none !important; }
 }
+
+
+/* =========================================================
+   PRODUCT DETAIL
+========================================================= */
+
+/* hash遷移でtopbarに隠れない */
+.product{
+  scroll-margin-top: calc(var(--topbar-h) + 14px);
+  padding: 28px 0 80px;
+}
+
+.product__inner{
+  padding:
+    0
+    calc(var(--gutter) + env(safe-area-inset-right, 0px))
+    0
+    calc(var(--gutter) + env(safe-area-inset-left, 0px));
+}
+
+/* 画像スライド（JSなし） */
+.product__gallery{
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.product__track{
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  gap: 12px;
+
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+
+  border-radius: 0;
+}
+
+.product__slide{
+  margin: 0;
+  scroll-snap-align: start;
+  background: rgba(17,17,17,.06);
+}
+
+.product__slide img{
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* “SWIPE” ヒント（要らなければ消してOK） */
+.product__hint{
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 10px;
+  letter-spacing: .22em;
+  opacity: .5;
+  user-select: none;
+}
+
+/* meta */
+.product__title{
+  margin: 8px 0 10px;
+  font-size: 14px;
+  letter-spacing: .30em;
+  text-transform: uppercase;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.product__subtitle{
+  opacity: .75;
+  font-size: 12px;
+  letter-spacing: .28em;
+}
+
+.product__price{
+  font-size: 12px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  opacity: .65;
+  margin-bottom: 14px;
+}
+
+/* add to bag */
+.product__cta{
+  display: block;
+  width: 100%;
+  padding: 14px 14px;
+  border: 1px solid rgba(17,17,17,.28);
+  border-radius: 14px;
+
+  font-size: 12px;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  text-align: center;
+
+  margin: 10px 0 18px;
+}
+
+.product__block{
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.product__label{
+  font-size: 11px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  opacity: .55;
+  margin-bottom: 10px;
+}
+
+.product__desc{
+  font-size: 12px;
+  line-height: 1.8;
+  letter-spacing: .02em;
+  opacity: .9;
+}
+
+.product__player{
+  border: 1px solid rgba(17,17,17,.10);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.product__link{
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  opacity: .6;
+}
+
+/* PCで見やすく：画像/情報 2カラム */
+@media (min-width: 900px){
+  .product__inner{
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .product__gallery{
+    margin-bottom: 0;
+  }
+
+  .product__track{
+    grid-auto-columns: 100%;
+  }
+}
