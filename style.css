@@ -608,52 +608,88 @@ body.is-locked{
 }
 
 /* =========================================================
-   Product: SoundCloud lockbox（ブラウザ版と同じlockboxを流用）
-   ※ .sc-lock__* は使わない（重複/縦線化の元）
+   Product: SoundCloud lockbox（崩れない版）
 ========================================================= */
 .product__sc{
-  display:inline-flex;
+  display:flex;                 /* inline-flexやめる（iOSでズレやすい） */
   align-items:center;
   gap:14px;
+
   margin-top:6px;
-  padding:12px 0;
+  padding:12px 0 26px;          /* ←下に余白を作って CLICK HERE の居場所確保 */
+
   font-size:11px;
   letter-spacing:.22em;
   text-transform:uppercase;
   color:#111;
   opacity:.7;
+
+  line-height:1;                /* ←文字の縦ズレ抑える */
 }
 .product__sc:hover{ opacity:1; }
 
-/* lockboxを product内に置くためのラッパー */
+/* lockbox wrapper（flex内で潰れない） */
 .sc-lockbox{
-  display:inline-block;
+  display:block;
   flex:0 0 auto;
+  width:84px;                   /* ←確実に領域を固定 */
+  height:84px;
 }
 
-/* product側は少し小さめにしたいので上書き（110→84） */
+/* product用にサイズを固定（110→84） */
 .sc-lockbox .lockbox__rect{
   width:84px;
   height:84px;
   border-radius:14px;
+
+  display:block;
+  box-sizing:border-box;
 }
 
-/* 十字・tickもスケール合わせ */
+/* ====== ここが保険：HTMLが --h だけでも描画されるようにする ====== */
+.sc-lockbox .lockbox__cross,
+.sc-lockbox .lockbox__cross--h,
+.sc-lockbox .lockbox__cross--v{
+  position:absolute;
+  left:50%;
+  top:50%;
+  background:rgba(17,17,17,.25);
+  transform:translate(-50%,-50%);
+}
+.sc-lockbox .lockbox__tick,
+.sc-lockbox .lockbox__tick--t,
+.sc-lockbox .lockbox__tick--b,
+.sc-lockbox .lockbox__tick--l,
+.sc-lockbox .lockbox__tick--r{
+  position:absolute;
+  background:rgba(17,17,17,.35);
+}
+
+/* 十字（product用スケール） */
 .sc-lockbox .lockbox__cross--h{ width:48px; height:1px; }
 .sc-lockbox .lockbox__cross--v{ width:1px; height:48px; }
 
-.sc-lockbox .lockbox__tick--t{ top:6px; width:14px; }
-.sc-lockbox .lockbox__tick--b{ bottom:6px; width:14px; }
-.sc-lockbox .lockbox__tick--l{ left:6px; height:14px; }
-.sc-lockbox .lockbox__tick--r{ right:6px; height:14px; }
+/* tick（product用スケール） */
+.sc-lockbox .lockbox__tick--t{ top:6px; left:50%; width:14px; height:1px; transform:translateX(-50%); }
+.sc-lockbox .lockbox__tick--b{ bottom:6px; left:50%; width:14px; height:1px; transform:translateX(-50%); }
+.sc-lockbox .lockbox__tick--l{ left:6px; top:50%; width:1px; height:14px; transform:translateY(-50%); }
+.sc-lockbox .lockbox__tick--r{ right:6px; top:50%; width:1px; height:14px; transform:translateY(-50%); }
 
-/* CLICK HERE 位置は同じ */
+/* CLICK HERE（product用） */
 .sc-lockbox .lockbox__rect::after{
   content:"CLICK HERE";
+  position:absolute;
+  left:50%;
   bottom:-18px;
+  transform:translateX(-50%);
+  font-size:10px;
+  letter-spacing:.22em;
+  color:rgba(17,17,17,.55);
+  white-space:nowrap;
+  pointer-events:none;
 }
 
-/* coarse pointer: 既存PointerFXの挙動はそのまま */
+/* coarse pointer: 既存PointerFXはそのまま */
 @media (pointer: coarse) {
   #lockbox{
     transform: translate(-50%, -50%) scale(1.8);
