@@ -129,7 +129,7 @@ const goHome = (e) => {
   // 4) スクロールを最上部へ
   window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 };
-
+$$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture: true }));
   /* ----------------------------
      Shop Modal (open/close)
   ---------------------------- */
