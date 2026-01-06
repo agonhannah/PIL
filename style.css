@@ -618,7 +618,7 @@ body.is-locked{
   align-items:center;
   gap:14px;
   margin-top:6px;
-  padding: 10px 0;
+  padding: 12px 0;
   font-size:11px;
   letter-spacing:.22em;
   text-transform:uppercase;
@@ -627,6 +627,19 @@ body.is-locked{
 }
 
 .product__sc:hover{ opacity:1; }
+
+/* lock icon parts base (必須) */
+.sc-lock__cross{
+  position:absolute;
+  left:50%;
+  top:50%;
+  background:rgba(0,0,0,.5);
+  transform:translate(-50%,-50%);
+}
+.sc-lock__tick{
+  position:absolute;
+  background:rgba(0,0,0,.45);
+}
 
 /* lock icon (static) */
 .sc-lock__rect{
