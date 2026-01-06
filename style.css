@@ -646,7 +646,7 @@ body.is-locked{
   content:"";
   position:absolute;
   left:0;
-  top: calc(110px - 120px); /* 被せ量 */
+  top: calc(110px - 125px); /* 被せ量 */
 
   width:110px;
   height:110px;
