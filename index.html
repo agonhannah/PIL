@@ -231,15 +231,18 @@
         </a>
 
         <div class="product__block">
-  <div class="product__label">TRIAL / 試聴</div>
+ 
+<div class="trial">
+  <div class="trial__head">TRIAL / 試聴</div>
 
-  <div class="product__trial">
-    <!-- ✅ クリックできるのは lockbox だけ -->
-    <a class="product__trialLock" href="YOUR_SOUNDCLOUD_URL" target="_blank" rel="noopener">
-      <span class="sc-lockbox" aria-hidden="true">
+  <div class="trial__row">
+    <!-- クリックできるのは lock + logo のみ -->
+    <a class="trial__link" href="YOUR_SOUNDCLOUD_URL" target="_blank" rel="noopener">
+      <span class="trial__lock" aria-hidden="true">
         <span class="lockbox__rect">
           <span class="lockbox__cross lockbox__cross--h"></span>
           <span class="lockbox__cross lockbox__cross--v"></span>
+
           <span class="lockbox__tick lockbox__tick--t"></span>
           <span class="lockbox__tick lockbox__tick--b"></span>
           <span class="lockbox__tick lockbox__tick--l"></span>
@@ -247,12 +250,12 @@
         </span>
       </span>
 
-      <!-- ✅ lockbox下にロゴ（同じ幅） -->
-      <img class="product__trialLogo" src="images/soundcloud.PNG" alt="SoundCloud" />
+      <!-- ロゴ：lockboxと同じ幅で固定 -->
+      <img class="trial__logo" src="images/soundcloud.PNG" alt="SoundCloud">
     </a>
 
-    <!-- ✅ 表示だけ。リンク無し -->
-    <div class="product__trialText" aria-hidden="true">← OPEN ON SOUNDCLOUD</div>
+    <!-- テキストはリンクじゃない -->
+    <div class="trial__text">← OPEN ON SOUNDCLOUD</div>
   </div>
 </div>
 
