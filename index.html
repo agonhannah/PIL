@@ -81,7 +81,7 @@
   <!-- =========================================================
        SHOP MODAL
        - ここは「Topbarを使う」前提なので、モーダル内バー（SHOP/×）は置かない
-       - close は menuBtn で行う（見た目はハンバーガー）
+       - close は overlay / Esc で行う（JS）
   ========================================================== -->
   <div class="modal-overlay" id="modalOverlay" hidden></div>
 
@@ -91,50 +91,54 @@
       <!-- ===== SHOP: ALL ===== -->
       <div class="shopview" data-modal-view="shop-all" hidden>
         <div class="shop__head">
-          <div class="shop__count">1 item</div>
+          <div class="shop__count">2 item</div>
         </div>
 
         <div class="shop__grid">
+          <!-- Session Collection -->
           <article class="shop-card">
             <a class="shop-card__link" href="#session-collection">
               <div class="shop-card__media">
                 <img
                   src="images/SessionCollection.JPG"
-                  alt="【CD】Session Collection [2022-24 Bootleg]"
+                  alt="【CD】Session Collection"
                   loading="lazy"
                   decoding="async"
                 />
               </div>
 
-           <h3 class="shop-card__title">
-  【CD】Session Collection<br>
-  <span class="shop-card__subtitle">[2022–24 Bootleg]</span>
-</h3>
+              <h3 class="shop-card__title">
+                【CD】Session Collection<br>
+                <span class="shop-card__subtitle">[2022–24 Bootleg]</span>
+              </h3>
+
               <div class="shop-card__price">2750 YEN (TAX IN)</div>
+            </a>
+          </article>
+
+          <!-- NOW PLAYING (SOLD OUT) -->
+          <article class="shop-card is-soldout">
+            <a class="shop-card__link" href="#nowplaying">
+              <div class="shop-card__media">
+                <img
+                  src="images/NOWPLAYING.JPG"
+                  alt="【ZINE & CD】NOW PLAYING ZINE & Soundtrack for quest (SOLD OUT)"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+
+              <h3 class="shop-card__title">
+                【ZINE & CD】NOW PLAYING ZINE &<br>
+                <span class="shop-card__subtitle">Soundtrack for quest</span>
+              </h3>
+
+              <div class="shop-card__price">SOLD OUT</div>
             </a>
           </article>
         </div>
       </div>
-<article class="shop-card is-soldout">
-  <a class="shop-card__link" href="#nowplaying">
-    <div class="shop-card__media">
-      <img
-        src="images/NOWPLAYING.JPG"
-        alt="[CD] NOW PLAYING (SOLD OUT)"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
 
-    <h3 class="shop-card__title">
-      【ZINE & CD】NOW PLAYING ZINE &<br>
-  <span class="shop-card__subtitle">Soundtrack for quest</span>
-</h3>
-    
-
-    <div class="shop-card__price">SOLD OUT</div>
-  </a>
-</article>
       <!-- ===== SHOP: DIGITAL ===== -->
       <div class="shopview" data-modal-view="shop-digital" hidden>
         <div class="shop__head">
@@ -143,29 +147,57 @@
       </div>
 
       <!-- ===== SHOP: PHYSICAL ===== -->
-<div class="shopview" data-modal-view="shop-physical" hidden>
-  <div class="shop__head">
-    <div class="shop__count">1 item</div>
-  </div>
-
-  <div class="shop__grid">
-    <article class="shop-card">
-      <a class="shop-card__link" href="#session-collection">
-        <div class="shop-card__media">
-          <img
-            src="images/SessionCollection.JPG"
-            alt="【CD】Session Collection [2022-24 Bootleg] ジャケット"
-            loading="lazy"
-            decoding="async"
-          />
+      <div class="shopview" data-modal-view="shop-physical" hidden>
+        <div class="shop__head">
+          <div class="shop__count">2 item</div>
         </div>
 
-      <h3 class="shop-card__title">【CD】Session Collection<br>[2022-24 Bootleg]</h3>
-        <div class="shop-card__price">2750 YEN (TAX IN)</div>
-      </a>
-    </article>
-  </div>
-</div>
+        <div class="shop__grid">
+          <!-- Session Collection -->
+          <article class="shop-card">
+            <a class="shop-card__link" href="#session-collection">
+              <div class="shop-card__media">
+                <img
+                  src="images/SessionCollection.JPG"
+                  alt="【CD】Session Collection"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+
+              <h3 class="shop-card__title">
+                【CD】Session Collection<br>
+                <span class="shop-card__subtitle">[2022–24 Bootleg]</span>
+              </h3>
+
+              <div class="shop-card__price">2750 YEN (TAX IN)</div>
+            </a>
+          </article>
+
+          <!-- NOW PLAYING (SOLD OUT) -->
+          <article class="shop-card is-soldout">
+            <a class="shop-card__link" href="#nowplaying">
+              <div class="shop-card__media">
+                <img
+                  src="images/NOWPLAYING.JPG"
+                  alt="【ZINE & CD】NOW PLAYING ZINE & Soundtrack for quest (SOLD OUT)"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+
+              <h3 class="shop-card__title">
+                【ZINE & CD】NOW PLAYING ZINE &<br>
+                <span class="shop-card__subtitle">Soundtrack for quest</span>
+              </h3>
+
+              <div class="shop-card__price">SOLD OUT</div>
+            </a>
+          </article>
+        </div>
+      </div>
+
+    </div>
   </section>
 
   <!-- Pointer FX -->
