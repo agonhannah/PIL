@@ -14,6 +14,20 @@
   --fx-scale: 1;
 }
 
+/* iOS tap highlight / focus の四角を消す */
+a, button, #menuBtn, .hamburger, .toplink{
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+a:focus, button:focus{
+  outline: none;
+}
+a:focus-visible, button:focus-visible{
+  outline: none;
+}
+
+
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
 
