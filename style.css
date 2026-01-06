@@ -618,89 +618,90 @@ body.is-locked{
 }
 
 /* =========================================================
-   TRIAL (isolated / no interference)  ★全置き換え用
+   TRIAL (SESSION ONLY / FORCE FIX)
 ========================================================= */
+#session-collection .trial{
+  margin-top: 18px !important;
+  padding-top: 18px !important;
+  border-top: 1px solid var(--line) !important;
 
-.trial{
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
-
-  /* ここでサイズ管理：元の大きさに戻す（110px） */
-  --trial-size: 110px;
+  /* 元サイズ＝110 */
+  --trial-size: 110px !important;
 }
 
-.trial__head{
-  font-size: 11px;
-  letter-spacing: .28em;
-  text-transform: uppercase;
-  opacity: .55;
-  margin-bottom: 12px;
+#session-collection .trial__head{
+  font-size: 11px !important;
+  letter-spacing: .28em !important;
+  text-transform: uppercase !important;
+  opacity: .55 !important;
+  margin: 0 0 12px !important;
 }
 
-.trial__row{
-  display: flex;
-  align-items: flex-start;
-  gap: 18px;
+#session-collection .trial__row{
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 18px !important;
 }
 
-/* クリックできるのは lock + logo のみ（このリンクだけ） */
-.trial__link{
-  position: relative;
-  width: var(--trial-size);
+/* クリックできるのは lock+logo のみ */
+#session-collection .trial__link{
+  position: relative !important;
+  width: var(--trial-size) !important;
 
-  /* ロゴを下に“重ねる”ぶん高さを確保（ここが崩れ防止） */
-  height: calc(var(--trial-size) + 54px);
+  /* ロゴを重ねる分の高さを確保（巨大化/崩れ防止） */
+  height: calc(var(--trial-size) + 60px) !important;
 
-  display: block;
-  text-decoration: none;
-  color: inherit;
+  display: block !important;
+  text-decoration: none !important;
+  color: inherit !important;
 }
 
-/* lockbox 本体（110に戻す） */
-.trial__lock{
-  position: relative;
-  display: block;
-  width: var(--trial-size);
-  height: var(--trial-size);
+/* lock（110固定） */
+#session-collection .trial__lock{
+  position: relative !important;
+  display: block !important;
+  width: var(--trial-size) !important;
+  height: var(--trial-size) !important;
 }
 
-/* lockboxのrectもこの中だけ110に固定 */
-.trial__lock .lockbox__rect{
-  width: var(--trial-size);
-  height: var(--trial-size);
-  border-radius: 14px;
-  box-sizing: border-box;
+#session-collection .trial__lock .lockbox__rect{
+  width: var(--trial-size) !important;
+  height: var(--trial-size) !important;
+  border-radius: 14px !important;
+  box-sizing: border-box !important;
 }
 
-/* ロゴ：ロックの“下に重ねる”（半分かぶる感じ） */
-.trial__logo{
-  position: absolute;
-  left: 0;
+/* ロゴ：ロックの下に重ねる（ここが本題） */
+#session-collection img.trial__logo{
+  position: absolute !important;
+  left: 0 !important;
 
-  /* ここが「重ね位置」：110の下端付近から被せる */
-  top: calc(var(--trial-size) - 32px);
+  /* 110の下端から少し上に被せる */
+  top: calc(var(--trial-size) - 24px) !important;
 
-  width: var(--trial-size);
-  height: var(--trial-size);
-  display: block;
+  width: var(--trial-size) !important;
+  height: var(--trial-size) !important;
+  max-width: var(--trial-size) !important;   /* ←巨大化を絶対殺す */
+  max-height: var(--trial-size) !important;  /* ←巨大化を絶対殺す */
 
-  /* PNGの余白がデカくてもロゴを大きく見せるため */
-  object-fit: cover;
-
-  opacity: .75;
-  pointer-events: none;
+  display: block !important;
+  object-fit: cover !important;              /* PNG余白があってもデカく見せる */
+  opacity: .75 !important;
+  pointer-events: none !important;
 }
-.trial__link:hover .trial__logo{ opacity: 1; }
 
-/* テキストはリンク外。少し下げる */
-.trial__text{
-  margin-top: 44px;
-  font-size: 11px;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  opacity: .55;
-  white-space: nowrap;
+#session-collection .trial__link:hover img.trial__logo{
+  opacity: 1 !important;
+}
+
+/* 右のテキスト（リンク外、少し下げる） */
+#session-collection .trial__text{
+  margin-top: 44px !important;
+  font-size: 11px !important;
+  letter-spacing: .22em !important;
+  text-transform: uppercase !important;
+  opacity: .55 !important;
+  white-space: nowrap !important;
 }
 
 /* coarse pointer: 既存PointerFXはそのまま */
