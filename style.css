@@ -617,3 +617,26 @@ body.is-touch #pointer-fx{
     white-space: normal;
   }
 }
+
+
+/* =========================================================
+   FIX: Drawer / Modal を中でスクロール可能にする
+========================================================= */
+
+/* Drawer: 中身をスクロール */
+.drawer__inner{
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Modal: 画面全体をスクロールコンテナにする */
+.modal{
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* もし modal 内の余白（.modal__body）だけをスクロールさせたい場合はこっちでもOK */
+.modal__body{
+  /* modal が inset:0 なので基本は不要だけど、念のため */
+  min-height: 100%;
+}
