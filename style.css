@@ -15,7 +15,7 @@
 }
 
 /* =========================================================
-   Reset & iOS tap / focus highlight kill（★統合済み）
+   Reset & iOS tap / focus highlight kill
 ========================================================= */
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
@@ -101,6 +101,7 @@ body::after{
   display:grid;
   place-items:center;
   cursor:pointer;
+  padding:0;
 }
 
 .hamburger__lines{
@@ -115,6 +116,7 @@ body::after{
   height:1px;
   background:rgba(17,17,17,.7);
   transition:transform 180ms ease, opacity 180ms ease;
+  transform-origin:center;
 }
 
 #menuBtn.is-open .hamburger__lines span:nth-child(1){
@@ -175,6 +177,9 @@ body.is-locked{
   font-size:12px;
   letter-spacing:.32em;
   text-transform:uppercase;
+
+  /* 表記揺れ止め（数字/幅変化対策） */
+  font-variant-numeric: tabular-nums;
 }
 
 .acc__mark{
@@ -200,6 +205,29 @@ body.is-locked{
   opacity:.55;
 }
 
+/* Drawer secondary（ABOUT / CONTACT） */
+.drawer__secondary{
+  margin-top:18px;
+  padding-top:18px;
+  border-top:1px solid var(--line);
+
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.drawer__secondary .sec__link{
+  display:block;
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  opacity:.92;
+
+  /* 表記揺れ止め */
+  font-variant-numeric: tabular-nums;
+  min-width: 10ch;
+}
+
 /* =========================================================
    Pointer FX（最前面固定）
 ========================================================= */
@@ -213,21 +241,62 @@ body.is-locked{
 }
 
 #pointer-blob{
+  position:absolute;
   width:84px;
   height:84px;
   border-radius:999px;
   background:rgba(0,255,90,.85);
   filter:blur(10px);
   transform:translate(-50%,-50%) scale(var(--fx-scale));
+  transform-origin:center;
 }
 
 #lockbox{
+  position:absolute;
   opacity:0;
   transition:opacity 120ms ease;
   transform:translate(-50%,-50%) scale(var(--fx-scale));
+  transform-origin:center;
 }
 
 #pointer-fx.is-hot #lockbox{ opacity:1; }
+
+/* lockbox visuals（←これが無いと箱が見えない） */
+.lockbox__rect{
+  width:110px;
+  height:110px;
+  border:1px solid rgba(17,17,17,.28);
+  border-radius:14px;
+  position:relative;
+}
+
+.lockbox__cross{
+  position:absolute;
+  left:50%;
+  top:50%;
+  background:rgba(17,17,17,.25);
+  transform:translate(-50%,-50%);
+}
+.lockbox__cross--h{ width:64px; height:1px; }
+.lockbox__cross--v{ width:1px; height:64px; }
+
+.lockbox__tick{ position:absolute; background:rgba(17,17,17,.35); }
+.lockbox__tick--t{ top:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
+.lockbox__tick--b{ bottom:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
+.lockbox__tick--l{ left:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
+.lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
+
+.lockbox__rect::after{
+  content:"POINT HERE";
+  position:absolute;
+  left:50%;
+  bottom:-18px;
+  transform:translateX(-50%);
+  font-size:10px;
+  letter-spacing:.22em;
+  color:rgba(17,17,17,.55);
+  white-space:nowrap;
+}
 
 /* =========================================================
    Shop Grid
@@ -245,7 +314,26 @@ body.is-locked{
   .shop__grid{ grid-template-columns:repeat(4,1fr); }
 }
 
-.shop-card__media{ position:relative; overflow:hidden; }
+.shop__head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin: 0 0 18px;
+}
+
+/* items 揺れ止め */
+.shop__count{
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  opacity:.70;
+
+  font-variant-numeric: tabular-nums;
+  display:inline-block;
+  min-width: 8ch;
+}
+
+.shop-card__media{ position:relative; overflow:hidden; background:rgba(17,17,17,.06); }
 .shop-card__media::before{ content:""; display:block; padding-top:100%; }
 .shop-card__media img{
   position:absolute;
@@ -253,6 +341,7 @@ body.is-locked{
   width:100%;
   height:100%;
   object-fit:cover;
+  display:block;
 }
 
 .shop-card__title{
@@ -270,7 +359,9 @@ body.is-locked{
 .shop-card__price{
   font-size:11px;
   letter-spacing:.28em;
+  text-transform:uppercase;
   opacity:.55;
+  line-height:1.2;
 }
 
 .shop-card.is-soldout .shop-card__price{ opacity:.35; }
@@ -316,11 +407,23 @@ body.is-locked{
   transform:translate3d(0,0,0);
 }
 
+/* modal内を中央寄せ（左寄り改善） */
+.modal__body{
+  max-width: 1120px;
+  margin: 0 auto;
+  padding:
+    18px
+    calc(var(--gutter) + env(safe-area-inset-right, 0px))
+    calc(18px + env(safe-area-inset-bottom, 0px))
+    calc(var(--gutter) + env(safe-area-inset-left, 0px));
+}
+
 /* Mobile: タイトル省略しない */
 @media(max-width:600px){
   .modal .shop-card__title{
     display:block;
     -webkit-line-clamp:unset;
+    -webkit-box-orient:unset;
     overflow:visible;
     white-space:normal;
   }
@@ -329,9 +432,8 @@ body.is-locked{
 /* Desktop cursor */
 @media(pointer:fine){
   :root{ --fx-scale:0.5; }
-  html,body,a,button{ cursor:none !important; }
+  html,body,a,button,[role="button"],input,textarea,select,label,summary{ cursor:none !important; }
 }
-
 
 /* =========================================================
    PRODUCT DETAIL
@@ -341,9 +443,19 @@ body.is-locked{
 .product{
   scroll-margin-top: calc(var(--topbar-h) + 14px);
   padding: 28px 0 80px;
+
+  /* ===== PRODUCT VISIBILITY (hash target) ===== */
+  display:none;
+}
+
+.product:target{
+  display:block;
 }
 
 .product__inner{
+  max-width: 1120px;
+  margin: 0 auto;
+
   padding:
     0
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
@@ -366,8 +478,6 @@ body.is-locked{
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-
-  border-radius: 0;
 }
 
 .product__slide{
@@ -382,7 +492,7 @@ body.is-locked{
   display: block;
 }
 
-/* “SWIPE” ヒント（要らなければ消してOK） */
+/* “SWIPE” ヒント */
 .product__hint{
   position: absolute;
   right: 10px;
@@ -477,44 +587,6 @@ body.is-locked{
     gap: 28px;
     align-items: start;
   }
-
-  .product__gallery{
-    margin-bottom: 0;
-  }
-
-  .product__track{
-    grid-auto-columns: 100%;
-  }
-}
-
-/* =========================================================
-   PRODUCT VISIBILITY (hash target)
-   - .product は hidden が付いてる前提
-   - :target になった時だけ表示する
-========================================================= */
-
-/* まず全部隠す（HTMLに hidden が付いててもOK・保険） */
-.product{
-  display:none;
-}
-
-/* hash が当たった商品だけ表示 */
-.product:target{
-  display:block;
-}
-
-/* :target を開いた時はTOPの空っぽmainを見せない（任意） */
-#main{
-  display:block;
-}
-.product:target ~ #pointer-fx{
-  /* 何もしない。pointerは最前面維持 */
-}
-
-/* もし “商品を開いたら、Shop Modalは閉じた状態に見せたい”なら
-   JS側で閉じるのが本命だけど、CSSだけでとりあえず “背面化” はできる */
-.product:target ~ .modal,
-.product:target ~ .modal-overlay{
-  /* モーダルがDOM上でproductより後ろにある場合にのみ効くので、
-     今のHTML順だと効かない。JSで閉じるのが確実。 */
+  .product__gallery{ margin-bottom: 0; }
+  .product__track{ grid-auto-columns: 100%; }
 }
