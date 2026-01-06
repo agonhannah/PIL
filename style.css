@@ -486,3 +486,35 @@ body.is-locked{
     grid-auto-columns: 100%;
   }
 }
+
+/* =========================================================
+   PRODUCT VISIBILITY (hash target)
+   - .product は hidden が付いてる前提
+   - :target になった時だけ表示する
+========================================================= */
+
+/* まず全部隠す（HTMLに hidden が付いててもOK・保険） */
+.product{
+  display:none;
+}
+
+/* hash が当たった商品だけ表示 */
+.product:target{
+  display:block;
+}
+
+/* :target を開いた時はTOPの空っぽmainを見せない（任意） */
+#main{
+  display:block;
+}
+.product:target ~ #pointer-fx{
+  /* 何もしない。pointerは最前面維持 */
+}
+
+/* もし “商品を開いたら、Shop Modalは閉じた状態に見せたい”なら
+   JS側で閉じるのが本命だけど、CSSだけでとりあえず “背面化” はできる */
+.product:target ~ .modal,
+.product:target ~ .modal-overlay{
+  /* モーダルがDOM上でproductより後ろにある場合にのみ効くので、
+     今のHTML順だと効かない。JSで閉じるのが確実。 */
+}
