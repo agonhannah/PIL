@@ -1,6 +1,6 @@
 /* =========================================================
    script.js
-   - Drawer open/close + HOME reload
+   - Drawer open/close + HOME reload (hashless reload)
    - Accordion
    - Shop Modal (open/close)
    - Shop Card -> Product hash navigation (close modal)
@@ -51,8 +51,6 @@
     window.scrollTo(0, 0);
   };
 
-  // 初回ロード時：product hash が付いてて、許可フラグが無ければ強制的にTOPへ
-  // ※Shop経由で入る場合は後でフラグを立てる
   if (isProductHash(location.hash) && !sessionStorage.getItem(HASH_FLAG)) {
     clearHashToHome();
   }
@@ -83,20 +81,26 @@
   const closeDrawer = () => setOpen(false);
 
   if (menuBtn) {
-    menuBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    menuBtn.addEventListener(
+      "click",
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
 
-      const expanded = menuBtn.getAttribute("aria-expanded") === "true";
-      expanded ? closeDrawer() : openDrawer();
-    }, { capture: true });
+        const expanded = menuBtn.getAttribute("aria-expanded") === "true";
+        expanded ? closeDrawer() : openDrawer();
+      },
+      { capture: true }
+    );
   }
 
-  if (overlay) overlay.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    closeDrawer();
-  });
+  if (overlay) {
+    overlay.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeDrawer();
+    });
+  }
 
   if (drawer) {
     drawer.addEventListener("click", (e) => {
@@ -110,26 +114,6 @@
     });
   }
 
-  // TOP：hashも含めて完全に初期化（商品が残らない）
-  // TOP は「完全に初期状態」へ戻す（どこにいても無地TOPへ）
-const goHome = (e) => {
-  e.preventDefault();
-
-  // 1) 商品 hash 許可フラグを消す
-  sessionStorage.removeItem(HASH_FLAG);
-
-  // 2) Drawer / Modal を確実に閉じる
-  if (drawer && drawer.classList.contains("is-open")) closeDrawer();
-  if (modal && modal.classList.contains("is-open")) closeModal();
-
-  // 3) hash を確実に消して、無地TOPへ戻す
-  const url = location.pathname + location.search; // hashなし
-  history.replaceState(null, "", url);
-
-  // 4) スクロールを最上部へ
-  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-};
-$$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture: true }));
   /* ----------------------------
      Shop Modal (open/close)
   ---------------------------- */
@@ -144,7 +128,7 @@ $$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture
       modalOverlay.hidden = true;
     }
 
-    modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
+    modal.querySelectorAll("[data-modal-view]").forEach((v) => (v.hidden = true));
 
     const drawerOpen = drawer && drawer.classList.contains("is-open");
     if (!drawerOpen) document.body.classList.remove("is-locked");
@@ -155,13 +139,13 @@ $$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture
 
     if (drawer && drawer.classList.contains("is-open")) closeDrawer();
 
-    modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
+    modal.querySelectorAll("[data-modal-view]").forEach((v) => (v.hidden = true));
     const view = modal.querySelector(`[data-modal-view="${viewName}"]`);
     if (view) view.hidden = false;
 
     if (modalOverlay) {
       modalOverlay.hidden = false;
-      modalOverlay.offsetHeight;
+      modalOverlay.offsetHeight; // reflow
       modalOverlay.classList.add("is-open");
     }
 
@@ -170,6 +154,7 @@ $$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture
     document.body.classList.add("is-locked");
   };
 
+  // drawer のリンク（data-open-modal）で modal を開く
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest("[data-open-modal]");
     if (!a) return;
@@ -182,17 +167,44 @@ $$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture
     openModal(view);
   });
 
-  if (modalOverlay) modalOverlay.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    closeModal();
-  });
+  if (modalOverlay) {
+    modalOverlay.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeModal();
+    });
+  }
 
+  // Esc：drawer優先、次にmodal
   window.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
 
     if (drawer && drawer.classList.contains("is-open")) closeDrawer();
     else if (modal && modal.classList.contains("is-open")) closeModal();
+  });
+
+  /* ----------------------------
+     TOP：どこにいても「hash無しでリロード」して無地TOPへ戻す（確実版）
+  ---------------------------- */
+  const goHome = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // 1) 商品 hash 許可フラグを消す
+    sessionStorage.removeItem(HASH_FLAG);
+
+    // 2) Drawer / Modal を確実に閉じる（見た目を先に戻す）
+    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+    if (modal && modal.classList.contains("is-open")) closeModal();
+
+    // 3) hash無しURLへ“リロード”で戻す（iOS含め最強）
+    const url = window.location.pathname + window.location.search;
+    window.location.replace(url);
+  };
+
+  // ★必ず capture で付ける（他クリック処理に食われない）
+  $$("[data-home]").forEach((el) => {
+    el.addEventListener("click", goHome, { capture: true });
   });
 
   /* ----------------------------
@@ -210,7 +222,9 @@ $$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture
       setTimeout(() => location.replace(url), 0);
       return;
     }
-    setTimeout(() => { location.hash = hash; }, 0);
+    setTimeout(() => {
+      location.hash = hash;
+    }, 0);
   };
 
   // modal内の商品カードクリック：hash許可フラグを立ててから遷移
@@ -225,7 +239,6 @@ $$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture
       e.preventDefault();
       e.stopPropagation();
 
-      // ★ここで許可
       sessionStorage.setItem(HASH_FLAG, "1");
       jumpToHash(href);
     });
@@ -248,7 +261,8 @@ $$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture
 
     requestAnimationFrame(() => {
       const h = panel.scrollHeight;
-      panel.style.transition = "max-height 420ms cubic-bezier(.22, 1, .36, 1), opacity 320ms ease";
+      panel.style.transition =
+        "max-height 420ms cubic-bezier(.22, 1, .36, 1), opacity 320ms ease";
       panel.style.maxHeight = h + "px";
       panel.style.opacity = "1";
     });
@@ -271,7 +285,8 @@ $$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture
     panel.style.overflow = "hidden";
     panel.style.maxHeight = panel.scrollHeight + "px";
     panel.style.opacity = "1";
-    panel.style.transition = "max-height 420ms cubic-bezier(.22, 1, .36, 1), opacity 320ms ease";
+    panel.style.transition =
+      "max-height 420ms cubic-bezier(.22, 1, .36, 1), opacity 320ms ease";
 
     requestAnimationFrame(() => {
       panel.style.maxHeight = "0px";
@@ -291,7 +306,7 @@ $$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture
   };
 
   accButtons.forEach((btn) => {
-    const name  = btn.getAttribute("data-acc");
+    const name = btn.getAttribute("data-acc");
     const panel = document.querySelector(`[data-acc-panel="${name}"]`);
     if (!panel) return;
 
@@ -314,22 +329,29 @@ $$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture
   ---------------------------- */
   const fx = $("#pointer-fx");
   if (fx) {
-    let x = -9999, y = -9999;
-    let tx = -9999, ty = -9999;
+    let x = -9999,
+      y = -9999;
+    let tx = -9999,
+      ty = -9999;
 
     let idleTimer = null;
-    let dimTimer  = null;
+    let dimTimer = null;
 
     const isInteractive = (el) => {
       if (!el) return false;
-      return !!(el.closest && el.closest(
-        'a[href]:not([href=""]), button, [role="button"], input, textarea, select, label, summary'
-      ));
+      return !!(
+        el.closest &&
+        el.closest(
+          'a[href]:not([href=""]), button, [role="button"], input, textarea, select, label, summary'
+        )
+      );
     };
 
     const setTransform = (nx, ny) => {
-      x = nx; y = ny;
-      tx = nx; ty = ny;
+      x = nx;
+      y = ny;
+      tx = nx;
+      ty = ny;
       fx.style.transform = `translate3d(${nx}px, ${ny}px, 0)`;
     };
 
@@ -414,13 +436,21 @@ $$("[data-home]").forEach((el) => el.addEventListener("click", goHome, { capture
       document.addEventListener("pointerleave", hardHide, { passive: true });
       document.addEventListener("mouseleave", hardHide, { passive: true });
 
-      document.addEventListener("pointerout", (e) => {
-        if (!e.relatedTarget) hardHide();
-      }, { passive: true });
+      document.addEventListener(
+        "pointerout",
+        (e) => {
+          if (!e.relatedTarget) hardHide();
+        },
+        { passive: true }
+      );
 
-      document.addEventListener("mouseout", (e) => {
-        if (!e.relatedTarget) hardHide();
-      }, { passive: true });
+      document.addEventListener(
+        "mouseout",
+        (e) => {
+          if (!e.relatedTarget) hardHide();
+        },
+        { passive: true }
+      );
 
       window.addEventListener("blur", hardHide, { passive: true });
       document.addEventListener("visibilitychange", () => {
