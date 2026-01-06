@@ -651,3 +651,47 @@ body.is-locked{
   border-radius:50%;
   background:#fff;
 }
+
+/* SoundCloud lock-style link */
+.product__sc{
+  display:inline-flex;
+  align-items:center;
+  gap:14px;
+  margin-top:6px;
+
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:#111;
+  opacity:.7;
+}
+
+.product__sc:hover{ opacity:1; }
+
+/* lock icon (static) */
+.sc-lock__rect{
+  width:22px;
+  height:22px;
+  border:1px solid rgba(0,0,0,.6);
+  border-radius:6px;
+  position:relative;
+}
+
+.sc-lock__cross{
+  position:absolute;
+  left:50%;
+  top:50%;
+  background:rgba(0,0,0,.5);
+  transform:translate(-50%,-50%);
+}
+.sc-lock__cross--h{ width:10px; height:1px; }
+.sc-lock__cross--v{ width:1px; height:10px; }
+
+.sc-lock__tick{
+  position:absolute;
+  background:rgba(0,0,0,.45);
+}
+.sc-lock__tick--t{ top:3px; left:50%; width:6px; height:1px; transform:translateX(-50%); }
+.sc-lock__tick--b{ bottom:3px; left:50%; width:6px; height:1px; transform:translateX(-50%); }
+.sc-lock__tick--l{ left:3px; top:50%; width:1px; height:6px; transform:translateY(-50%); }
+.sc-lock__tick--r{ right:3px; top:50%; width:1px; height:6px; transform:translateY(-50%); }
