@@ -620,3 +620,34 @@ body.is-locked{
 .product__hint{
   display: none !important;
 }
+
+/* SoundCloud link (icon style) */
+.product__sc{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  margin-top:6px;
+
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  opacity:.6;
+}
+
+.product__sc:hover{ opacity:.9; }
+
+.sc__icon{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:currentColor;
+  position:relative;
+}
+
+.sc__icon::after{
+  content:"";
+  position:absolute;
+  inset:4px;
+  border-radius:50%;
+  background:#fff;
+}
