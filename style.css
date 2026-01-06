@@ -617,64 +617,74 @@ body.is-locked{
   pointer-events:none;
 }
 
-/* ===== TRIAL : lock + soundcloud overlay (FINAL) ===== */
+/* =========================================================
+   TRIAL / 試聴  (LOCK + SC LOGO OVERLAY : FIXED)
+========================================================= */
 
-.product__trial{
-  margin-top:18px;
-  padding-top:18px;
-  border-top:1px solid var(--line);
+.trial{
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
 
+.trial__head{
+  font-size: 11px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  opacity: .55;
+  margin-bottom: 12px;
+}
+
+.trial__row{
   display:flex;
   align-items:flex-start;
   gap:18px;
 }
 
-.product__trialHead{
-  font-size:11px;
-  letter-spacing:.28em;
-  text-transform:uppercase;
-  opacity:.55;
-  margin:0 0 12px;
-}
-
-/* lock + logo を1つの84px箱に */
-.product__trialLink{
+/* クリックできるのはこの 84x84 の箱だけ */
+.trial__link{
   position:relative;
   width:84px;
   height:84px;
   display:block;
   text-decoration:none;
+  color:inherit;
 }
 
-/* lockbox */
-.product__trialLink .trial__lock{
-  width:84px;
-  height:84px;
+/* lock を箱いっぱいに固定 */
+.trial__lock{
+  position:absolute;
+  inset:0;
+  display:block;
 }
 
-.product__trialLink .lockbox__rect{
+/* lockbox 自体も 84 に固定 */
+.trial__lock .lockbox__rect{
   width:84px;
   height:84px;
   border-radius:14px;
+  box-sizing:border-box;
 }
 
-/* 🔴 SoundCloud ロゴを「元サイズ感」で重ねる */
-.product__trialLogo{
+/* ロゴは “下に重ねる” （= 追加で下に並べない） */
+.trial__logo{
   position:absolute;
   left:50%;
-  bottom:6px;                 /* ← lockbox内の下側 */
+  bottom:8px;                 /* ←ロゴの下位置（6〜12で調整） */
   transform:translateX(-50%);
 
-  width:36px;                 /* ← 見た目の“元サイズ感” */
+  width:44px;                 /* ←ロゴの見た目サイズ（36〜52で調整） */
   height:auto;
+  display:block;
+  object-fit:contain;
 
   opacity:.85;
-  pointer-events:none;
+  pointer-events:none;        /* クリックは trial__link へ */
 }
 
-/* 右側テキスト */
-.product__trialText{
-  margin-top:44px;
+/* 右側テキスト（リンクじゃない） */
+.trial__text{
+  margin-top:44px;            /* ←“少し下げ” */
   font-size:11px;
   letter-spacing:.22em;
   text-transform:uppercase;
