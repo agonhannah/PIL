@@ -186,26 +186,32 @@
   /* ----------------------------
      TOP：どこにいても「hash無しでリロード」して無地TOPへ戻す（確実版）
   ---------------------------- */
-  const goHome = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  // ============================
+// TOP: どこからでも“無地TOP”へ確実に戻す
+// - iOS対策：clickだけだと落ちることがあるので pointerdown も拾う
+// - :target 状態を確実に消すため「replaceでhash無しURLへ遷移」
+// ============================
+const goHome = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
 
-    // 1) 商品 hash 許可フラグを消す
-    sessionStorage.removeItem(HASH_FLAG);
+  // 1) 商品hash許可フラグを消す
+  sessionStorage.removeItem(HASH_FLAG);
 
-    // 2) Drawer / Modal を確実に閉じる（見た目を先に戻す）
-    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
-    if (modal && modal.classList.contains("is-open")) closeModal();
+  // 2) Drawer / Modal を確実に閉じる
+  if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+  if (modal && modal.classList.contains("is-open")) closeModal();
 
-    // 3) hash無しURLへ“リロード”で戻す（iOS含め最強）
-    const url = window.location.pathname + window.location.search;
-    window.location.replace(url);
-  };
+  // 3) hash無しURLへ“遷移” (履歴汚さない)
+  const url = location.pathname + location.search; // hashなし
+  location.replace(url);
+};
 
-  // ★必ず capture で付ける（他クリック処理に食われない）
-  $$("[data-home]").forEach((el) => {
-    el.addEventListener("click", goHome, { capture: true });
-  });
+// 既存の $$("[data-home]") の addEventListener は一旦全部消してこれに統一
+$$("[data-home]").forEach((el) => {
+  el.addEventListener("pointerdown", goHome, { capture: true });
+  el.addEventListener("click", goHome, { capture: true });
+});
 
   /* ----------------------------
      Shop Card -> Product hash navigation
