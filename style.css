@@ -640,3 +640,30 @@ body.is-touch #pointer-fx{
   /* modal が inset:0 なので基本は不要だけど、念のため */
   min-height: 100%;
 }
+
+/* =========================================================
+   FIX: iOS / Mobile Tap Highlight & Focus Box
+   - TOP / Hamburger 押下時の黒い四角を消す
+========================================================= */
+
+/* iOS tap highlight */
+a, button, .toplink, .hamburger {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* focus / active の黒背景・枠を消す */
+a:focus,
+a:active,
+button:focus,
+button:active {
+  outline: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+/* iOS Safari 特有の :focus-visible 対策 */
+a:focus-visible,
+button:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
