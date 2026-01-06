@@ -3,6 +3,7 @@
    - Drawer open/close + HOME reload
    - Accordion
    - Shop Modal (open/close)
+   - Shop Card -> Product hash navigation (close modal)
    - Pointer FX
 ========================================================= */
 
@@ -55,7 +56,6 @@
 
   if (menuBtn) {
     // ★重要：ボタンのクリックを“ここで止める”
-    // これで hash(#session-collection) の挙動や他クリック処理に食われるのを防ぐ
     menuBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -94,9 +94,6 @@
 
   /* ----------------------------
      Shop Modal (open/close)
-     - drawer の All/Digital/Physical から開く
-     - overlay / Esc で閉じる
-     ※ modal開閉で drawer を勝手に閉じない（開く時だけ閉じる）
   ---------------------------- */
   const closeModal = () => {
     if (!modal) return;
@@ -169,6 +166,46 @@
     if (drawer && drawer.classList.contains("is-open")) closeDrawer();
     else if (modal && modal.classList.contains("is-open")) closeModal();
   });
+
+  /* ----------------------------
+     ★ Shop Card -> Product hash navigation
+     - modal内の商品カードクリックで「modalを閉じてから」hashへ遷移
+  ---------------------------- */
+  const jumpToHash = (hash) => {
+    if (!hash || hash === "#") return;
+
+    // まずUIを閉じる（lock解除まで含める）
+    if (modal && modal.classList.contains("is-open")) closeModal();
+    if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+
+    // hash遷移（同一hashでも動くように少し工夫）
+    const cur = location.hash;
+    if (cur === hash) {
+      // 同じhashの場合でもスクロールを起こす
+      const url = location.pathname + location.search + hash;
+      // replace で再評価
+      setTimeout(() => location.replace(url), 0);
+      return;
+    }
+
+    setTimeout(() => { location.hash = hash; }, 0);
+  };
+
+  // modal内のカードリンクを拾う
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      const link = e.target.closest && e.target.closest("a.shop-card__link");
+      if (!link) return;
+
+      const href = link.getAttribute("href") || "";
+      if (!href.startsWith("#")) return; // 外部リンク等は触らない
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      jumpToHash(href);
+    });
+  }
 
   /* ----------------------------
      Accordion
