@@ -287,7 +287,7 @@ body.is-locked{
 .lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
 
 .lockbox__rect::after{
-  content:"POINT HERE";
+  content:"CLICK HERE";
   position:absolute;
   left:50%;
   bottom:-18px;
