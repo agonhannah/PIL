@@ -634,7 +634,7 @@ body.is-locked{
 #session-collection .product__trialLink{
   position:relative;
   width:110px;
-  height:110px; /* ロック自体 */
+  height:170px; /* ロック自体 */
   display:block;
 }
 
