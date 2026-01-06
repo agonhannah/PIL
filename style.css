@@ -153,8 +153,8 @@ body::after{
   pointer-events:none;
 
   transition:
-    transform 240ms ease,
-    visibility 0s linear 240ms;
+    transform 420ms ease,
+    visibility 0s linear 420ms;
 }
 
 .drawer.is-open{
@@ -163,7 +163,7 @@ body::after{
   pointer-events:auto;
 
   transition:
-    transform 240ms ease,
+    transform 420ms ease,
     visibility 0s;
 }
 
