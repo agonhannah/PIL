@@ -178,7 +178,6 @@ body.is-locked{
   letter-spacing:.32em;
   text-transform:uppercase;
 
-  /* 表記揺れ止め（数字/幅変化対策） */
   font-variant-numeric: tabular-nums;
 }
 
@@ -223,7 +222,6 @@ body.is-locked{
   text-transform:uppercase;
   opacity:.92;
 
-  /* 表記揺れ止め */
   font-variant-numeric: tabular-nums;
   min-width: 10ch;
 }
@@ -261,7 +259,7 @@ body.is-locked{
 
 #pointer-fx.is-hot #lockbox{ opacity:1; }
 
-/* lockbox visuals（←これが無いと箱が見えない） */
+/* lockbox visuals（基底） */
 .lockbox__rect{
   width:110px;
   height:110px;
@@ -321,7 +319,6 @@ body.is-locked{
   margin: 0 0 18px;
 }
 
-/* items 揺れ止め */
 .shop__count{
   font-size:12px;
   letter-spacing:.32em;
@@ -366,24 +363,17 @@ body.is-locked{
 
 .shop-card.is-soldout .shop-card__price{ opacity:.35; }
 
-/* =========================================
-   SOLD OUT 表示（Shop list：赤）
-========================================= */
 .shop-card.is-soldout .shop-card__price{
   opacity: 1;
-  color: #c00000; /* 赤 */
+  color: #c00000;
 }
 
-/* subtitle を「サブ扱い」せずタイトル同格に見せる */
 .shop-card__subtitle{
   font-size: inherit;
   letter-spacing: inherit;
   opacity: 1;
 }
 
-/* =========================================
-   Product CTA：SOLD OUT（グレーで無効）
-========================================= */
 .product__cta.is-disabled{
   border-color: rgba(17,17,17,.12);
   background: rgba(17,17,17,.06);
@@ -432,7 +422,6 @@ body.is-locked{
   transform:translate3d(0,0,0);
 }
 
-/* modal内を中央寄せ（左寄り改善） */
 .modal__body{
   max-width: 1120px;
   margin: 0 auto;
@@ -443,7 +432,6 @@ body.is-locked{
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
 }
 
-/* Mobile: タイトル省略しない */
 @media(max-width:600px){
   .modal .shop-card__title{
     display:block;
@@ -454,7 +442,6 @@ body.is-locked{
   }
 }
 
-/* Desktop cursor */
 @media(pointer:fine){
   :root{ --fx-scale:0.5; }
   html,body,a,button,[role="button"],input,textarea,select,label,summary{ cursor:none !important; }
@@ -463,24 +450,16 @@ body.is-locked{
 /* =========================================================
    PRODUCT DETAIL
 ========================================================= */
-
-/* hash遷移でtopbarに隠れない */
 .product{
   scroll-margin-top: calc(var(--topbar-h) + 14px);
   padding: 28px 0 80px;
-
-  /* ===== PRODUCT VISIBILITY (hash target) ===== */
   display:none;
 }
-
-.product:target{
-  display:block;
-}
+.product:target{ display:block; }
 
 .product__inner{
   max-width: 1120px;
   margin: 0 auto;
-
   padding:
     0
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
@@ -488,7 +467,6 @@ body.is-locked{
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
 }
 
-/* 画像スライド（JSなし） */
 .product__gallery{
   position: relative;
   margin-bottom: 18px;
@@ -519,7 +497,6 @@ body.is-locked{
 
 .product__hint{ display:none; }
 
-/* meta */
 .product__title{
   margin: 8px 0 10px;
   font-size: 14px;
@@ -543,7 +520,6 @@ body.is-locked{
   margin-bottom: 14px;
 }
 
-/* add to bag */
 .product__cta{
   display: block;
   width: 100%;
@@ -595,7 +571,6 @@ body.is-locked{
   opacity: .6;
 }
 
-/* PCで見やすく：画像/情報 2カラム */
 @media (min-width: 900px){
   .product__inner{
     display: grid;
@@ -608,74 +583,27 @@ body.is-locked{
 }
 
 /* =========================================================
-   Product: SoundCloud lockbox（崩れない版）
+   Product: lockbox (84px 安定)
 ========================================================= */
-.product__sc{
-  display:flex;                 /* inline-flexやめる（iOSでズレやすい） */
-  align-items:center;
-  gap:14px;
-
-  margin-top:6px;
-  padding:12px 0 26px;          /* ←下に余白を作って CLICK HERE の居場所確保 */
-
-  font-size:11px;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:#111;
-  opacity:.7;
-
-  line-height:1;                /* ←文字の縦ズレ抑える */
-}
-.product__sc:hover{ opacity:1; }
-
-/* lockbox wrapper（flex内で潰れない） */
 .sc-lockbox{
   display:block;
-  flex:0 0 auto;
-  width:84px;                   /* ←確実に領域を固定 */
+  width:84px;
   height:84px;
 }
-
-/* product用にサイズを固定（110→84） */
 .sc-lockbox .lockbox__rect{
   width:84px;
   height:84px;
   border-radius:14px;
-
   display:block;
   box-sizing:border-box;
 }
-
-/* ====== ここが保険：HTMLが --h だけでも描画されるようにする ====== */
-.sc-lockbox .lockbox__cross,
-.sc-lockbox .lockbox__cross--h,
-.sc-lockbox .lockbox__cross--v{
-  position:absolute;
-  left:50%;
-  top:50%;
-  background:rgba(17,17,17,.25);
-  transform:translate(-50%,-50%);
-}
-.sc-lockbox .lockbox__tick,
-.sc-lockbox .lockbox__tick--t,
-.sc-lockbox .lockbox__tick--b,
-.sc-lockbox .lockbox__tick--l,
-.sc-lockbox .lockbox__tick--r{
-  position:absolute;
-  background:rgba(17,17,17,.35);
-}
-
-/* 十字（product用スケール） */
 .sc-lockbox .lockbox__cross--h{ width:48px; height:1px; }
 .sc-lockbox .lockbox__cross--v{ width:1px; height:48px; }
+.sc-lockbox .lockbox__tick--t{ top:6px; width:14px; }
+.sc-lockbox .lockbox__tick--b{ bottom:6px; width:14px; }
+.sc-lockbox .lockbox__tick--l{ left:6px; height:14px; }
+.sc-lockbox .lockbox__tick--r{ right:6px; height:14px; }
 
-/* tick（product用スケール） */
-.sc-lockbox .lockbox__tick--t{ top:6px; left:50%; width:14px; height:1px; transform:translateX(-50%); }
-.sc-lockbox .lockbox__tick--b{ bottom:6px; left:50%; width:14px; height:1px; transform:translateX(-50%); }
-.sc-lockbox .lockbox__tick--l{ left:6px; top:50%; width:1px; height:14px; transform:translateY(-50%); }
-.sc-lockbox .lockbox__tick--r{ right:6px; top:50%; width:1px; height:14px; transform:translateY(-50%); }
-
-/* CLICK HERE（product用） */
 .sc-lockbox .lockbox__rect::after{
   content:"CLICK HERE";
   position:absolute;
@@ -689,142 +617,77 @@ body.is-locked{
   pointer-events:none;
 }
 
-/* coarse pointer: 既存PointerFXはそのまま */
-@media (pointer: coarse) {
-  #lockbox{
-    transform: translate(-50%, -50%) scale(1.8);
-  }
-}
-
 /* =========================================================
-   Product TRIAL (lockbox only clickable + arrow text)
+   PRODUCT TRIAL（ここが今回の“書き換え”本体）
+   - OPEN ON〜 は非リンク
+   - lock + logo だけがリンク
+   - ロゴは lock の下に「重ねる」
 ========================================================= */
 .product__trial{
-  display:flex;
-  align-items:flex-start;
-  gap:16px;
-  padding: 12px 0 0;
-}
-
-/* lockbox + logo をまとめてリンクにする */
-.product__trialLock{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:10px;
-  text-decoration:none;
-}
-
-/* lockbox wrapper（固定サイズ） */
-.product__trialLock .sc-lockbox{
-  display:block;
-  width:84px;
-  height:84px;
-}
-
-/* ロゴを lockbox と同じ幅に */
-.product__trialLogo{
-  width:84px;
-  height:auto;
-  display:block;
-  opacity:.75;
-}
-.product__trialLock:hover .product__trialLogo{ opacity:1; }
-
-/* “← OPEN ON SOUNDCLOUD” は少し下げる */
-.product__trialText{
-  font-size:11px;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:#111;
-  opacity:.55;
-
-  margin-top: 44px; /* ←ここで「少し下げ」を調整 */
-  white-space:nowrap;
-}
-
-/* =========================================================
-   TRIAL (isolated / no interference)
-========================================================= */
-
-.trial{
   margin-top: 18px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
+
+  display:flex;
+  align-items:flex-start;
+  gap:18px;
+
+  /* ロゴ重ね分の“下余白”確保（ここが崩れ防止） */
+  padding-bottom: 110px;
 }
 
-.trial__head{
+.product__trialHead{
   font-size: 11px;
   letter-spacing: .28em;
   text-transform: uppercase;
   opacity: .55;
-  margin-bottom: 12px;
+  margin: 0 0 12px;
 }
 
-/* lock+logo と テキスト を横並び */
-.trial__row{
-  display: flex;
-  align-items: flex-start;
-  gap: 18px;
+/* lock+logo のみクリック */
+.product__trialLink{
+  position:relative;
+  width:84px;
+  height:84px;
+  display:block;
+  text-decoration:none;
+  color:inherit;
 }
 
-/* クリック領域：lock + logo だけ */
-.trial__link{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  text-decoration: none;
-  color: inherit;
+/* lock */
+.product__trialLink .sc-lockbox{
+  width:84px;
+  height:84px;
 }
 
-/* lockbox をこの枠内だけで 84px に固定 */
-.trial__lock{
-  display: block;
-  width: 84px;
-  height: 84px;
+/* ロゴ：下に“重ねる”（absolute） */
+.product__trialLogo{
+  position:absolute;
+  left:0;
+  top: 116px;              /* ←重ね位置（必要なら 108〜128 で微調整） */
+  width:84px;
+  height:84px;
+  display:block;
+  object-fit:contain;
+
+  opacity:.75;
+  pointer-events:none;      /* クリックはリンクへ */
 }
+.product__trialLink:hover .product__trialLogo{ opacity:1; }
 
-/* 既存の lockbox__rect を流用しつつ、この中だけサイズ上書き */
-.trial__lock .lockbox__rect{
-  width: 84px;
-  height: 84px;
-  border-radius: 14px;
-  box-sizing: border-box;
-}
-
-/* 十字・tick のスケールを trial だけ調整 */
-.trial__lock .lockbox__cross--h{ width: 48px; }
-.trial__lock .lockbox__cross--v{ height: 48px; }
-
-.trial__lock .lockbox__tick--t{ width: 14px; top: 6px; }
-.trial__lock .lockbox__tick--b{ width: 14px; bottom: 6px; }
-.trial__lock .lockbox__tick--l{ height: 14px; left: 6px; }
-.trial__lock .lockbox__tick--r{ height: 14px; right: 6px; }
-
-/* “CLICK HERE” は trial では要らないなら消せる（必要なら消さない） */
-.trial__lock .lockbox__rect::after{
-  content: "CLICK HERE";
-  bottom: -18px;
-}
-
-/* ロゴ巨大化をこの画像だけで止める */
-.trial__logo{
-  width: 84px;
-  max-width: 84px;
-  height: auto;
-  display: block;
-  object-fit: contain;
-  opacity: .75;
-}
-.trial__link:hover .trial__logo{ opacity: 1; }
-
-/* テキストはリンク外。少し下げる */
-.trial__text{
-  margin-top: 56px; /* ← “少し下げ” 調整はここだけ */
+/* 非リンクのテキスト（右側） */
+.product__trialText{
+  margin-top: 44px;         /* ←“少し下げ” */
   font-size: 11px;
   letter-spacing: .22em;
   text-transform: uppercase;
   opacity: .55;
   white-space: nowrap;
+}
+
+/* coarse pointer: 既存PointerFXはそのまま */
+@media (pointer: coarse) {
+  #lockbox{
+    transform: translate(-50%, -50%) scale(1.8);
+  }
 }
