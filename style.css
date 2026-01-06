@@ -643,6 +643,10 @@ body.is-locked{
 
 /* lock icon (static) */
 .sc-lock__rect{
+  display:inline-block;   /* ←これが必須 */
+  flex:0 0 auto;          /* ←念のため（flex内で潰れ防止） */
+  box-sizing:border-box;
+  
   width:84px;
   height:84px;
   border:1px solid rgba(0,0,0,.6);
