@@ -32,7 +32,6 @@
   <!-- Drawer -->
   <aside class="drawer" id="drawer" aria-hidden="true">
     <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
-
       <section class="drawer__acc" aria-label="Menu sections">
 
         <!-- ARCHIVE -->
@@ -59,8 +58,6 @@
 
           <div class="acc__panel" data-acc-panel="shop">
             <nav class="acc__list" aria-label="Shop list">
-              <!-- ★TOPに出さず、モーダルを開く -->
-              <!-- data-close は Drawer を閉じるために残す（JS側で e.preventDefault される） -->
               <a class="acc__link" href="#" data-close data-open-modal="shop-all">All</a>
               <a class="acc__link" href="#" data-close data-open-modal="shop-digital">Digital</a>
               <a class="acc__link" href="#" data-close data-open-modal="shop-physical">Physical</a>
@@ -74,14 +71,18 @@
         <a class="sec__link" href="#about" data-close>ABOUT</a>
         <a class="sec__link" href="mailto:kazukihanamoto.dhrma@gmail.com" data-close>CONTACT</a>
       </nav>
-
     </div>
   </aside>
 
   <!-- =========================================================
+       MAIN (TOPには何も出さない / ここは将来About等を置く場所)
+  ========================================================== -->
+  <main id="main" aria-label="Main">
+    <!-- 今はTOPに何も表示しない -->
+  </main>
+
+  <!-- =========================================================
        SHOP MODAL
-       - ここは「Topbarを使う」前提なので、モーダル内バー（SHOP/×）は置かない
-       - close は overlay / Esc で行う（JS）
   ========================================================== -->
   <div class="modal-overlay" id="modalOverlay" hidden></div>
 
@@ -89,53 +90,53 @@
     <div class="modal__body">
 
       <!-- ===== SHOP: ALL ===== -->
-<div class="shopview" data-modal-view="shop-all" hidden>
-  <div class="shop__head">
-    <div class="shop__count">2 items</div>
-  </div>
-
-  <div class="shop__grid">
-    <!-- Session Collection -->
-    <article class="shop-card">
-      <a class="shop-card__link" href="#session-collection">
-        <div class="shop-card__media">
-          <img
-            src="images/SessionCollection.JPG"
-            alt="【CD】Session Collection [2022-24 Bootleg]"
-            loading="lazy"
-            decoding="async"
-          />
+      <div class="shopview" data-modal-view="shop-all" hidden>
+        <div class="shop__head">
+          <div class="shop__count">2 items</div>
         </div>
 
-        <h3 class="shop-card__title">
-          【CD】Session Collection<br>
-          <span class="shop-card__subtitle">[2022–24 Bootleg]</span>
-        </h3>
+        <div class="shop__grid">
+          <!-- Session Collection -->
+          <article class="shop-card">
+            <a class="shop-card__link" href="#session-collection" data-product-link="session-collection">
+              <div class="shop-card__media">
+                <img
+                  src="images/SessionCollection.JPG"
+                  alt="【CD】Session Collection [2022-24 Bootleg]"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
 
-        <div class="shop-card__price">2750 YEN (TAX IN)</div>
-      </a>
-    </article>
+              <h3 class="shop-card__title">
+                【CD】Session Collection<br>
+                <span class="shop-card__subtitle">[2022–24 Bootleg]</span>
+              </h3>
 
-    <!-- NOW PLAYING (SOLD OUT) -->
-    <article class="shop-card is-soldout">
-      <a class="shop-card__link" href="#nowplaying">
-        <div class="shop-card__media">
-          <img
-            src="images/NOWPLAYING.JPG"
-            alt="【ZINE & CD】NOW PLAYING ZINE & Soundtrack for quest（SOLD OUT）"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
+              <div class="shop-card__price">2750 YEN (TAX IN)</div>
+            </a>
+          </article>
 
-        <h3 class="shop-card__title">
-          【ZINE & CD】NOW PLAYING ZINE &<br>
-          <span class="shop-card__subtitle">Soundtrack for quest</span>
-        </h3>
+          <!-- NOW PLAYING (SOLD OUT) -->
+          <article class="shop-card is-soldout">
+            <a class="shop-card__link" href="#nowplaying" data-product-link="nowplaying">
+              <div class="shop-card__media">
+                <img
+                  src="images/NOWPLAYING.JPG"
+                  alt="【ZINE & CD】NOW PLAYING ZINE & Soundtrack for quest（SOLD OUT）"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
 
-        <div class="shop-card__price">SOLD OUT</div>
-      </a>
-    </article>
+              <h3 class="shop-card__title">
+                【ZINE & CD】NOW PLAYING ZINE &<br>
+                <span class="shop-card__subtitle">Soundtrack for quest</span>
+              </h3>
+
+              <div class="shop-card__price">SOLD OUT</div>
+            </a>
+          </article>
         </div>
       </div>
 
@@ -147,130 +148,131 @@
       </div>
 
       <!-- ===== SHOP: PHYSICAL ===== -->
-<div class="shopview" data-modal-view="shop-physical" hidden>
-  <div class="shop__head">
-    <div class="shop__count">2 items</div>
-  </div>
-
-  <div class="shop__grid">
-    <!-- Session Collection -->
-    <article class="shop-card">
-      <a class="shop-card__link" href="#session-collection">
-        <div class="shop-card__media">
-          <img
-            src="images/SessionCollection.JPG"
-            alt="【CD】Session Collection [2022-24 Bootleg]"
-            loading="lazy"
-            decoding="async"
-          />
+      <div class="shopview" data-modal-view="shop-physical" hidden>
+        <div class="shop__head">
+          <div class="shop__count">2 items</div>
         </div>
 
-        <h3 class="shop-card__title">
-          【CD】Session Collection<br>
-          <span class="shop-card__subtitle">[2022–24 Bootleg]</span>
-        </h3>
+        <div class="shop__grid">
+          <!-- Session Collection -->
+          <article class="shop-card">
+            <a class="shop-card__link" href="#session-collection" data-product-link="session-collection">
+              <div class="shop-card__media">
+                <img
+                  src="images/SessionCollection.JPG"
+                  alt="【CD】Session Collection [2022-24 Bootleg]"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
 
-        <div class="shop-card__price">2750 YEN (TAX IN)</div>
-      </a>
-    </article>
+              <h3 class="shop-card__title">
+                【CD】Session Collection<br>
+                <span class="shop-card__subtitle">[2022–24 Bootleg]</span>
+              </h3>
 
-    <!-- NOW PLAYING (SOLD OUT) -->
-    <article class="shop-card is-soldout">
-      <a class="shop-card__link" href="#nowplaying">
-        <div class="shop-card__media">
-          <img
-            src="images/NOWPLAYING.JPG"
-            alt="【ZINE & CD】NOW PLAYING ZINE & Soundtrack for quest（SOLD OUT）"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
+              <div class="shop-card__price">2750 YEN (TAX IN)</div>
+            </a>
+          </article>
 
-        <h3 class="shop-card__title">
-          【ZINE & CD】NOW PLAYING ZINE &<br>
-          <span class="shop-card__subtitle">Soundtrack for quest</span>
-        </h3>
+          <!-- NOW PLAYING (SOLD OUT) -->
+          <article class="shop-card is-soldout">
+            <a class="shop-card__link" href="#nowplaying" data-product-link="nowplaying">
+              <div class="shop-card__media">
+                <img
+                  src="images/NOWPLAYING.JPG"
+                  alt="【ZINE & CD】NOW PLAYING ZINE & Soundtrack for quest（SOLD OUT）"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
 
-        <div class="shop-card__price">SOLD OUT</div>
-      </a>
-    </article>
+              <h3 class="shop-card__title">
+                【ZINE & CD】NOW PLAYING ZINE &<br>
+                <span class="shop-card__subtitle">Soundtrack for quest</span>
+              </h3>
+
+              <div class="shop-card__price">SOLD OUT</div>
+            </a>
+          </article>
         </div>
       </div>
 
     </div>
   </section>
 
-<!-- =========================================================
-     PRODUCT: Session Collection (Detail)
-========================================================= -->
-<section class="product" id="session-collection" aria-label="Session Collection">
-  <div class="product__inner">
+  <!-- =========================================================
+     PRODUCT DETAILS
+     ★重要：デフォルト非表示（TOPに出ない）
+     → CSSで :target 表示 / JSで表示切替、どっちでもいける構造
+  ========================================================== -->
+  <section class="product" id="session-collection" aria-label="Session Collection" hidden data-product>
+    <div class="product__inner">
 
-    <!-- gallery (swipe) -->
-    <div class="product__gallery" aria-label="Product images">
-      <div class="product__track">
-        <figure class="product__slide">
-          <img src="images/SessionCollection.JPG" alt="Session Collection cover 1" loading="lazy" decoding="async">
-        </figure>
-        <!-- 2枚目以降を追加したければここに figure を増やす -->
-        <!--
-        <figure class="product__slide">
-          <img src="images/SessionCollection_2.JPG" alt="Session Collection cover 2" loading="lazy" decoding="async">
-        </figure>
-        -->
-      </div>
-      <div class="product__hint">SWIPE</div>
-    </div>
-
-    <!-- meta -->
-    <div class="product__meta">
-      <h1 class="product__title">
-        【CD】Session Collection<br>
-        <span class="product__subtitle">[2022–24 Bootleg]</span>
-      </h1>
-
-      <div class="product__price">2750 YEN (TAX IN)</div>
-
-      <!-- CTA -->
-      <a class="product__cta" href="#"
-         aria-label="Add to bag (coming soon)"
-         onclick="return false;">
-        ADD TO BAG
-      </a>
-
-      <!-- Soundcloud -->
-      <div class="product__block">
-        <div class="product__label">LISTEN</div>
-        <!-- SoundCloudのURLが決まったら src を差し替え -->
-        <!-- 例: https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/xxx/yyy -->
-        <div class="product__player">
-          <iframe
-            title="SoundCloud player"
-            width="100%"
-            height="166"
-            scrolling="no"
-            frameborder="no"
-            allow="autoplay"
-            src=""
-          ></iframe>
+      <div class="product__gallery" aria-label="Product images">
+        <div class="product__track">
+          <figure class="product__slide">
+            <img src="images/SessionCollection.JPG" alt="Session Collection cover 1" loading="lazy" decoding="async">
+          </figure>
+          <!-- 追加するならここに figure を増やす -->
         </div>
-        <a class="product__link" href="#" target="_blank" rel="noopener" onclick="return false;">
-          Open on SoundCloud
+        <div class="product__hint">SWIPE</div>
+      </div>
+
+      <div class="product__meta">
+        <h1 class="product__title">
+          【CD】Session Collection<br>
+          <span class="product__subtitle">[2022–24 Bootleg]</span>
+        </h1>
+
+        <div class="product__price">2750 YEN (TAX IN)</div>
+
+        <a class="product__cta" href="#" aria-label="Add to bag (coming soon)" onclick="return false;">
+          ADD TO BAG
         </a>
-      </div>
 
-      <!-- Description -->
-      <div class="product__block">
-        <div class="product__label">DESCRIPTION</div>
-        <div class="product__desc">
-          <!-- ここに説明文 -->
-          SBK と dhrma による初のフルセッション作品。神戸と加古川を拠点に、深夜のビートセッションとリミックスを重ねて生まれた全21曲を収録。
+        <div class="product__block">
+          <div class="product__label">LISTEN</div>
+          <div class="product__player">
+            <iframe
+              title="SoundCloud player"
+              width="100%"
+              height="166"
+              scrolling="no"
+              frameborder="no"
+              allow="autoplay"
+              src=""
+            ></iframe>
+          </div>
+          <a class="product__link" href="#" target="_blank" rel="noopener" onclick="return false;">
+            Open on SoundCloud
+          </a>
         </div>
-      </div>
 
+        <div class="product__block">
+          <div class="product__label">DESCRIPTION</div>
+          <div class="product__desc">
+            SBK と dhrma による初のフルセッション作品。神戸と加古川を拠点に、深夜のビートセッションとリミックスを重ねて生まれた全21曲を収録。
+          </div>
+        </div>
+
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <section class="product" id="nowplaying" aria-label="NOW PLAYING" hidden data-product>
+    <div class="product__inner">
+      <!-- 後で同じフォーマットで作れるように枠だけ -->
+      <div class="product__meta">
+        <h1 class="product__title">
+          【ZINE & CD】NOW PLAYING ZINE &<br>
+          <span class="product__subtitle">Soundtrack for quest</span>
+        </h1>
+        <div class="product__price">SOLD OUT</div>
+        <div class="product__desc">（後で説明文を追加）</div>
+      </div>
+    </div>
+  </section>
 
   <!-- Pointer FX -->
   <div id="pointer-fx" aria-hidden="true">
