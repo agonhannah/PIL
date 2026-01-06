@@ -742,3 +742,89 @@ body.is-locked{
   margin-top: 44px; /* ←ここで「少し下げ」を調整 */
   white-space:nowrap;
 }
+
+/* =========================================================
+   TRIAL (isolated / no interference)
+========================================================= */
+
+.trial{
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.trial__head{
+  font-size: 11px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  opacity: .55;
+  margin-bottom: 12px;
+}
+
+/* lock+logo と テキスト を横並び */
+.trial__row{
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+/* クリック領域：lock + logo だけ */
+.trial__link{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* lockbox をこの枠内だけで 84px に固定 */
+.trial__lock{
+  display: block;
+  width: 84px;
+  height: 84px;
+}
+
+/* 既存の lockbox__rect を流用しつつ、この中だけサイズ上書き */
+.trial__lock .lockbox__rect{
+  width: 84px;
+  height: 84px;
+  border-radius: 14px;
+  box-sizing: border-box;
+}
+
+/* 十字・tick のスケールを trial だけ調整 */
+.trial__lock .lockbox__cross--h{ width: 48px; }
+.trial__lock .lockbox__cross--v{ height: 48px; }
+
+.trial__lock .lockbox__tick--t{ width: 14px; top: 6px; }
+.trial__lock .lockbox__tick--b{ width: 14px; bottom: 6px; }
+.trial__lock .lockbox__tick--l{ height: 14px; left: 6px; }
+.trial__lock .lockbox__tick--r{ height: 14px; right: 6px; }
+
+/* “CLICK HERE” は trial では要らないなら消せる（必要なら消さない） */
+.trial__lock .lockbox__rect::after{
+  content: "CLICK HERE";
+  bottom: -18px;
+}
+
+/* ロゴ巨大化をこの画像だけで止める */
+.trial__logo{
+  width: 84px;
+  max-width: 84px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  opacity: .75;
+}
+.trial__link:hover .trial__logo{ opacity: 1; }
+
+/* テキストはリンク外。少し下げる */
+.trial__text{
+  margin-top: 56px; /* ← “少し下げ” 調整はここだけ */
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  opacity: .55;
+  white-space: nowrap;
+}
