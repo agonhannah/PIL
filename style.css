@@ -621,56 +621,39 @@ body.is-locked{
    TRIAL (Session Collection only) – FIX
 ========================================================= */
 
+/* TRIAL – 強制レイアウト修正 */
 #session-collection .product__trial{
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
   display:flex;
   align-items:flex-start;
   gap:18px;
 }
 
-/* lock + logo のクリック領域 */
+/* クリック領域（ロック＋ロゴ分の高さを確保） */
 #session-collection .product__trialLink{
   position:relative;
   width:110px;
-  height:170px; /* ロック自体 */
-  display:block;
+  height:170px; /* ← ここが本丸 */
+  flex-shrink:0;
 }
 
-/* lockbox を110にする（既存110があれば不要だが保険） */
-#session-collection .product__trialLink .lockbox__rect{
-  width:110px;
-  height:110px;
-}
-
-/* SoundCloudロゴを “下に重ねる” */
+/* SoundCloudロゴ（下に被せる） */
 #session-collection .product__trialLink::after{
   content:"";
   position:absolute;
   left:0;
-  top: calc(110px - 24px); /* 被せ量：ここだけ好みで調整 */
+  top:86px; /* 110 - 24 */
 
   width:110px;
   height:110px;
-
-  background: url("images/soundcloud.PNG") center / contain no-repeat;
+  background:url("images/soundcloud.PNG") center / contain no-repeat;
   opacity:.75;
   pointer-events:none;
 }
 
-#session-collection .product__trialLink:hover::after{
-  opacity:1;
-}
-
-/* 右のテキスト */
+/* テキストを下げる */
 #session-collection .product__trialText{
-  margin-top: 44px;
-  font-size: 11px;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  opacity: .55;
-  white-space: nowrap;
+  margin-top:44px;
+  white-space:nowrap;
 }
 
 
