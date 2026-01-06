@@ -366,6 +366,31 @@ body.is-locked{
 
 .shop-card.is-soldout .shop-card__price{ opacity:.35; }
 
+/* =========================================
+   SOLD OUT 表示（Shop list：赤）
+========================================= */
+.shop-card.is-soldout .shop-card__price{
+  opacity: 1;
+  color: #c00000; /* 赤 */
+}
+
+/* subtitle を「サブ扱い」せずタイトル同格に見せる */
+.shop-card__subtitle{
+  font-size: inherit;
+  letter-spacing: inherit;
+  opacity: 1;
+}
+
+/* =========================================
+   Product CTA：SOLD OUT（グレーで無効）
+========================================= */
+.product__cta.is-disabled{
+  border-color: rgba(17,17,17,.12);
+  background: rgba(17,17,17,.06);
+  color: rgba(17,17,17,.38);
+  pointer-events: none;
+}
+
 /* =========================================================
    Modal（Topbarを絶対に覆わない）
 ========================================================= */
