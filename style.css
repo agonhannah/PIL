@@ -658,8 +658,8 @@ body.is-locked{
 }
 
 #session-collection .product__trialLink .sc-lockbox{
-  width:110px;
-  height:110px;
+  width:110px !important;
+  height:110px !important;
   display:block;
 }
 
@@ -675,4 +675,7 @@ body.is-locked{
     transform: translate(-50%, -50%) scale(1.8);
   }
 }
+
+  
+
 
