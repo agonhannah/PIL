@@ -4,6 +4,7 @@
    - Accordion
    - Shop Modal (open/close)
    - Shop Card -> Product hash navigation (close modal)
+   - Hash guard (prevent product showing on direct load)
    - Pointer FX
 ========================================================= */
 
@@ -29,6 +30,34 @@
   const modalOverlay = $("#modalOverlay");
 
   /* ----------------------------
+     Hash Guard
+     - 直アクセス/更新で #product が残ってると TOPで商品が出る
+     - Shopから遷移した時だけ hash を許可する
+  ---------------------------- */
+  const HASH_FLAG = "pc_allow_product_hash";
+
+  const getProductIds = () =>
+    $$(".product[id]").map((el) => el.id).filter(Boolean);
+
+  const isProductHash = (hash) => {
+    if (!hash || hash.length < 2) return false;
+    const id = hash.slice(1);
+    return getProductIds().includes(id);
+  };
+
+  const clearHashToHome = () => {
+    const url = location.pathname + location.search; // hash無し
+    history.replaceState(null, "", url);
+    window.scrollTo(0, 0);
+  };
+
+  // 初回ロード時：product hash が付いてて、許可フラグが無ければ強制的にTOPへ
+  // ※Shop経由で入る場合は後でフラグを立てる
+  if (isProductHash(location.hash) && !sessionStorage.getItem(HASH_FLAG)) {
+    clearHashToHome();
+  }
+
+  /* ----------------------------
      Drawer
   ---------------------------- */
   const setOpen = (open) => {
@@ -45,7 +74,6 @@
       overlay.hidden = !open;
     }
 
-    // drawer / modal のどちらかが開いてる間は body lock
     const modalOpen = modal && modal.classList.contains("is-open");
     if (open || modalOpen) document.body.classList.add("is-locked");
     else document.body.classList.remove("is-locked");
@@ -55,7 +83,6 @@
   const closeDrawer = () => setOpen(false);
 
   if (menuBtn) {
-    // ★重要：ボタンのクリックを“ここで止める”
     menuBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -71,7 +98,6 @@
     closeDrawer();
   });
 
-  // drawer 内の data-close は閉じるだけ（ページ遷移はさせない）
   if (drawer) {
     drawer.addEventListener("click", (e) => {
       const closeEl = e.target.closest && e.target.closest("[data-close]");
@@ -84,11 +110,11 @@
     });
   }
 
-  // TOP は “スクロールトップ” 的にリロード（今の挙動維持）
+  // TOP：hashも含めて完全に初期化（商品が残らない）
   const goHome = (e) => {
     e.preventDefault();
-    const url = location.pathname + location.search;
-    location.replace(url);
+    sessionStorage.removeItem(HASH_FLAG);
+    clearHashToHome();
   };
   $$("[data-home]").forEach((el) => el.addEventListener("click", goHome));
 
@@ -106,10 +132,8 @@
       modalOverlay.hidden = true;
     }
 
-    // view 非表示
     modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
 
-    // drawer が開いてなければ body lock 解除
     const drawerOpen = drawer && drawer.classList.contains("is-open");
     if (!drawerOpen) document.body.classList.remove("is-locked");
   };
@@ -117,29 +141,23 @@
   const openModal = (viewName) => {
     if (!modal) return;
 
-    // drawer は閉じる（menu の見た目優先）
     if (drawer && drawer.classList.contains("is-open")) closeDrawer();
 
-    // view 切替
     modal.querySelectorAll("[data-modal-view]").forEach(v => (v.hidden = true));
     const view = modal.querySelector(`[data-modal-view="${viewName}"]`);
     if (view) view.hidden = false;
 
-    // overlay
     if (modalOverlay) {
       modalOverlay.hidden = false;
-      modalOverlay.offsetHeight; // reflow
+      modalOverlay.offsetHeight;
       modalOverlay.classList.add("is-open");
     }
 
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
-
-    // modal中は body lock
     document.body.classList.add("is-locked");
   };
 
-  // drawer のリンク（data-open-modal）で modal を開く
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest("[data-open-modal]");
     if (!a) return;
@@ -152,14 +170,12 @@
     openModal(view);
   });
 
-  // modal overlay click
   if (modalOverlay) modalOverlay.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
     closeModal();
   });
 
-  // Esc：drawer優先、次にmodal
   window.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
 
@@ -168,41 +184,37 @@
   });
 
   /* ----------------------------
-     ★ Shop Card -> Product hash navigation
-     - modal内の商品カードクリックで「modalを閉じてから」hashへ遷移
+     Shop Card -> Product hash navigation
   ---------------------------- */
   const jumpToHash = (hash) => {
     if (!hash || hash === "#") return;
 
-    // まずUIを閉じる（lock解除まで含める）
     if (modal && modal.classList.contains("is-open")) closeModal();
     if (drawer && drawer.classList.contains("is-open")) closeDrawer();
 
-    // hash遷移（同一hashでも動くように少し工夫）
     const cur = location.hash;
     if (cur === hash) {
-      // 同じhashの場合でもスクロールを起こす
       const url = location.pathname + location.search + hash;
-      // replace で再評価
       setTimeout(() => location.replace(url), 0);
       return;
     }
-
     setTimeout(() => { location.hash = hash; }, 0);
   };
 
-  // modal内のカードリンクを拾う
+  // modal内の商品カードクリック：hash許可フラグを立ててから遷移
   if (modal) {
     modal.addEventListener("click", (e) => {
       const link = e.target.closest && e.target.closest("a.shop-card__link");
       if (!link) return;
 
       const href = link.getAttribute("href") || "";
-      if (!href.startsWith("#")) return; // 外部リンク等は触らない
+      if (!href.startsWith("#")) return;
 
       e.preventDefault();
       e.stopPropagation();
 
+      // ★ここで許可
+      sessionStorage.setItem(HASH_FLAG, "1");
       jumpToHash(href);
     });
   }
