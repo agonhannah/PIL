@@ -618,13 +618,16 @@ body.is-locked{
 }
 
 /* =========================================================
-   TRIAL / 試聴  (LOCK + SC LOGO OVERLAY : FIXED)
+   TRIAL (isolated / no interference)  ★全置き換え用
 ========================================================= */
 
 .trial{
   margin-top: 18px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
+
+  /* ここでサイズ管理：元の大きさに戻す（110px） */
+  --trial-size: 110px;
 }
 
 .trial__head{
@@ -636,60 +639,68 @@ body.is-locked{
 }
 
 .trial__row{
-  display:flex;
-  align-items:flex-start;
-  gap:18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
 }
 
-/* クリックできるのはこの 84x84 の箱だけ */
+/* クリックできるのは lock + logo のみ（このリンクだけ） */
 .trial__link{
-  position:relative;
-  width:84px;
-  height:84px;
-  display:block;
-  text-decoration:none;
-  color:inherit;
+  position: relative;
+  width: var(--trial-size);
+
+  /* ロゴを下に“重ねる”ぶん高さを確保（ここが崩れ防止） */
+  height: calc(var(--trial-size) + 54px);
+
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
-/* lock を箱いっぱいに固定 */
+/* lockbox 本体（110に戻す） */
 .trial__lock{
-  position:absolute;
-  inset:0;
-  display:block;
+  position: relative;
+  display: block;
+  width: var(--trial-size);
+  height: var(--trial-size);
 }
 
-/* lockbox 自体も 84 に固定 */
+/* lockboxのrectもこの中だけ110に固定 */
 .trial__lock .lockbox__rect{
-  width:84px;
-  height:84px;
-  border-radius:14px;
-  box-sizing:border-box;
+  width: var(--trial-size);
+  height: var(--trial-size);
+  border-radius: 14px;
+  box-sizing: border-box;
 }
 
-/* ロゴは “下に重ねる” （= 追加で下に並べない） */
+/* ロゴ：ロックの“下に重ねる”（半分かぶる感じ） */
 .trial__logo{
-  position:absolute;
-  left:50%;
-  bottom:8px;                 /* ←ロゴの下位置（6〜12で調整） */
-  transform:translateX(-50%);
+  position: absolute;
+  left: 0;
 
-  width:44px;                 /* ←ロゴの見た目サイズ（36〜52で調整） */
-  height:auto;
-  display:block;
-  object-fit:contain;
+  /* ここが「重ね位置」：110の下端付近から被せる */
+  top: calc(var(--trial-size) - 22px);
 
-  opacity:.85;
-  pointer-events:none;        /* クリックは trial__link へ */
+  width: var(--trial-size);
+  height: var(--trial-size);
+  display: block;
+
+  /* PNGの余白がデカくてもロゴを大きく見せるため */
+  object-fit: cover;
+
+  opacity: .75;
+  pointer-events: none;
 }
+.trial__link:hover .trial__logo{ opacity: 1; }
 
-/* 右側テキスト（リンクじゃない） */
+/* テキストはリンク外。少し下げる */
 .trial__text{
-  margin-top:44px;            /* ←“少し下げ” */
-  font-size:11px;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  opacity:.55;
-  white-space:nowrap;
+  margin-top: 44px;
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  opacity: .55;
+  white-space: nowrap;
 }
 
 /* coarse pointer: 既存PointerFXはそのまま */
