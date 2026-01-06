@@ -631,10 +631,10 @@ body.is-locked{
 /* クリック領域（ロック＋ロゴ分の高さを確保） */
 #session-collection .product__trialLink{
   position:relative;
-  padding-bottom: 110px;
   width:110px;
-  height:170px; /* ← ここが本丸 */
+  height:196px; /* ← ここが本丸 */
   flex-shrink:0;
+  display:block;
 }
 
 /* SoundCloudロゴ（下に被せる） */
