@@ -695,3 +695,50 @@ body.is-locked{
     transform: translate(-50%, -50%) scale(1.8);
   }
 }
+
+/* =========================================================
+   Product TRIAL (lockbox only clickable + arrow text)
+========================================================= */
+.product__trial{
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+  padding: 12px 0 0;
+}
+
+/* lockbox + logo をまとめてリンクにする */
+.product__trialLock{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:10px;
+  text-decoration:none;
+}
+
+/* lockbox wrapper（固定サイズ） */
+.product__trialLock .sc-lockbox{
+  display:block;
+  width:84px;
+  height:84px;
+}
+
+/* ロゴを lockbox と同じ幅に */
+.product__trialLogo{
+  width:84px;
+  height:auto;
+  display:block;
+  opacity:.75;
+}
+.product__trialLock:hover .product__trialLogo{ opacity:1; }
+
+/* “← OPEN ON SOUNDCLOUD” は少し下げる */
+.product__trialText{
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:#111;
+  opacity:.55;
+
+  margin-top: 44px; /* ←ここで「少し下げ」を調整 */
+  white-space:nowrap;
+}
