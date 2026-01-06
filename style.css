@@ -619,7 +619,7 @@ body.is-locked{
 ========================================================= */
 #session-collection .product__trial{
   margin-top: 18px;
-  padding-top: 18px;
+  padding-top: 0px;
   border-top: none;
   display:flex;
   align-items:flex-start;
