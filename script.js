@@ -111,12 +111,24 @@
   }
 
   // TOP：hashも含めて完全に初期化（商品が残らない）
-  const goHome = (e) => {
-    e.preventDefault();
-    sessionStorage.removeItem(HASH_FLAG);
-    clearHashToHome();
-  };
-  $$("[data-home]").forEach((el) => el.addEventListener("click", goHome));
+  // TOP は「完全に初期状態」へ戻す（どこにいても無地TOPへ）
+const goHome = (e) => {
+  e.preventDefault();
+
+  // 1) 商品 hash 許可フラグを消す
+  sessionStorage.removeItem(HASH_FLAG);
+
+  // 2) Drawer / Modal を確実に閉じる
+  if (drawer && drawer.classList.contains("is-open")) closeDrawer();
+  if (modal && modal.classList.contains("is-open")) closeModal();
+
+  // 3) hash を確実に消して、無地TOPへ戻す
+  const url = location.pathname + location.search; // hashなし
+  history.replaceState(null, "", url);
+
+  // 4) スクロールを最上部へ
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+};
 
   /* ----------------------------
      Shop Modal (open/close)
