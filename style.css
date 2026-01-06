@@ -623,6 +623,7 @@ body.is-locked{
    - lock + logo だけがリンク
    - ロゴは lock の下に「重ねる」
 ========================================================= */
+/* ===== PRODUCT TRIAL (lock + sc logo overlay) ===== */
 .product__trial{
   margin-top: 18px;
   padding-top: 18px;
@@ -632,7 +633,7 @@ body.is-locked{
   align-items:flex-start;
   gap:18px;
 
-  /* ロゴ重ね分の“下余白”確保（ここが崩れ防止） */
+  /* ロゴ重ね分の“下余白”確保 */
   padding-bottom: 110px;
 }
 
@@ -648,7 +649,10 @@ body.is-locked{
 .product__trialLink{
   position:relative;
   width:84px;
-  height:84px;
+
+  /* lock(84) + CLICK HERE(18) + logo(〜28) ぶん */
+  height:130px;
+
   display:block;
   text-decoration:none;
   color:inherit;
@@ -656,28 +660,42 @@ body.is-locked{
 
 /* lock */
 .product__trialLink .sc-lockbox{
+  display:block;
   width:84px;
   height:84px;
+}
+
+/* 既存lockboxをこの中だけ84固定 */
+.product__trialLink .lockbox__rect{
+  width:84px;
+  height:84px;
+  border-radius:14px;
+  box-sizing:border-box;
 }
 
 /* ロゴ：下に“重ねる”（absolute） */
 .product__trialLogo{
   position:absolute;
   left:0;
-  top: 116px;              /* ←重ね位置（必要なら 108〜128 で微調整） */
+
+  /* 84(lock) + 18(CLICK HERE下) */
+  top:102px;  /* 微調整するなら 98〜112 */
+
   width:84px;
-  height:84px;
+  height:auto;
+  max-height:28px;     /* ← デカすぎ防止の要 */
   display:block;
   object-fit:contain;
 
   opacity:.75;
-  pointer-events:none;      /* クリックはリンクへ */
+  pointer-events:none; /* クリックはリンクへ */
 }
+
 .product__trialLink:hover .product__trialLogo{ opacity:1; }
 
 /* 非リンクのテキスト（右側） */
 .product__trialText{
-  margin-top: 44px;         /* ←“少し下げ” */
+  margin-top: 44px; /* “少し下げ” */
   font-size: 11px;
   letter-spacing: .22em;
   text-transform: uppercase;
