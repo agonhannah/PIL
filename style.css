@@ -10,27 +10,35 @@
 
   --topbar-h: calc((18px + env(safe-area-inset-top, 0px)) + 44px + 14px);
 
-  /* Pointer FX scale: mobile=1 / desktop=0.5 */
+  /* Pointer FX scale */
   --fx-scale: 1;
 }
 
-/* iOS tap highlight / focus の四角を消す */
+/* =========================================================
+   Reset & iOS tap / focus highlight kill（★統合済み）
+========================================================= */
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+
 a, button, #menuBtn, .hamburger, .toplink{
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
 
-a:focus, button:focus{
-  outline: none;
+a:focus,
+a:active,
+button:focus,
+button:active,
+a:focus-visible,
+button:focus-visible{
+  outline:none;
+  box-shadow:none;
+  background-color:transparent;
 }
-a:focus-visible, button:focus-visible{
-  outline: none;
-}
 
-
-*{ box-sizing:border-box; }
-html,body{ height:100%; }
-
+/* =========================================================
+   Body
+========================================================= */
 body{
   margin:0;
   background:var(--bg);
@@ -43,17 +51,8 @@ body{
   padding-top: var(--topbar-h);
 }
 
-a, a:link, a:visited, a:hover, a:active{
-  color:inherit;
-  text-decoration:none;
-}
-button{
-  color:inherit;
-  background:none;
-  border:0;
-}
-
-.drawer, .drawer *{ -webkit-tap-highlight-color: transparent; }
+a{ color:inherit; text-decoration:none; }
+button{ color:inherit; background:none; border:0; }
 
 /* noise */
 body::after{
@@ -69,25 +68,20 @@ body::after{
 }
 
 /* =========================================================
-   Topbar
+   Topbar（常に最前・消えない）
 ========================================================= */
 .topbar{
   position:fixed;
-  left:0;
-  right:0;
-  top:0;
+  top:0; left:0; right:0;
   z-index:9000;
-
   display:flex;
   justify-content:space-between;
   align-items:center;
-
   padding:
     calc(18px + env(safe-area-inset-top, 0px))
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
     14px
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
-
   background:#fff;
 }
 
@@ -99,7 +93,6 @@ body::after{
   height:44px;
   display:inline-flex;
   align-items:center;
-  line-height:1;
 }
 
 .hamburger{
@@ -108,8 +101,6 @@ body::after{
   display:grid;
   place-items:center;
   cursor:pointer;
-  padding:0;
-  margin-left:auto;
 }
 
 .hamburger__lines{
@@ -118,53 +109,42 @@ body::after{
   flex-direction:column;
   gap:5px;
 }
+
 .hamburger__lines span{
-  display:block;
   width:22px;
   height:1px;
   background:rgba(17,17,17,.7);
-  transition: transform 180ms ease, opacity 180ms ease;
-  transform-origin:center;
+  transition:transform 180ms ease, opacity 180ms ease;
 }
 
 #menuBtn.is-open .hamburger__lines span:nth-child(1){
   transform: translateY(6px) rotate(45deg);
 }
-#menuBtn.is-open .hamburger__lines span:nth-child(2){
-  opacity:0;
-}
+#menuBtn.is-open .hamburger__lines span:nth-child(2){ opacity:0; }
 #menuBtn.is-open .hamburger__lines span:nth-child(3){
   transform: translateY(-6px) rotate(-45deg);
 }
 
 /* =========================================================
-   Drawer
+   Drawer（商品ページ上から出る）
 ========================================================= */
 .drawer{
   position:fixed;
   top:var(--topbar-h);
-  inset-inline:0;
-  bottom:0;
+  left:0; right:0; bottom:0;
   z-index:4600;
   background:var(--panel);
-
   transform:translateX(105%);
   visibility:hidden;
   pointer-events:none;
-
-  transition:
-    transform 420ms ease,
-    visibility 0s linear 420ms;
+  transition:transform 420ms ease, visibility 0s linear 420ms;
 }
 
 .drawer.is-open{
   transform:translateX(0);
   visibility:visible;
   pointer-events:auto;
-
-  transition:
-    transform 420ms ease,
-    visibility 0s;
+  transition:transform 420ms ease;
 }
 
 .drawer__inner{
@@ -174,6 +154,8 @@ body::after{
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
     calc(18px + env(safe-area-inset-bottom, 0px))
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 
 body.is-locked{
@@ -182,7 +164,7 @@ body.is-locked{
 }
 
 /* =========================================================
-   Accordion (表示の“横並び揺れ”防止で block 指定を明示)
+   Accordion（ぬるっと）
 ========================================================= */
 .acc__btn{
   width:100%;
@@ -190,11 +172,9 @@ body.is-locked{
   display:flex;
   justify-content:space-between;
   align-items:center;
-
   font-size:12px;
   letter-spacing:.32em;
   text-transform:uppercase;
-  font-weight:400;
 }
 
 .acc__mark{
@@ -203,227 +183,84 @@ body.is-locked{
   opacity:.6;
 }
 
-.acc__panel{
-  padding:6px 0 14px;
-}
+.acc__panel{ padding:6px 0 14px; }
 
 .acc__link{
-  display:block;           /* ←これが無いと横並びになりやすい */
+  display:block;
   padding:8px 0;
   font-size:12px;
   letter-spacing:.32em;
   text-transform:uppercase;
-  font-weight:400;
   opacity:.92;
 }
+
 .acc__link::before{
   content:"・";
   margin-right:1em;
   opacity:.55;
 }
 
-.drawer__secondary{
-  margin-top:18px;
-  padding-top:18px;
-  border-top:1px solid var(--line);
-
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-.drawer__secondary .sec__link{
-  display:block;
-  font-size:12px;
-  letter-spacing:.32em;
-  text-transform:uppercase;
-  font-weight:400;
-  opacity:.92;
-}
-
 /* =========================================================
-   Pointer FX
+   Pointer FX（最前面固定）
 ========================================================= */
 #pointer-fx{
   position:fixed;
-  top:0;
-  left:0;
+  top:0; left:0;
   pointer-events:none;
   z-index:9100;
-
-  /* JSが transform を書く前提なのでここは固定 */
   transform:translate3d(-9999px,-9999px,0);
   will-change:transform;
 }
 
-/* blob */
 #pointer-blob{
-  position:absolute;
   width:84px;
   height:84px;
   border-radius:999px;
   background:rgba(0,255,90,.85);
   filter:blur(10px);
-
-  /* translate は保持したまま scale を足す */
   transform:translate(-50%,-50%) scale(var(--fx-scale));
-  transform-origin:center;
 }
 
-/* lockbox */
 #lockbox{
-  position:absolute;
   opacity:0;
   transition:opacity 120ms ease;
-
   transform:translate(-50%,-50%) scale(var(--fx-scale));
-  transform-origin:center;
 }
 
-#pointer-fx.is-hot #lockbox{
-  opacity:1;
-}
-
-.lockbox__rect{
-  width:110px;
-  height:110px;
-  border:1px solid rgba(17,17,17,.28);
-  border-radius:14px;
-  position:relative;
-}
-
-.lockbox__cross{
-  position:absolute;
-  left:50%;
-  top:50%;
-  background:rgba(17,17,17,.25);
-  transform:translate(-50%,-50%);
-}
-.lockbox__cross--h{ width:64px; height:1px; }
-.lockbox__cross--v{ width:1px; height:64px; }
-
-.lockbox__tick{ position:absolute; background:rgba(17,17,17,.35); }
-.lockbox__tick--t{ top:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
-.lockbox__tick--b{ bottom:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
-.lockbox__tick--l{ left:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
-.lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
-
-.lockbox__rect::after{
-  content:"POINT HERE";
-  position:absolute;
-  left:50%;
-  bottom:-18px;
-  transform:translateX(-50%);
-  font-size:10px;
-  letter-spacing:.22em;
-  color:rgba(17,17,17,.55);
-  white-space:nowrap;
-}
+#pointer-fx.is-hot #lockbox{ opacity:1; }
 
 /* =========================================================
-   Mobile
+   Shop Grid
 ========================================================= */
-body.is-touch #pointer-fx{
-  transition:none;
-}
-
-/* =========================================================
-   Desktop
-========================================================= */
-@media (pointer:fine){
-  :root{ --fx-scale: 0.5; }
-
-  html, body,
-  a, button, [role="button"],
-  input, textarea, select, label, summary,
-  #menuBtn,
-  .hamburger,
-  .hamburger *{
-    cursor:none !important;
-  }
-}
-
-/* closebtn 残骸対策 */
-.closebtn{ display:none !important; }
-
-/* =========================================================
-   SHOP GRID (ParadiCeloner unified)
-========================================================= */
-.shop{
-  padding: 28px 0 64px;
-}
-
-.shop__head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  margin: 0 0 18px;
-}
-
-.shop__count{
-  font-size:12px;
-  letter-spacing:.32em;
-  text-transform:uppercase;
-  opacity:.70;
-}
-
-/* grid: mobile 2 columns like screenshot */
 .shop__grid{
   display:grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 26px 18px;
+  grid-template-columns:repeat(2,1fr);
+  gap:26px 18px;
 }
 
-@media (min-width: 780px){
-  .shop__grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media(min-width:780px){
+  .shop__grid{ grid-template-columns:repeat(3,1fr); }
 }
-@media (min-width: 1120px){
-  .shop__grid{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-
-/* card */
-.shop-card{
-  min-width:0;
+@media(min-width:1120px){
+  .shop__grid{ grid-template-columns:repeat(4,1fr); }
 }
 
-.shop-card__link{
-  display:block;
-}
-
-/* image frame */
-.shop-card__media{
-  position:relative; /* ★必須：absolute img の基準 */
-  width:100%;
-  background: rgba(17,17,17,.06);
-  border-radius: 0;
-  overflow:hidden;
-}
-
-/* square-ish */
-.shop-card__media::before{
-  content:"";
-  display:block;
-  padding-top: 100%;
-}
-
+.shop-card__media{ position:relative; overflow:hidden; }
+.shop-card__media::before{ content:""; display:block; padding-top:100%; }
 .shop-card__media img{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
-  display:block;
 }
 
-/* title & price typography */
 .shop-card__title{
-  margin: 12px 0 6px;
+  margin:12px 0 6px;
   font-size:12px;
   letter-spacing:.32em;
   text-transform:uppercase;
-  font-weight:400;
   line-height:1.35;
-
-  /* ★2行クランプを正しく効かせる */
   display:-webkit-box;
   -webkit-line-clamp:2;
   -webkit-box-orient:vertical;
@@ -433,39 +270,23 @@ body.is-touch #pointer-fx{
 .shop-card__price{
   font-size:11px;
   letter-spacing:.28em;
-  text-transform:uppercase;
   opacity:.55;
-  line-height:1.2;
 }
 
-/* soldout用 */
-.shop-card.is-soldout .shop-card__price{
-  opacity:.35;
-}
-.shop-card__soldout{
-  margin-top:6px;
-  font-size:11px;
-  letter-spacing:.28em;
-  text-transform:uppercase;
-  opacity:.35;
-}
+.shop-card.is-soldout .shop-card__price{ opacity:.35; }
 
 /* =========================================================
-   Shop Modal (append-only)
-   ※既存に干渉しないよう modal 内だけに限定
+   Modal（Topbarを絶対に覆わない）
 ========================================================= */
-
 .modal-overlay{
   position:fixed;
-  left:0;
-  right:0;
-  top:var(--topbar-h);      /* ★FIX: topbar を覆わない */
-  bottom:0;                 /* ★FIX */
+  top:var(--topbar-h);
+  left:0; right:0; bottom:0;
   background:rgba(0,0,0,.08);
   opacity:0;
   pointer-events:none;
-  transition: opacity 180ms ease;
-  z-index:4200; /* drawer(4600)より下 / pointer-fx(9100)より下 / topbar(9000)より下 */
+  transition:opacity 180ms ease;
+  z-index:4200;
 }
 
 .modal-overlay.is-open{
@@ -475,209 +296,38 @@ body.is-touch #pointer-fx{
 
 .modal{
   position:fixed;
-  left:0;
-  right:0;
-  top:var(--topbar-h);      /* ★FIX: topbar を覆わない */
-  bottom:0;                 /* ★FIX */
+  top:var(--topbar-h);
+  left:0; right:0; bottom:0;
   background:#fff;
   z-index:4300;
-
   opacity:0;
   visibility:hidden;
   pointer-events:none;
-
-  transform: translate3d(0, 8px, 0);
-  transition: opacity 180ms ease, transform 180ms ease, visibility 0s linear 180ms;
+  transform:translate3d(0,8px,0);
+  transition:opacity 180ms ease, transform 180ms ease;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 
 .modal.is-open{
   opacity:1;
   visibility:visible;
   pointer-events:auto;
-
-  transform: translate3d(0, 0, 0);
-  transition: opacity 180ms ease, transform 180ms ease, visibility 0s;
+  transform:translate3d(0,0,0);
 }
 
-/* モーダル内は topbar が外にあるので、内側バーは不要なら使わなくてOK
-   （HTMLに残ってても見えるだけで問題なし） */
-.modal__bar{
-  position:sticky;
-  top:0;
-  z-index:1;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:
-    18px
-    calc(var(--gutter) + env(safe-area-inset-right, 0px))
-    14px
-    calc(var(--gutter) + env(safe-area-inset-left, 0px));
-
-  background:#fff;
-}
-
-.modal__title{
-  font-size:14px;
-  letter-spacing:.30em;
-  text-transform:uppercase;
-  opacity:.80;
-  height:44px;
-  display:inline-flex;
-  align-items:center;
-  line-height:1;
-}
-
-.modal__close{
-  width:44px;
-  height:44px;
-  display:grid;
-  place-items:center;
-  font-size:22px;
-  line-height:1;
-  opacity:.75;
-  padding:0;
-  margin-left:auto;
-}
-
-/* 本文 */
-.modal__body{
-  padding:
-    18px
-    calc(var(--gutter) + env(safe-area-inset-right, 0px))
-    calc(18px + env(safe-area-inset-bottom, 0px))
-    calc(var(--gutter) + env(safe-area-inset-left, 0px));
-}
-
-/* ===== モーダル内の shop view（.modal でスコープ） ===== */
-.modal .shop__head{
-  margin-bottom:16px;
-}
-
-.modal .shop__count{
-  font-size:12px;
-  letter-spacing:.32em;
-  text-transform:uppercase;
-  opacity:.65;
-}
-
-/* HYKEっぽい2カラム寄り */
-.modal .shop__grid{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap:18px 14px;
-}
-
-/* 小さい画面では1カラム */
-@media (max-width: 420px){
-  .modal .shop__grid{
-    grid-template-columns: 1fr;
-  }
-}
-
-.modal .shop-card__link{
-  display:block;
-}
-
-.modal .shop-card__media{
-  position:relative;
-  width:100%;
-  aspect-ratio: 1 / 1;
-  background:rgba(17,17,17,.06);
-  overflow:hidden;
-}
-
-.modal .shop-card__media img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-
-.modal .shop-card__title{
-  margin:12px 0 6px;
-  font-size:12px;
-  letter-spacing:.32em;
-  text-transform:uppercase;
-  font-weight:400;
-  line-height:1.2;
-
-  /* PC側は2行クランプ（デフォルト継承でOKだが明示） */
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-}
-
-.modal .shop-card__price{
-  font-size:11px;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  opacity:.65;
-  line-height:1.2;
-}
-
-/* =========================================================
-   FIX: Mobileでタイトルを省略しない（… をやめて改行でフル表示）
-========================================================= */
-@media (max-width: 600px){
+/* Mobile: タイトル省略しない */
+@media(max-width:600px){
   .modal .shop-card__title{
-    display:block !important;
-    -webkit-line-clamp: unset;
-    -webkit-box-orient: unset;
-    overflow: visible;
-    white-space: normal;
+    display:block;
+    -webkit-line-clamp:unset;
+    overflow:visible;
+    white-space:normal;
   }
 }
 
-
-/* =========================================================
-   FIX: Drawer / Modal を中でスクロール可能にする
-========================================================= */
-
-/* Drawer: 中身をスクロール */
-.drawer__inner{
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Modal: 画面全体をスクロールコンテナにする */
-.modal{
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* もし modal 内の余白（.modal__body）だけをスクロールさせたい場合はこっちでもOK */
-.modal__body{
-  /* modal が inset:0 なので基本は不要だけど、念のため */
-  min-height: 100%;
-}
-
-/* =========================================================
-   FIX: iOS / Mobile Tap Highlight & Focus Box
-   - TOP / Hamburger 押下時の黒い四角を消す
-========================================================= */
-
-/* iOS tap highlight */
-a, button, .toplink, .hamburger {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* focus / active の黒背景・枠を消す */
-a:focus,
-a:active,
-button:focus,
-button:active {
-  outline: none;
-  box-shadow: none;
-  background-color: transparent;
-}
-
-/* iOS Safari 特有の :focus-visible 対策 */
-a:focus-visible,
-button:focus-visible {
-  outline: none;
-  box-shadow: none;
+/* Desktop cursor */
+@media(pointer:fine){
+  :root{ --fx-scale:0.5; }
+  html,body,a,button{ cursor:none !important; }
 }
