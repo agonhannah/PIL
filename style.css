@@ -607,20 +607,10 @@ body.is-locked{
   .product__track{ grid-auto-columns: 100%; }
 }
 
-/* SWIPE hint 無効化（全プロダクト共通） */
-.product__hint{
-  display: none !important;
-}
 
 
 
-.sc__icon::after{
-  content:"";
-  position:absolute;
-  inset:4px;
-  border-radius:50%;
-  background:#fff;
-}
+
 
 /* SoundCloud lock-style link */
 .product__sc{
