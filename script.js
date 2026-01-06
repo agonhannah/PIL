@@ -187,7 +187,7 @@
 
     requestAnimationFrame(() => {
       const h = panel.scrollHeight;
-      panel.style.transition = "max-height 280ms ease, opacity 220ms ease";
+      panel.style.transition = "max-height 520ms cubic-bezier(.22, 1, .36, 1), opacity 360ms ease";
       panel.style.maxHeight = h + "px";
       panel.style.opacity = "1";
     });
@@ -210,7 +210,7 @@
     panel.style.overflow = "hidden";
     panel.style.maxHeight = panel.scrollHeight + "px";
     panel.style.opacity = "1";
-    panel.style.transition = "max-height 240ms ease, opacity 180ms ease";
+    panel.style.transition = "max-height 420ms cubic-bezier(.22, 1, .36, 1), opacity 260ms ease";
 
     requestAnimationFrame(() => {
       panel.style.maxHeight = "0px";
