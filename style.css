@@ -695,3 +695,9 @@ body.is-locked{
 .sc-lock__tick--b{ bottom:3px; left:50%; width:6px; height:1px; transform:translateX(-50%); }
 .sc-lock__tick--l{ left:3px; top:50%; width:1px; height:6px; transform:translateY(-50%); }
 .sc-lock__tick--r{ right:3px; top:50%; width:1px; height:6px; transform:translateY(-50%); }
+
+@media (pointer: coarse) {
+  #lockbox{
+    transform: translate(-50%, -50%) scale(1.8);
+  }
+}
