@@ -607,61 +607,53 @@ body.is-locked{
   .product__track{ grid-auto-columns: 100%; }
 }
 
-
-
-
-
-
-/* SoundCloud lock-style link */
+/* =========================================================
+   Product: SoundCloud lockbox（ブラウザ版と同じlockboxを流用）
+   ※ .sc-lock__* は使わない（重複/縦線化の元）
+========================================================= */
 .product__sc{
   display:inline-flex;
   align-items:center;
   gap:14px;
   margin-top:6px;
-  padding: 12px 0;
+  padding:12px 0;
   font-size:11px;
   letter-spacing:.22em;
   text-transform:uppercase;
   color:#111;
   opacity:.7;
 }
-
 .product__sc:hover{ opacity:1; }
 
-/* lock icon parts base (必須) */
-.sc-lock__cross{
-  position:absolute;
-  left:50%;
-  top:50%;
-  background:rgba(0,0,0,.5);
-  transform:translate(-50%,-50%);
-}
-.sc-lock__tick{
-  position:absolute;
-  background:rgba(0,0,0,.45);
+/* lockboxを product内に置くためのラッパー */
+.sc-lockbox{
+  display:inline-block;
+  flex:0 0 auto;
 }
 
-/* lock icon (static) */
-.sc-lock__rect{
-  display:inline-block;   /* ←これが必須 */
-  flex:0 0 auto;          /* ←念のため（flex内で潰れ防止） */
-  box-sizing:border-box;
-  
+/* product側は少し小さめにしたいので上書き（110→84） */
+.sc-lockbox .lockbox__rect{
   width:84px;
   height:84px;
-  border:1px solid rgba(0,0,0,.6);
   border-radius:14px;
-  position:relative;
 }
 
-.sc-lock__cross--h{ width:40px; height:1px; }
-.sc-lock__cross--v{ width:1px; height:40px; }
+/* 十字・tickもスケール合わせ */
+.sc-lockbox .lockbox__cross--h{ width:48px; height:1px; }
+.sc-lockbox .lockbox__cross--v{ width:1px; height:48px; }
 
-.sc-lock__tick--t{ top:10px; left:50%; width:18px; height:1px; transform:translateX(-50%); }
-.sc-lock__tick--b{ bottom:10px; left:50%; width:18px; height:1px; transform:translateX(-50%); }
-.sc-lock__tick--l{ left:10px; top:50%; width:1px; height:18px; transform:translateY(-50%); }
-.sc-lock__tick--r{ right:10px; top:50%; width:1px; height:18px; transform:translateY(-50%); }
+.sc-lockbox .lockbox__tick--t{ top:6px; width:14px; }
+.sc-lockbox .lockbox__tick--b{ bottom:6px; width:14px; }
+.sc-lockbox .lockbox__tick--l{ left:6px; height:14px; }
+.sc-lockbox .lockbox__tick--r{ right:6px; height:14px; }
 
+/* CLICK HERE 位置は同じ */
+.sc-lockbox .lockbox__rect::after{
+  content:"CLICK HERE";
+  bottom:-18px;
+}
+
+/* coarse pointer: 既存PointerFXの挙動はそのまま */
 @media (pointer: coarse) {
   #lockbox{
     transform: translate(-50%, -50%) scale(1.8);
