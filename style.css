@@ -617,90 +617,69 @@ body.is-locked{
   pointer-events:none;
 }
 
-/* =========================================================
-   PRODUCT TRIAL（ここが今回の“書き換え”本体）
-   - OPEN ON〜 は非リンク
-   - lock + logo だけがリンク
-   - ロゴは lock の下に「重ねる」
-========================================================= */
-/* ===== PRODUCT TRIAL (lock + sc logo overlay) ===== */
+/* ===== TRIAL : lock + soundcloud overlay (FINAL) ===== */
+
 .product__trial{
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
+  margin-top:18px;
+  padding-top:18px;
+  border-top:1px solid var(--line);
 
   display:flex;
   align-items:flex-start;
   gap:18px;
-
-  /* ロゴ重ね分の“下余白”確保 */
-  padding-bottom: 110px;
 }
 
 .product__trialHead{
-  font-size: 11px;
-  letter-spacing: .28em;
-  text-transform: uppercase;
-  opacity: .55;
-  margin: 0 0 12px;
+  font-size:11px;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  opacity:.55;
+  margin:0 0 12px;
 }
 
-/* lock+logo のみクリック */
+/* lock + logo を1つの84px箱に */
 .product__trialLink{
   position:relative;
   width:84px;
-
-  /* lock(84) + CLICK HERE(18) + logo(〜28) ぶん */
-  height:130px;
-
+  height:84px;
   display:block;
   text-decoration:none;
-  color:inherit;
 }
 
-/* lock */
-.product__trialLink .sc-lockbox{
-  display:block;
+/* lockbox */
+.product__trialLink .trial__lock{
   width:84px;
   height:84px;
 }
 
-/* 既存lockboxをこの中だけ84固定 */
 .product__trialLink .lockbox__rect{
   width:84px;
   height:84px;
   border-radius:14px;
-  box-sizing:border-box;
 }
 
-/* ロゴ：下に“重ねる”（absolute） */
+/* 🔴 SoundCloud ロゴを「元サイズ感」で重ねる */
 .product__trialLogo{
   position:absolute;
-  left:0;
+  left:50%;
+  bottom:6px;                 /* ← lockbox内の下側 */
+  transform:translateX(-50%);
 
-  /* 84(lock) + 18(CLICK HERE下) */
-  top:102px;  /* 微調整するなら 98〜112 */
-
-  width:84px;
+  width:36px;                 /* ← 見た目の“元サイズ感” */
   height:auto;
-  max-height:28px;     /* ← デカすぎ防止の要 */
-  display:block;
-  object-fit:contain;
 
-  opacity:.75;
-  pointer-events:none; /* クリックはリンクへ */
+  opacity:.85;
+  pointer-events:none;
 }
 
-.product__trialLink:hover .product__trialLogo{ opacity:1; }
-
-/* 非リンクのテキスト（右側） */
+/* 右側テキスト */
 .product__trialText{
-  margin-top: 44px; /* “少し下げ” */
-  font-size: 11px;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  opacity: .55;
-  white-space: nowrap;
+  margin-top:44px;
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  opacity:.55;
+  white-space:nowrap;
 }
 
 /* coarse pointer: 既存PointerFXはそのまま */
