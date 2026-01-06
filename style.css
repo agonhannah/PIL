@@ -618,91 +618,63 @@ body.is-locked{
 }
 
 /* =========================================================
-   TRIAL (SESSION ONLY / FORCE FIX)
+   TRIAL (Session Collection only) – FIX
 ========================================================= */
-#session-collection .trial{
-  margin-top: 18px !important;
-  padding-top: 18px !important;
-  border-top: 1px solid var(--line) !important;
 
-  /* 元サイズ＝110 */
-  --trial-size: 110px !important;
+#session-collection .product__trial{
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  display:flex;
+  align-items:flex-start;
+  gap:18px;
 }
 
-#session-collection .trial__head{
-  font-size: 11px !important;
-  letter-spacing: .28em !important;
-  text-transform: uppercase !important;
-  opacity: .55 !important;
-  margin: 0 0 12px !important;
+/* lock + logo のクリック領域 */
+#session-collection .product__trialLink{
+  position:relative;
+  width:110px;
+  height:110px; /* ロック自体 */
+  display:block;
 }
 
-#session-collection .trial__row{
-  display: flex !important;
-  align-items: flex-start !important;
-  gap: 18px !important;
+/* lockbox を110にする（既存110があれば不要だが保険） */
+#session-collection .product__trialLink .lockbox__rect{
+  width:110px;
+  height:110px;
 }
 
-/* クリックできるのは lock+logo のみ */
-#session-collection .trial__link{
-  position: relative !important;
-  width: var(--trial-size) !important;
+/* SoundCloudロゴを “下に重ねる” */
+#session-collection .product__trialLink::after{
+  content:"";
+  position:absolute;
+  left:0;
+  top: calc(110px - 24px); /* 被せ量：ここだけ好みで調整 */
 
-  /* ロゴを重ねる分の高さを確保（巨大化/崩れ防止） */
-  height: calc(var(--trial-size) + 60px) !important;
+  width:110px;
+  height:110px;
 
-  display: block !important;
-  text-decoration: none !important;
-  color: inherit !important;
+  background: url("images/soundcloud.PNG") center / contain no-repeat;
+  opacity:.75;
+  pointer-events:none;
 }
 
-/* lock（110固定） */
-#session-collection .trial__lock{
-  position: relative !important;
-  display: block !important;
-  width: var(--trial-size) !important;
-  height: var(--trial-size) !important;
+#session-collection .product__trialLink:hover::after{
+  opacity:1;
 }
 
-#session-collection .trial__lock .lockbox__rect{
-  width: var(--trial-size) !important;
-  height: var(--trial-size) !important;
-  border-radius: 14px !important;
-  box-sizing: border-box !important;
+/* 右のテキスト */
+#session-collection .product__trialText{
+  margin-top: 44px;
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  opacity: .55;
+  white-space: nowrap;
 }
 
-/* ロゴ：ロックの下に重ねる（ここが本題） */
-#session-collection img.trial__logo{
-  position: absolute !important;
-  left: 0 !important;
 
-  /* 110の下端から少し上に被せる */
-  top: calc(var(--trial-size) - 24px) !important;
 
-  width: var(--trial-size) !important;
-  height: var(--trial-size) !important;
-  max-width: var(--trial-size) !important;   /* ←巨大化を絶対殺す */
-  max-height: var(--trial-size) !important;  /* ←巨大化を絶対殺す */
-
-  display: block !important;
-  object-fit: cover !important;              /* PNG余白があってもデカく見せる */
-  opacity: .75 !important;
-  pointer-events: none !important;
-}
-
-#session-collection .trial__link:hover img.trial__logo{
-  opacity: 1 !important;
-}
-
-/* 右のテキスト（リンク外、少し下げる） */
-#session-collection .trial__text{
-  margin-top: 44px !important;
-  font-size: 11px !important;
-  letter-spacing: .22em !important;
-  text-transform: uppercase !important;
-  opacity: .55 !important;
-  white-space: nowrap !important;
-}
 
 /* coarse pointer: 既存PointerFXはそのまま */
 @media (pointer: coarse) {
@@ -710,3 +682,4 @@ body.is-locked{
     transform: translate(-50%, -50%) scale(1.8);
   }
 }
+
