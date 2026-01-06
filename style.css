@@ -656,6 +656,15 @@ body.is-locked{
   white-space:nowrap;
 }
 
+#session-collection .product__trialLink .sc-lockbox{
+  width:110px;
+  height:110px;
+  display:block;
+}
+
+#session-collection .product__trialLogo{
+  display:none !important;
+}
 
 
 
