@@ -492,8 +492,8 @@ body.is-locked{
 
 /* ★ここが「ADD TO BAG 下のバー」＝標準に戻す */
 .product__block{
-  margin-top: 38px;
-  padding-top: 18px;
+  margin-top: 18px;
+  padding-top: 30px;
   border-top: 1px solid var(--line);
 }
 
