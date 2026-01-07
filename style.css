@@ -728,3 +728,9 @@ body.is-locked{
   margin-top: 6px;   /* 小さいほど線が上がる */
   padding-top: 10px; /* 線の直下のテキスト開始位置 */
 }
+
+
+/* DEBUG: 例の線がどれか特定 */
+#session-collection .product__block{
+  border-top: 6px solid red !important;
+}
