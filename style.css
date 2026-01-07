@@ -17,6 +17,7 @@
   --trial-click-gap: 22px;     /* CLICK HERE をボックスから離す量（大きいほど下へ） */
   --trial-size: 90px;          /* ロゴ&枠のサイズ（正方形） */
   --trial-area-h: 170px;       /* クリック領域の高さ（基本そのままでOK） */
+  --trial-group-offset-y: 8px; /* ← これを 8px とか 12px にすると全体が下がる */
 
   /* 「CLICK HERE 下のバー（＝説明文の上の線）」だけ動かす */
   --trial-divider-gap: 0px;   /* 小さいほど “上に” 近づく（推奨: 8〜18px） */
@@ -657,4 +658,9 @@ body.is-locked{
   margin-top: var(--trial-divider-gap) !important;
   padding-top: var(--desc-top-padding) !important;
 }
+}
+
+/* ===== Trial（TEASER/lock/logo/CLICK HERE）一式をまとめて上下 ===== */
+#session-collection .product__trial{
+  margin-top: calc(18px + var(--trial-group-offset-y)) !important;
 }
