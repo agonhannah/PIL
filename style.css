@@ -12,6 +12,10 @@
 
   /* Pointer FX scale */
   --fx-scale: 1;
+
+  /* Trial UI tuning */
+  --trial-click-gap: 30px;   /* CLICK HERE をボックスから離す量（大きいほど下へ） */
+  --trial-divider-gap: 12px; /* CLICK HERE 下のバー位置（大きいほど下へ） */
 }
 
 /* =========================================================
@@ -36,6 +40,9 @@ button:focus-visible{
   background-color:transparent;
 }
 
+a{ color:inherit; text-decoration:none; }
+button{ color:inherit; background:none; border:0; }
+
 /* =========================================================
    Body
 ========================================================= */
@@ -50,9 +57,6 @@ body{
   overflow-x:hidden;
   padding-top: var(--topbar-h);
 }
-
-a{ color:inherit; text-decoration:none; }
-button{ color:inherit; background:none; border:0; }
 
 /* noise */
 body::after{
@@ -208,7 +212,6 @@ body.is-locked{
   margin-top:18px;
   padding-top:18px;
   border-top:1px solid var(--line);
-
   display:flex;
   flex-direction:column;
   gap:12px;
@@ -254,13 +257,9 @@ body.is-locked{
   transform:translate(-50%,-50%) scale(var(--fx-scale));
   transform-origin:center;
 }
-
 #pointer-fx.is-hot #lockbox{ opacity:1; }
 
-/* =========================================================
-   Lockbox visuals（基底）※ PointerFX と 試聴で共用する “部品”
-   - ここは消さない（両方が依存）
-========================================================= */
+/* lockbox visuals（共通） */
 .lockbox__rect{
   width:110px;
   height:110px;
@@ -285,20 +284,6 @@ body.is-locked{
 .lockbox__tick--l{ left:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
 .lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
 
-/* PointerFX 側だけに “CLICK HERE” を出す（試聴と干渉させない） */
-#lockbox .lockbox__rect::after{
-  content:"CLICK HERE";
-  position:absolute;
-  left:50%;
-  bottom:-18px;
-  transform:translateX(-50%);
-  font-size:10px;
-  letter-spacing:.22em;
-  color:rgba(17,17,17,.55);
-  white-space:nowrap;
-  pointer-events:none;
-}
-
 /* =========================================================
    Shop Grid
 ========================================================= */
@@ -307,7 +292,6 @@ body.is-locked{
   grid-template-columns:repeat(2,1fr);
   gap:26px 18px;
 }
-
 @media(min-width:780px){
   .shop__grid{ grid-template-columns:repeat(3,1fr); }
 }
@@ -363,25 +347,8 @@ body.is-locked{
   line-height:1.2;
 }
 
-.shop-card.is-soldout .shop-card__price{ opacity:.35; }
-
-.shop-card.is-soldout .shop-card__price{
-  opacity: 1;
-  color: #c00000;
-}
-
-.shop-card__subtitle{
-  font-size: inherit;
-  letter-spacing: inherit;
-  opacity: 1;
-}
-
-.product__cta.is-disabled{
-  border-color: rgba(17,17,17,.12);
-  background: rgba(17,17,17,.06);
-  color: rgba(17,17,17,.38);
-  pointer-events: none;
-}
+.shop-card.is-soldout .shop-card__price{ opacity: 1; color:#c00000; }
+.shop-card__subtitle{ font-size: inherit; letter-spacing: inherit; opacity: 1; }
 
 /* =========================================================
    Modal（Topbarを絶対に覆わない）
@@ -396,11 +363,7 @@ body.is-locked{
   transition:opacity 180ms ease;
   z-index:4200;
 }
-
-.modal-overlay.is-open{
-  opacity:1;
-  pointer-events:auto;
-}
+.modal-overlay.is-open{ opacity:1; pointer-events:auto; }
 
 .modal{
   position:fixed;
@@ -416,7 +379,6 @@ body.is-locked{
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
 }
-
 .modal.is-open{
   opacity:1;
   visibility:visible;
@@ -469,34 +431,20 @@ body.is-locked{
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
 }
 
-.product__gallery{
-  position: relative;
-  margin-bottom: 18px;
-}
+.product__gallery{ position:relative; margin-bottom:18px; }
 
 .product__track{
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 100%;
-  gap: 12px;
-
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:100%;
+  gap:12px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
 }
 
-.product__slide{
-  margin: 0;
-  scroll-snap-align: start;
-  background: rgba(17,17,17,.06);
-}
-
-.product__slide img{
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
+.product__slide{ margin:0; scroll-snap-align:start; background:rgba(17,17,17,.06); }
+.product__slide img{ width:100%; height:auto; display:block; }
 .product__hint{ display:none; }
 
 .product__title{
@@ -508,12 +456,6 @@ body.is-locked{
   line-height: 1.25;
 }
 
-.product__subtitle{
-  opacity: .75;
-  font-size: 12px;
-  letter-spacing: .28em;
-}
-
 .product__price{
   font-size: 12px;
   letter-spacing: .28em;
@@ -523,18 +465,23 @@ body.is-locked{
 }
 
 .product__cta{
-  display: block;
-  width: 100%;
-  padding: 14px 14px;
-  border: 1px solid rgba(17,17,17,.28);
-  border-radius: 14px;
+  display:block;
+  width:100%;
+  padding:14px 14px;
+  border:1px solid rgba(17,17,17,.28);
+  border-radius:14px;
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  text-align:center;
+  margin:10px 0 18px;
+}
 
-  font-size: 12px;
-  letter-spacing: .32em;
-  text-transform: uppercase;
-  text-align: center;
-
-  margin: 10px 0 18px;
+.product__cta.is-disabled{
+  border-color: rgba(17,17,17,.12);
+  background: rgba(17,17,17,.06);
+  color: rgba(17,17,17,.38);
+  pointer-events:none;
 }
 
 .product__block{
@@ -543,53 +490,51 @@ body.is-locked{
   border-top: 1px solid var(--line);
 }
 
-.product__label{
-  display:none;
-}
+.product__label{ display:none; }
 
 .product__desc{
-  font-size: 12px;
-  line-height: 1.8;
-  letter-spacing: .02em;
-  opacity: .9;
+  font-size:12px;
+  line-height:1.8;
+  letter-spacing:.02em;
+  opacity:.9;
 }
 
 .product__player{
-  border: 1px solid rgba(17,17,17,.10);
-  border-radius: 14px;
-  overflow: hidden;
+  border:1px solid rgba(17,17,17,.10);
+  border-radius:14px;
+  overflow:hidden;
 }
 
 .product__link{
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 11px;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  opacity: .6;
+  display:inline-block;
+  margin-top:10px;
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  opacity:.6;
 }
 
 @media (min-width: 900px){
   .product__inner{
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 28px;
-    align-items: start;
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:28px;
+    align-items:start;
   }
-  .product__gallery{ margin-bottom: 0; }
-  .product__track{ grid-auto-columns: 100%; }
+  .product__gallery{ margin-bottom:0; }
+  .product__track{ grid-auto-columns:100%; }
 }
 
 /* =========================================================
-   Trial lockbox（試聴側）
+   Trial / lockbox (SoundCloud)
 ========================================================= */
+
+/* lockbox を 84px 基準で安定 */
 .sc-lockbox{
   display:block;
   width:84px;
   height:84px;
 }
-
-/* 試聴は “84px lockbox” を基準に縮小する */
 .sc-lockbox .lockbox__rect{
   width:84px;
   height:84px;
@@ -597,32 +542,30 @@ body.is-locked{
   display:block;
   box-sizing:border-box;
 }
-.sc-lockbox .lockbox__cross--h{ width:48px; height:1px; }
-.sc-lockbox .lockbox__cross--v{ width:1px; height:48px; }
+
+/* 試聴は十字を消す（あなたが今やった状態を正式に反映） */
+.sc-lockbox .lockbox__cross{ display:none; }
+
 .sc-lockbox .lockbox__tick--t{ top:6px; width:14px; }
 .sc-lockbox .lockbox__tick--b{ bottom:6px; width:14px; }
 .sc-lockbox .lockbox__tick--l{ left:6px; height:14px; }
 .sc-lockbox .lockbox__tick--r{ right:6px; height:14px; }
 
-/* 試聴側にも CLICK HERE を出すならここ（今は出してOK） */
+/* CLICK HERE（試聴用） */
 .sc-lockbox .lockbox__rect::after{
   content:"CLICK HERE";
   position:absolute;
   left:50%;
-  bottom:-28px;
+  bottom: calc(var(--trial-click-gap) * -1);
   transform:translateX(-50%);
-  font-size:11px;
+  font-size:10px;
   letter-spacing:.22em;
   color:rgba(17,17,17,.55);
   white-space:nowrap;
   pointer-events:none;
 }
 
-/* =========================================================
-   PATCH: Trial UI unify (ALL products) + tighten divider spacing
-========================================================= */
-
-/* trialブロックを “線なし” にしてUIを統一 */
+/* Trial UI unify */
 .product .product__trial{
   margin-top:18px;
   padding-top:0;
@@ -636,24 +579,24 @@ body.is-locked{
 .product .product__trialLink{
   position:relative;
   width:110px;
-  height:170px; /* 110(lock) + ロゴ余白 */
+  height:170px;
   display:block;
   flex-shrink:0;
 }
 
-/* ロックオンをロゴより前に */
+/* ロック(枠)を前面固定 */
 .product .product__trialLink .sc-lockbox{
   position:relative;
   z-index:1;
 }
 
-/* lockboxを110に統一（見た目合わせ） */
+/* lockbox を 110 に統一（見た目合わせ） */
 .product .product__trialLink .lockbox__rect{
   width:110px;
   height:110px;
 }
 
-/* SoundCloudロゴを背面に（全商品共通） */
+/* SoundCloud ロゴを背面 */
 .product .product__trialLink::after{
   content:"";
   position:absolute;
@@ -667,13 +610,13 @@ body.is-locked{
   pointer-events:none;
 }
 
-/* HTML側の trialテキストは使わない（残ってても非表示） */
+/* trial テキストは使わない */
 .product .product__trialText,
 .product .product__label{
   display:none !important;
 }
 
-/* lockbox 上ラベル（TEASER / 試聴）を統一 */
+/* 上ラベル（TEASER / 試聴） */
 .sc-lockbox .lockbox__rect::before{
   content:"TEASER / 試聴";
   position:absolute;
@@ -687,62 +630,11 @@ body.is-locked{
   pointer-events:none;
 }
 
-/* ✅ これが “CLICK HEREの下の赤線(次blockのborder)” を上げる本命 */
+/* =========================================================
+   FINAL PATCH (確実に効かせる：CLICK HERE下のバー位置)
+   - ここが「これまでに…の上の線」
+========================================================= */
 .product .product__block + .product__block{
-  margin-top: 5px;
-  padding-top: 5px;
-}
-
-/* =========================================================
-   FIX: CLICK HERE 下の “赤線” は次blockの border-top
-   → product__block 同士の間隔を調整する（正しいセレクタ）
-========================================================= */
-
-/* Session Collection だけ：試聴blockの次の説明blockを少し下げる */
-#session-collection .product__meta > .product__block + .product__block{
-  margin-top: 12px;   /* 線を下げる：大きくすると離れる */
-  padding-top: 12px;  /* テキスト開始位置も一緒に下がる */
-}
-
-/* =========================================================
-   OPTIONAL: CLICK HERE “文字そのもの” の位置（ロック枠に対して）
-   → 文字を上げたい/下げたい時に触る
-========================================================= */
-
-/* 試聴の lockbox（sc-lockbox）だけ調整 */
-#session-collection .sc-lockbox .lockbox__rect::after{
-  bottom: -14px; /* 例：-18px → -14px で文字が少し上に来る */
-}
-
-/* =========================================
-   Session Collection：CLICK HERE ↔ 次の線を寄せる
-========================================= */
-
-/* ① 試聴リンクの“見えない余白”を削る（ここが一番効く） */
-#session-collection .product__trialLink{
-  height: 128px; /* 170 → 128（まずはこのくらい） */
-}
-
-/* ② 試聴ブロック（1個目）と説明ブロック（2個目）の間隔を詰める */
-#session-collection .product__meta > .product__block + .product__block{
-  margin-top: 6px;   /* 小さいほど線が上がる */
-  padding-top: 10px; /* 線の直下のテキスト開始位置 */
-}
-
-
-/* CLICK HERE 下の線を上に寄せる（Session Collectionのみ） */
-#session-collection .product__block + .product__block{
-  margin-top: 6px;    /* 18px → 6px */
-  padding-top: 8px;   /* 18px → 8px */
-}
-
-/* 試聴（product内）だけ十字を消す */
-.product .sc-lockbox .lockbox__cross{
-  display:none;
-}
-
-/* TEASERブロックの次に来る説明ブロック（=バーがあるやつ）を下げる */
-#session-collection .product__block + .product__block{
-  margin-top: 22px !important;
-  padding-top: 22px !important;  /* ここが “バー位置” に効く */
+  margin-top: var(--trial-divider-gap) !important;
+  padding-top: var(--trial-divider-gap) !important;
 }
