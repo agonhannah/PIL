@@ -683,3 +683,87 @@ body.is-locked{
     transform: translate(-50%, -50%) scale(1.8);
   }
 }
+
+/* =========================================================
+   PATCH: Trial UI unify (ALL products) + tighten divider spacing
+   - Do NOT delete existing rules. Append only.
+========================================================= */
+
+/* 1) 全商品で trialブロックを “線なし” にしてUIを統一 */
+.product .product__trial{
+  margin-top:18px;
+  padding-top:0;
+  border-top:none;
+  display:flex;
+  align-items:flex-start;
+  gap:18px;
+}
+
+/* クリック領域（lock + logo のみ） */
+.product .product__trialLink{
+  position:relative;
+  width:110px;
+  height:170px; /* 110(lock) + ロゴ余白 */
+  display:block;
+  flex-shrink:0;
+}
+
+/* ロックオン(枠線)をロゴより前に固定 */
+.product .product__trialLink .sc-lockbox{
+  position:relative;
+  z-index:1;
+}
+
+/* lockboxを110に統一（見た目合わせ） */
+.product .product__trialLink .lockbox__rect{
+  width:110px;
+  height:110px;
+}
+
+/* SoundCloudロゴを背面に（全商品共通） */
+.product .product__trialLink::after{
+  content:"";
+  position:absolute;
+  left:0;
+  top: calc(110px - 110px); /* 今の一致値を維持 */
+  width:110px;
+  height:110px;
+  background: url("images/soundcloud.PNG") center / contain no-repeat;
+  opacity:.75;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* HTML側の trialテキストは使わない（残ってても非表示） */
+.product .product__trialText,
+.product .product__label{
+  display:none !important;
+}
+
+/* lockbox 上ラベル（TRIAL / 試聴）を sc-lockbox側で統一 */
+.sc-lockbox .lockbox__rect::before{
+  content:"TRIAL / 試聴";
+  position:absolute;
+  left:50%;
+  top:-22px;
+  transform:translateX(-50%);
+  font-size:11px;
+  letter-spacing:.22em;
+  color:rgba(17,17,17,.55);
+  white-space:nowrap;
+  pointer-events:none;
+}
+
+/* 2) CLICK HERE の下のアンダーバー（次blockのborder）を “少し上げる”
+   → 試聴ブロックの直後に来る説明ブロックの余白を詰める */
+.product .product__block + .product__block{
+  margin-top: 12px;   /* 元18px → 12px（好みで 10〜14） */
+  padding-top: 12px;  /* 元18px → 12px（好みで 10〜14） */
+}
+
+/* もし「試聴ブロックの直後だけ」さらに詰めたいならこれを追加で有効化
+.product .product__block:first-of-type + .product__block{
+  margin-top:10px;
+  padding-top:10px;
+}
+*/
