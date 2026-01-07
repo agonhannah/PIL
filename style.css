@@ -599,7 +599,7 @@ body.is-locked{
   position:relative;
   width: var(--trial-size);
   height: auto !important;
-  padding-bottom: 0 !important; 
+  padding-bottom: calc(var(--trial-click-gap) + 10px) !important;
   display:block;
   flex-shrink:0;
 }
