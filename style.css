@@ -732,8 +732,8 @@ body.is-locked{
 
 /* CLICK HERE 下の線を上に寄せる（Session Collectionのみ） */
 #session-collection .product__block + .product__block{
-  margin-top: 14px;    /* 18px → 6px */
-  padding-top: 14px;   /* 18px → 8px */
+  margin-top: 6px;    /* 18px → 6px */
+  padding-top: 8px;   /* 18px → 8px */
 }
 
 /* 試聴（product内）だけ十字を消す */
