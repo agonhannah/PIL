@@ -687,8 +687,8 @@ body.is-locked{
 /* 2) CLICK HERE の下のアンダーバー（次blockのborder）を “少し上げる”
    → 試聴ブロックの直後に来る説明ブロックの余白を詰める */
 .product .product__block + .product__block{
-  margin-top: 12px;   /* 元18px → 12px（好みで 10〜14） */
-  padding-top: 12px;  /* 元18px → 12px（好みで 10〜14） */
+  margin-top: 10px;   /* 元18px → 12px（好みで 10〜14） */
+  padding-top: 10px;  /* 元18px → 12px（好みで 10〜14） */
 }
 
 /* もし「試聴ブロックの直後だけ」さらに詰めたいならこれを追加で有効化
