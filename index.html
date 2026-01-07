@@ -201,12 +201,13 @@
     </div>
   </section>
 
-  <!-- =========================================================
+    <!-- =========================================================
      PRODUCT DETAILS
      ★重要：デフォルト非表示（TOPに出ない）
-     → CSSで :target 表示 / JSで表示切替、どっちでもいける構造
+     → CSS :target で表示
   ========================================================== -->
 
+  <section class="product" id="session-collection" aria-label="Session Collection" hidden data-product>
     <div class="product__inner">
 
       <div class="product__gallery" aria-label="Product images">
@@ -214,7 +215,6 @@
           <figure class="product__slide">
             <img src="images/SessionCollection.JPG" alt="Session Collection cover 1" loading="lazy" decoding="async">
           </figure>
-          <!-- 追加するならここに figure を増やす -->
         </div>
       </div>
 
@@ -230,66 +230,62 @@
           ADD TO BAG
         </a>
 
-       <div class="product__block">
-  <div class="product__label"> TEASER / 試聴</div>
-  
+        <div class="product__block">
+          <div class="product__label"> TEASER / 試聴</div>
 
+          <div class="product__trial">
+            <a class="product__trialLink" href="https://on.soundcloud.com/FG7QsHpQCyyN9nxy6k" target="_blank" rel="noopener">
+              <span class="sc-lockbox" aria-hidden="true">
+                <span class="lockbox__rect">
+                  <span class="lockbox__cross lockbox__cross--h"></span>
+                  <span class="lockbox__cross lockbox__cross--v"></span>
 
-  <div class="product__trial">
-    <!-- クリックできるのは lock + logo のみ -->
-    <a class="product__trialLink" href="https://on.soundcloud.com/FG7QsHpQCyyN9nxy6k" target="_blank" rel="noopener">
-      <span class="sc-lockbox" aria-hidden="true">
-        <span class="lockbox__rect">
-          <span class="lockbox__cross lockbox__cross--h"></span>
-          <span class="lockbox__cross lockbox__cross--v"></span>
+                  <span class="lockbox__tick lockbox__tick--t"></span>
+                  <span class="lockbox__tick lockbox__tick--b"></span>
+                  <span class="lockbox__tick lockbox__tick--l"></span>
+                  <span class="lockbox__tick lockbox__tick--r"></span>
+                </span>
+              </span>
+            </a>
+          </div>
+        </div>
 
-          <span class="lockbox__tick lockbox__tick--t"></span>
-          <span class="lockbox__tick lockbox__tick--b"></span>
-          <span class="lockbox__tick lockbox__tick--l"></span>
-          <span class="lockbox__tick lockbox__tick--r"></span>
-        </span>
-      </span>
-    </a>
-  </div>
-</div>
+        <div class="product__block">
+          <div class="product__desc">
+            これまでに多数のイベントでの共演やプロデューサー、リミキサーとして他作品への参加等、<br>
+            音楽活動としてもプライベートとしても多くの時間を共有してきたSBKとdhrma<br>
+            2人の初となるフルセッション作品となる。<br><br>
 
-<div class="product__block">
-  <div class="product__desc">
-  これまでに多数のイベントでの共演やプロデューサー、リミキサーとして他作品への参加等、<br>
-  音楽活動としてもプライベートとしても多くの時間を共有してきたSBKとdhrma<br>
-  2人の初となるフルセッション作品となる。<br><br>
+            それぞれの拠点である神戸と加古川で、<br>
+            夜分幾度となく繰り返されたビートセッション、リミックスを全21曲というボリュームで纏め上げた。<br><br>
 
-  それぞれの拠点である神戸と加古川で、<br>
-  夜分幾度となく繰り返されたビートセッション、リミックスを全21曲というボリュームで纏め上げた。<br><br>
+            Track.9にて大阪からビートメイカーのSQUALが客演としてサンプルチョップ、ドラムを担当、<br>
+            またジャケット / アートワークは、<br>
+            2人の共通の盟友であるフォトグラファー、グラフィックデザイナーのQUESTが担当している。<br><br>
 
-  Track.9にて大阪からビートメイカーのSQUALが客演としてサンプルチョップ、ドラムを担当、<br>
-  またジャケット / アートワークは、<br>
-  2人の共通の盟友であるフォトグラファー、グラフィックデザイナーのQUESTが担当している。<br><br>
+            Tracklist<br><br>
 
-  Tracklist<br><br>
-
-  1. Intro<br>
-  2. Worldwide Steppers [SBK]<br>
-  3. Freestyle<br>
-  4. Porch<br>
-  5. Talk 'bout<br>
-  6. Woo-Hah<br>
-  7. Wrist On Frost<br>
-  8. Raymist<br>
-  9. Bad Disco feat. SQUAL<br>
-  10. Therapy<br>
-  11. Figaro Figaro<br>
-  12. Flight Confirmation<br>
-  13. Skit [Clackle Session]<br>
-  14. FUPM<br>
-  15. Private Bullet [SBK]<br>
-  16. Skit [dhrma]<br>
-  17. Wonder If I<br>
-  18. Mindbrower [dhrma]<br>
-  19. XXX<br>
-  20. Skit [SBK]<br>
-  21. I HATE THAT I ---- YOU [dhrma]
-</div>
+            1. Intro<br>
+            2. Worldwide Steppers [SBK]<br>
+            3. Freestyle<br>
+            4. Porch<br>
+            5. Talk 'bout<br>
+            6. Woo-Hah<br>
+            7. Wrist On Frost<br>
+            8. Raymist<br>
+            9. Bad Disco feat. SQUAL<br>
+            10. Therapy<br>
+            11. Figaro Figaro<br>
+            12. Flight Confirmation<br>
+            13. Skit [Clackle Session]<br>
+            14. FUPM<br>
+            15. Private Bullet [SBK]<br>
+            16. Skit [dhrma]<br>
+            17. Wonder If I<br>
+            18. Mindbrower [dhrma]<br>
+            19. XXX<br>
+            20. Skit [SBK]<br>
+            21. I HATE THAT I ---- YOU [dhrma]
           </div>
         </div>
 
@@ -297,50 +293,50 @@
     </div>
   </section>
 
+  <section class="product" id="nowplaying" aria-label="NOW PLAYING" hidden data-product>
+    <div class="product__inner">
 
-  <div class="product__inner">
-
-    <div class="product__gallery" aria-label="Product images">
-      <div class="product__track">
-        <figure class="product__slide">
-          <img src="images/NOWPLAYING.JPG" alt="NOW PLAYING cover" loading="lazy" decoding="async">
-        </figure>
-      </div>
-    </div>
-
-    <div class="product__meta">
-      <h1 class="product__title">
-        【ZINE & CD】NOW PLAYING ZINE &<br>
-        Soundtrack for quest
-      </h1>
-
-      <div class="product__price">2750 yen (tax inc.)</div>
-
-      <a class="product__cta is-disabled" href="#" aria-disabled="true" onclick="return false;">
-        SOLD OUT
-      </a>
-
-      <div class="product__block">
-        <div class="product__desc">
-          兵庫県加古川市から全国的に活動の幅を広げ続けているビートメイカーのdhrmaによるサウンドトラック作品"NOW PLAYING"が
-          Quest(Quest of Visual Imfomation)による白黒写真6枚がしたためられたブックレット / Zine と共にリリースされる。<br><br>
-          それぞれの写真からイメージを広げ音像喚起を行ったdhrmaのサウンドトラックはこれまでのビート作品よりもさらにサウンドコラージュ、レフトフィールド的な側面を覗かせている。<br><br>
-          一枚につき一曲ずつ、ゆっくりとページをめくりながら楽しんで欲しい。<br><br>
-          NOWPLAYING &amp; Soundtrack for QUEST<br><br>
-          Format : 8P Booklet &amp; CD(41min32sec)<br>
-          6 Works(Each Black&amp;White Photographs with Sound)<br><br>
-          1. FAR 6min25sec<br>
-          2. OLD MOOD 6min30sec<br>
-          3. SUNNY DAY 8min03sec<br>
-          4. STATION FLOOR 6min38sec<br>
-          5. MISS SHOT 7min05sec<br>
-          6. WALK NEAR [Duval Timothy -9- Rework] 6min49sec
+      <div class="product__gallery" aria-label="Product images">
+        <div class="product__track">
+          <figure class="product__slide">
+            <img src="images/NOWPLAYING.JPG" alt="NOW PLAYING cover" loading="lazy" decoding="async">
+          </figure>
         </div>
       </div>
 
+      <div class="product__meta">
+        <h1 class="product__title">
+          【ZINE & CD】NOW PLAYING ZINE &<br>
+          Soundtrack for quest
+        </h1>
+
+        <div class="product__price">2750 yen (tax inc.)</div>
+
+        <a class="product__cta is-disabled" href="#" aria-disabled="true" onclick="return false;">
+          SOLD OUT
+        </a>
+
+        <div class="product__block">
+          <div class="product__desc">
+            兵庫県加古川市から全国的に活動の幅を広げ続けているビートメイカーのdhrmaによるサウンドトラック作品"NOW PLAYING"が
+            Quest(Quest of Visual Imfomation)による白黒写真6枚がしたためられたブックレット / Zine と共にリリースされる。<br><br>
+            それぞれの写真からイメージを広げ音像喚起を行ったdhrmaのサウンドトラックはこれまでのビート作品よりもさらにサウンドコラージュ、レフトフィールド的な側面を覗かせている。<br><br>
+            一枚につき一曲ずつ、ゆっくりとページをめくりながら楽しんで欲しい。<br><br>
+            NOWPLAYING &amp; Soundtrack for QUEST<br><br>
+            Format : 8P Booklet &amp; CD(41min32sec)<br>
+            6 Works(Each Black&amp;White Photographs with Sound)<br><br>
+            1. FAR 6min25sec<br>
+            2. OLD MOOD 6min30sec<br>
+            3. SUNNY DAY 8min03sec<br>
+            4. STATION FLOOR 6min38sec<br>
+            5. MISS SHOT 7min05sec<br>
+            6. WALK NEAR [Duval Timothy -9- Rework] 6min49sec
+          </div>
+        </div>
+
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
   <!-- Pointer FX -->
   <div id="pointer-fx" aria-hidden="true">
