@@ -735,3 +735,8 @@ body.is-locked{
   margin-top: 14px;    /* 18px → 6px */
   padding-top: 14px;   /* 18px → 8px */
 }
+
+/* 試聴（product内）だけ十字を消す */
+.product .sc-lockbox .lockbox__cross{
+  display:none;
+}
