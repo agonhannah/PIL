@@ -14,8 +14,13 @@
   --fx-scale: 1;
 
   /* Trial UI tuning */
-  --trial-click-gap: 22px;   /* CLICK HERE をボックスから離す量（大きいほど下へ） */
-  --trial-divider-gap:10px; /* CLICK HERE 下のバー位置（大きいほど下へ） */
+  --trial-click-gap: 22px;     /* CLICK HERE をボックスから離す量（大きいほど下へ） */
+  --trial-size: 90px;          /* ロゴ&枠のサイズ（正方形） */
+  --trial-area-h: 170px;       /* クリック領域の高さ（基本そのままでOK） */
+
+  /* 「CLICK HERE 下のバー（＝説明文の上の線）」だけ動かす */
+  --trial-divider-gap: 12px;   /* 小さいほど “上に” 近づく（推奨: 8〜18px） */
+  --desc-top-padding: 18px;    /* 線〜本文の距離（基本18でOK） */
 }
 
 /* =========================================================
@@ -484,6 +489,7 @@ body.is-locked{
   pointer-events:none;
 }
 
+/* ★ここが「ADD TO BAG 下のバー」＝標準に戻す */
 .product__block{
   margin-top: 18px;
   padding-top: 18px;
@@ -543,15 +549,10 @@ body.is-locked{
   box-sizing:border-box;
 }
 
-/* 試聴は十字を消す（あなたが今やった状態を正式に反映） */
+/* 試聴は十字を消す */
 .sc-lockbox .lockbox__cross{ display:none; }
 
-.sc-lockbox .lockbox__tick--t{ top:6px; width:14px; }
-.sc-lockbox .lockbox__tick--b{ bottom:6px; width:14px; }
-.sc-lockbox .lockbox__tick--l{ left:6px; height:14px; }
-.sc-lockbox .lockbox__tick--r{ right:6px; height:14px; }
-
-/* CLICK HERE（試聴用） */
+/* CLICK HERE */
 .sc-lockbox .lockbox__rect::after{
   content:"CLICK HERE";
   position:absolute;
@@ -563,57 +564,6 @@ body.is-locked{
   color:rgba(17,17,17,.55);
   white-space:nowrap;
   pointer-events:none;
-}
-
-/* Trial UI unify */
-.product .product__trial{
-  margin-top:18px;
-  padding-top:0;
-  border-top:none;
-  display:flex;
-  align-items:flex-start;
-  gap:18px;
-}
-
-/* クリック領域（lock + logo のみ） */
-.product .product__trialLink{
-  position:relative;
-  width:110px;
-  height:170px;
-  display:block;
-  flex-shrink:0;
-}
-
-/* ロック(枠)を前面固定 */
-.product .product__trialLink .sc-lockbox{
-  position:relative;
-  z-index:1;
-}
-
-/* lockbox を 110 に統一（見た目合わせ） */
-.product .product__trialLink .lockbox__rect{
-  width:90px;
-  height:90px;
-}
-
-/* SoundCloud ロゴを背面 */
-.product .product__trialLink::after{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  width:90px;
-  height:90px;
-  background: url("images/soundcloud.PNG") center / contain no-repeat;
-  opacity:.75;
-  z-index:0;
-  pointer-events:none;
-}
-
-/* trial テキストは使わない */
-.product .product__trialText,
-.product .product__label{
-  display:none !important;
 }
 
 /* 上ラベル（TEASER / 試聴） */
@@ -630,68 +580,63 @@ body.is-locked{
   pointer-events:none;
 }
 
-
-
-/* ===============================
-   Session Collection: 「CLICK HERE 下のバー」だけ自由に動かす
-   （border-top を捨てて ::before で線を描く）
-================================ */
-
-/* 2個目の product__block（説明文ブロック）を対象 */
-#session-collection .product__meta > .product__block:nth-of-type(2){
-  position: relative;
-  border-top: none;          /* ← 元のバーを消す */
-  padding-top: 10px;         /* ← バーから本文までの余白（好きに） */
+/* Trial UI unify */
+.product .product__trial{
+  margin-top:18px;
+  padding-top:0;
+  border-top:none;            /* trialブロックの上線は消す（＝ADD TO BAG下の線は別） */
+  display:flex;
+  align-items:flex-start;
+  gap:18px;
 }
 
-/* 代わりのバー（位置を top で動かす） */
-#session-collection .product__meta > .product__block:nth-of-type(2)::before{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  top: var(--trial-divider-gap);   /* ← ここが “バーの位置” */
-  height:1px;
-  background: var(--line);
-}
-
-
-:root{
-  --trial-size: 90px;   /* ← ロゴ&枠の大きさはここだけ触る */
-  --trial-area-h: 170px; /* クリック領域の高さ（必要なら） */
-}
-
-/* クリック領域 */
+/* クリック領域（lock + logo のみ） */
 .product .product__trialLink{
+  position:relative;
   width: var(--trial-size);
   height: var(--trial-area-h);
+  display:block;
+  flex-shrink:0;
 }
 
-/* 枠（lockbox） */
+/* ロック(枠)を前面固定 */
+.product .product__trialLink .sc-lockbox{
+  position:relative;
+  z-index:1;
+}
+
+/* lockbox size */
 .product .product__trialLink .lockbox__rect{
   width: var(--trial-size);
   height: var(--trial-size);
 }
 
-/* SoundCloudロゴ */
+/* SoundCloud ロゴを背面 */
 .product .product__trialLink::after{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
   width: var(--trial-size);
   height: var(--trial-size);
-  top: 0;
-  left: 0;
+  background: url("images/soundcloud.PNG") center / contain no-repeat;
+  opacity:.75;
+  z-index:0;
+  pointer-events:none;
 }
 
-/* ===============================
-   Session Collection: CLICK HERE 下のバーだけ動かす
-   - margin-top ＝ “バーまでの距離”（CLICK HERE→線）
-   - padding-top＝ “線→本文” の距離
-================================ */
-:root{
-  --trial-divider-gap: 28px;      /* ← ここだけ増減：CLICK HERE と線の距離 */
-  --desc-top-padding: 18px;       /* ← 線から本文まで（基本は今のままでOK） */
+/* trial テキストは使わない */
+.product .product__trialText,
+.product .product__label{
+  display:none !important;
 }
 
+/* =========================================================
+   Session Collection: CLICK HERE 下のバー（説明文の上線）だけ調整
+   - “線”は説明文ブロックの border-top
+   - 動かすのは margin-top（＝CLICK HERE→線の距離）
+========================================================= */
 #session-collection .product__meta > .product__block:nth-of-type(2){
-  margin-top: var(--trial-divider-gap) !important;   /* 線ごと下に落ちる */
+  margin-top: var(--trial-divider-gap) !important;   /* ← 小さくすると線が上がる */
   padding-top: var(--desc-top-padding) !important;  /* 線〜本文 */
 }
