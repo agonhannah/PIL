@@ -578,7 +578,7 @@ body.is-locked{
 
 /* ロックオンUI：上ラベル（TRIAL / 試聴） */
 .sc-lockbox .lockbox__rect::before{
-  content:"TRIAL / 試聴";
+  content:"TEASER / 試聴";
   position:absolute;
   left:50%;
   top:-22px;
