@@ -257,7 +257,10 @@ body.is-locked{
 
 #pointer-fx.is-hot #lockbox{ opacity:1; }
 
-/* lockbox visuals（基底） */
+/* =========================================================
+   Lockbox visuals（基底）※ PointerFX と 試聴で共用する “部品”
+   - ここは消さない（両方が依存）
+========================================================= */
 .lockbox__rect{
   width:110px;
   height:110px;
@@ -282,6 +285,7 @@ body.is-locked{
 .lockbox__tick--l{ left:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
 .lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
 
+/* PointerFX 側だけに “CLICK HERE” を出す（試聴と干渉させない） */
 #lockbox .lockbox__rect::after{
   content:"CLICK HERE";
   position:absolute;
@@ -576,15 +580,16 @@ body.is-locked{
   .product__track{ grid-auto-columns: 100%; }
 }
 
-
 /* =========================================================
-   Product: lockbox (84px 安定)  ← ここは消さない
+   Trial lockbox（試聴側）
 ========================================================= */
 .sc-lockbox{
   display:block;
   width:84px;
   height:84px;
 }
+
+/* 試聴は “84px lockbox” を基準に縮小する */
 .sc-lockbox .lockbox__rect{
   width:84px;
   height:84px;
@@ -599,6 +604,7 @@ body.is-locked{
 .sc-lockbox .lockbox__tick--l{ left:6px; height:14px; }
 .sc-lockbox .lockbox__tick--r{ right:6px; height:14px; }
 
+/* 試聴側にも CLICK HERE を出すならここ（今は出してOK） */
 .sc-lockbox .lockbox__rect::after{
   content:"CLICK HERE";
   position:absolute;
@@ -612,14 +618,11 @@ body.is-locked{
   pointer-events:none;
 }
 
-
-
 /* =========================================================
    PATCH: Trial UI unify (ALL products) + tighten divider spacing
-   - Do NOT delete existing rules. Append only.
 ========================================================= */
 
-/* 1) 全商品で trialブロックを “線なし” にしてUIを統一 */
+/* trialブロックを “線なし” にしてUIを統一 */
 .product .product__trial{
   margin-top:18px;
   padding-top:0;
@@ -638,7 +641,7 @@ body.is-locked{
   flex-shrink:0;
 }
 
-/* ロックオン(枠線)をロゴより前に固定 */
+/* ロックオンをロゴより前に */
 .product .product__trialLink .sc-lockbox{
   position:relative;
   z-index:1;
@@ -655,7 +658,7 @@ body.is-locked{
   content:"";
   position:absolute;
   left:0;
-  top: calc(110px - 110px); /* 今の一致値を維持 */
+  top:0;
   width:110px;
   height:110px;
   background: url("images/soundcloud.PNG") center / contain no-repeat;
@@ -670,7 +673,7 @@ body.is-locked{
   display:none !important;
 }
 
-/* lockbox 上ラベル（TRIAL / 試聴）を sc-lockbox側で統一 */
+/* lockbox 上ラベル（TEASER / 試聴）を統一 */
 .sc-lockbox .lockbox__rect::before{
   content:"TEASER / 試聴";
   position:absolute;
@@ -684,13 +687,8 @@ body.is-locked{
   pointer-events:none;
 }
 
-
-
-#session-collection .product__trial + .product__block{
-  margin-top: 10px;
-  padding-top: 10px;
+/* ✅ これが “CLICK HEREの下の赤線(次blockのborder)” を上げる本命 */
+.product .product__block + .product__block{
+  margin-top: 5px;
+  padding-top: 5px;
 }
-
-
-
-
