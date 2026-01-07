@@ -740,3 +740,9 @@ body.is-locked{
 .product .sc-lockbox .lockbox__cross{
   display:none;
 }
+
+/* TEASERブロックの次に来る説明ブロック（=バーがあるやつ）を下げる */
+#session-collection .product__block + .product__block{
+  margin-top: 22px !important;
+  padding-top: 22px !important;  /* ここが “バー位置” に効く */
+}
