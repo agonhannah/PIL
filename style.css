@@ -630,14 +630,7 @@ body.is-locked{
   pointer-events:none;
 }
 
-/* =========================================================
-   FINAL PATCH (確実に効かせる：CLICK HERE下のバー位置)
-   - ここが「これまでに…の上の線」
-========================================================= */
-.product .product__block + .product__block{
-  margin-top: var(--trial-divider-gap) !important;
-  padding-top: var(--trial-divider-gap) !important;
-}
+
 
 /* ===============================
    Session Collection: 「CLICK HERE 下のバー」だけ自由に動かす
@@ -660,4 +653,45 @@ body.is-locked{
   top: var(--trial-divider-gap);   /* ← ここが “バーの位置” */
   height:1px;
   background: var(--line);
+}
+
+
+:root{
+  --trial-size: 90px;   /* ← ロゴ&枠の大きさはここだけ触る */
+  --trial-area-h: 170px; /* クリック領域の高さ（必要なら） */
+}
+
+/* クリック領域 */
+.product .product__trialLink{
+  width: var(--trial-size);
+  height: var(--trial-area-h);
+}
+
+/* 枠（lockbox） */
+.product .product__trialLink .lockbox__rect{
+  width: var(--trial-size);
+  height: var(--trial-size);
+}
+
+/* SoundCloudロゴ */
+.product .product__trialLink::after{
+  width: var(--trial-size);
+  height: var(--trial-size);
+  top: 0;
+  left: 0;
+}
+
+/* ===============================
+   Session Collection: CLICK HERE 下のバーだけ動かす
+   - margin-top ＝ “バーまでの距離”（CLICK HERE→線）
+   - padding-top＝ “線→本文” の距離
+================================ */
+:root{
+  --trial-divider-gap: 28px;      /* ← ここだけ増減：CLICK HERE と線の距離 */
+  --desc-top-padding: 18px;       /* ← 線から本文まで（基本は今のままでOK） */
+}
+
+#session-collection .product__meta > .product__block:nth-of-type(2){
+  margin-top: var(--trial-divider-gap) !important;   /* 線ごと下に落ちる */
+  padding-top: var(--desc-top-padding) !important;  /* 線〜本文 */
 }
