@@ -639,4 +639,22 @@ body.is-locked{
 #session-collection .product__meta > .product__block:nth-of-type(2){
   margin-top: var(--trial-divider-gap) !important;   /* ← 小さくすると線が上がる */
   padding-top: var(--desc-top-padding) !important;  /* 線〜本文 */
+  
+  /* =========================================================
+   FIX: dividers (Session Collection only)
+   - ADD TO BAG下のバー：戻す
+   - CLICK HERE下のバー：少し上に
+========================================================= */
+
+/* ADD TO BAG 下のバー（= 1個目 block）を“標準値”に固定 */
+#session-collection .product__meta > .product__block:nth-of-type(1){
+  margin-top: 18px !important;
+  padding-top: 18px !important;
+}
+
+/* CLICK HERE 下のバー（= 2個目 block）だけ距離を詰める */
+#session-collection .product__meta > .product__block:nth-of-type(2){
+  margin-top: var(--trial-divider-gap) !important;
+  padding-top: var(--desc-top-padding) !important;
+}
 }
