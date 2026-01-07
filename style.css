@@ -23,7 +23,7 @@
   --trial-group-offset-y: 12px; /* ← これを 8px とか 12px にすると全体が下がる */
 
   /* 「CLICK HERE 下のバー（＝説明文の上の線）」だけ動かす */
-  --trial-divider-gap: 18px;   /* 小さいほど “上に” 近づく（推奨: 8〜18px） */
+  --trial-divider-gap: 48px;   /* 小さいほど “上に” 近づく（推奨: 8〜18px） */
   --desc-top-padding: 18px;    /* 線〜本文の距離（基本18でOK） */
 }
 
