@@ -611,7 +611,7 @@ body.is-locked{
   left:50%;
   bottom:-28px;
   transform:translateX(-50%);
-  font-size:12px;
+  font-size:11px;
   letter-spacing:.22em;
   color:rgba(17,17,17,.55);
   white-space:nowrap;
