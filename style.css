@@ -558,7 +558,7 @@ body.is-locked{
   left:50%;
   bottom: calc(var(--trial-click-gap) * -1);
   transform:translateX(-50%);
-  font-size:11px;
+  font-size:10px;
   letter-spacing:.22em;
   color:rgba(17,17,17,.55);
   white-space:nowrap;
@@ -623,7 +623,7 @@ body.is-locked{
   left:50%;
   top:-22px;
   transform:translateX(-50%);
-  font-size:11px;
+  font-size:10px;
   letter-spacing:.22em;
   color:rgba(17,17,17,.55);
   white-space:nowrap;
