@@ -19,7 +19,7 @@
   --trial-area-h: 170px;       /* クリック領域の高さ（基本そのままでOK） */
 
   /* 「CLICK HERE 下のバー（＝説明文の上の線）」だけ動かす */
-  --trial-divider-gap: 18px;   /* 小さいほど “上に” 近づく（推奨: 8〜18px） */
+  --trial-divider-gap: 1px;   /* 小さいほど “上に” 近づく（推奨: 8〜18px） */
   --desc-top-padding: 18px;    /* 線〜本文の距離（基本18でOK） */
 }
 
