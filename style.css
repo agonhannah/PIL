@@ -17,7 +17,7 @@
   --trial-click-gap: 22px;       /* CLICK HERE をボックスから離す量（大きいほど下へ） */
   --trial-size: 90px;            /* ロゴ&枠のサイズ（正方形） */
   --trial-area-h: 170px;         /* クリック領域の高さ */
-  --trial-group-offset-y: 8px;   /* TEASER/枠/ロゴ/CLICK HERE 一式を下げる */
+  --trial-group-offset-y: 16px;   /* TEASER/枠/ロゴ/CLICK HERE 一式を下げる */
 
   /* CLICK HERE 下のバー（=説明文上の線）調整 */
   --trial-divider-gap: 0px;      /* 小さいほど上（0が上限） */
