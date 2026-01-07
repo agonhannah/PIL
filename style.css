@@ -592,8 +592,8 @@ body.is-locked{
 
 /* lockbox を 110 に統一（見た目合わせ） */
 .product .product__trialLink .lockbox__rect{
-  width:100px;
-  height:100px;
+  width:90px;
+  height:90px;
 }
 
 /* SoundCloud ロゴを背面 */
@@ -602,8 +602,8 @@ body.is-locked{
   position:absolute;
   left:0;
   top:0;
-  width:100px;
-  height:100px;
+  width:90px;
+  height:90px;
   background: url("images/soundcloud.PNG") center / contain no-repeat;
   opacity:.75;
   z-index:0;
