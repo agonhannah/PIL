@@ -653,6 +653,7 @@ body.is-locked{
 
   background: url("images/soundcloud.PNG") center / contain no-repeat;
   opacity:.75;
+  z-index:1;  
   pointer-events:none;
 }
 
