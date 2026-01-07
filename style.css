@@ -697,3 +697,10 @@ body.is-locked{
   padding-top:10px;
 }
 */
+
+/* DEBUG: これで変わらないならキャッシュ or 未反映 */
+#session-collection .product__block + .product__block{
+  margin-top: 5px !important;
+  padding-top: 5px !important;
+  border-top: 3px solid red !important;
+}
