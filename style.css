@@ -635,6 +635,11 @@ body.is-locked{
   flex-shrink:0;
 }
 
+#session-collection .product__trialLink .sc-lockbox{
+  position:relative;
+  z-index:1;  /* ← ロックオン(枠線)をロゴより前に固定 */
+}
+
 /* 念のため lockbox を110にする（sc-lockbox自体は84のまま） */
 #session-collection .product__trialLink .lockbox__rect{
   width:110px;
