@@ -692,3 +692,24 @@ body.is-locked{
   margin-top: 5px;
   padding-top: 5px;
 }
+
+/* =========================================================
+   FIX: CLICK HERE 下の “赤線” は次blockの border-top
+   → product__block 同士の間隔を調整する（正しいセレクタ）
+========================================================= */
+
+/* Session Collection だけ：試聴blockの次の説明blockを少し下げる */
+#session-collection .product__meta > .product__block + .product__block{
+  margin-top: 12px;   /* 線を下げる：大きくすると離れる */
+  padding-top: 12px;  /* テキスト開始位置も一緒に下がる */
+}
+
+/* =========================================================
+   OPTIONAL: CLICK HERE “文字そのもの” の位置（ロック枠に対して）
+   → 文字を上げたい/下げたい時に触る
+========================================================= */
+
+/* 試聴の lockbox（sc-lockbox）だけ調整 */
+#session-collection .sc-lockbox .lockbox__rect::after{
+  bottom: -14px; /* 例：-18px → -14px で文字が少し上に来る */
+}
