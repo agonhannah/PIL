@@ -14,7 +14,7 @@
   --fx-scale: 1;
 
   /* Trial UI tuning */
-  --trial-click-gap: 28px;   /* CLICK HERE をボックスから離す量（大きいほど下へ） */
+  --trial-click-gap: 25px;   /* CLICK HERE をボックスから離す量（大きいほど下へ） */
   --trial-divider-gap: 5px; /* CLICK HERE 下のバー位置（大きいほど下へ） */
 }
 
