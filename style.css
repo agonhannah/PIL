@@ -496,7 +496,7 @@ body.is-locked{
 /* ★ここが「ADD TO BAG 下のバー」＝標準に戻す */
 .product__block{
   margin-top: 18px;
-  padding-top: 30px;
+  padding-top: 18px;
   border-top: 1px solid var(--line);
 }
 
@@ -586,9 +586,9 @@ body.is-locked{
 
 /* Trial UI unify */
 .product .product__trial{
-  margin-top:18px;
+  margin-top: calc(18px + var(--trial-group-offset-y));
   padding-top:0;
-  border-top:none;            /* trialブロックの上線は消す（＝ADD TO BAG下の線は別） */
+  border-top:none;
   display:flex;
   align-items:flex-start;
   gap:18px;
@@ -606,7 +606,7 @@ body.is-locked{
 /* ロック(枠)を前面固定 */
 .product .product__trialLink .sc-lockbox{
   position:relative;
-  z-index:1;
+  z-index:2;
 }
 
 /* lockbox size */
@@ -615,7 +615,7 @@ body.is-locked{
   height: var(--trial-size);
 }
 
-/* SoundCloud ロゴを背面 */
+/* SoundCloud ロゴを背面（枠の“下”に重ねる） */
 .product .product__trialLink::after{
   content:"";
   position:absolute;
@@ -625,7 +625,7 @@ body.is-locked{
   height: var(--trial-size);
   background: url("images/soundcloud.PNG") center / contain no-repeat;
   opacity:.75;
-  z-index:0;
+  z-index:1;
   pointer-events:none;
 }
 
@@ -636,53 +636,18 @@ body.is-locked{
 }
 
 /* =========================================================
-   Session Collection: CLICK HERE 下のバー（説明文の上線）だけ調整
-   - “線”は説明文ブロックの border-top
-   - 動かすのは margin-top（＝CLICK HERE→線の距離）
-========================================================= */
-#session-collection .product__meta > .product__block:nth-of-type(2){
-  margin-top: var(--trial-divider-gap) !important;   /* ← 小さくすると線が上がる */
-  padding-top: var(--desc-top-padding) !important;  /* 線〜本文 */
-  
-  /* =========================================================
-   FIX: dividers (Session Collection only)
-   - ADD TO BAG下のバー：戻す
-   - CLICK HERE下のバー：少し上に
+   Session Collection only
+   - 1個目 block = trial（ADD TO BAG下の線）
+   - 2個目 block = desc（CLICK HERE下の線）
 ========================================================= */
 
-/* ADD TO BAG 下のバー（= 1個目 block）を“標準値”に固定 */
 #session-collection .product__meta > .product__block:nth-of-type(1){
-  margin-top: 18px !important;
-  padding-top: 18px !important;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
 }
 
-/* CLICK HERE 下のバー（= 2個目 block）だけ距離を詰める */
 #session-collection .product__meta > .product__block:nth-of-type(2){
-  margin-top: var(--trial-divider-gap) !important;
-  padding-top: var(--desc-top-padding) !important;
-}
-}
-
-/* ===== Trial（TEASER/lock/logo/CLICK HERE）一式をまとめて上下 ===== */
-#session-collection .product__trial{
-  margin-top: calc(18px + var(--trial-group-offset-y)) !important;
-}
-
-/* ===============================
-   Session Collection: ADD TO BAG 下の「バー＋trial一式」を下げる
-   → product__meta の 1個目（trialブロック）を動かす
-================================ */
-:root{
-  --cta-to-trial-gap: 40px; /* ←ここを増やすほど「囲った一式」が下に落ちる */
-}
-
-/* 1個目 = trialブロック（ここに border-top がある） */
-#session-collection .product__meta > .product__block:nth-of-type(1){
-  margin-top: var(--cta-to-trial-gap) !important;
-}
-
-/* 念のため：ADD TO BAG 下の“線”はこのブロックの border-top を使う */
-#session-collection .product__meta > .product__block:nth-of-type(1){
-  padding-top: 18px !important;
-  border-top: 1px solid var(--line) !important;
+  margin-top: var(--trial-divider-gap);
+  padding-top: var(--desc-top-padding);
 }
