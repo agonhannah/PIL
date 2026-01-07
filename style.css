@@ -68,7 +68,7 @@ body::after{
 }
 
 /* =========================================================
-   Topbar
+   Topbar（常に最前・消えない）
 ========================================================= */
 .topbar{
   position:fixed;
@@ -100,6 +100,8 @@ body::after{
   height:44px;
   display:grid;
   place-items:center;
+  cursor:pointer;
+  padding:0;
 }
 
 .hamburger__lines{
@@ -113,10 +115,117 @@ body::after{
   width:22px;
   height:1px;
   background:rgba(17,17,17,.7);
+  transition:transform 180ms ease, opacity 180ms ease;
+  transform-origin:center;
+}
+
+#menuBtn.is-open .hamburger__lines span:nth-child(1){
+  transform: translateY(6px) rotate(45deg);
+}
+#menuBtn.is-open .hamburger__lines span:nth-child(2){ opacity:0; }
+#menuBtn.is-open .hamburger__lines span:nth-child(3){
+  transform: translateY(-6px) rotate(-45deg);
 }
 
 /* =========================================================
-   Pointer FX
+   Drawer（商品ページ上から出る）
+========================================================= */
+.drawer{
+  position:fixed;
+  top:var(--topbar-h);
+  left:0; right:0; bottom:0;
+  z-index:4600;
+  background:var(--panel);
+  transform:translateX(105%);
+  visibility:hidden;
+  pointer-events:none;
+  transition:transform 420ms ease, visibility 0s linear 420ms;
+}
+
+.drawer.is-open{
+  transform:translateX(0);
+  visibility:visible;
+  pointer-events:auto;
+  transition:transform 420ms ease;
+}
+
+.drawer__inner{
+  height:100%;
+  padding:
+    18px
+    calc(var(--gutter) + env(safe-area-inset-right, 0px))
+    calc(18px + env(safe-area-inset-bottom, 0px))
+    calc(var(--gutter) + env(safe-area-inset-left, 0px));
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+body.is-locked{
+  overflow:hidden;
+  touch-action:none;
+}
+
+/* =========================================================
+   Accordion（ぬるっと）
+========================================================= */
+.acc__btn{
+  width:100%;
+  padding:16px 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.acc__mark{
+  font-size:22px;
+  font-weight:200;
+  opacity:.6;
+}
+
+.acc__panel{ padding:6px 0 14px; }
+
+.acc__link{
+  display:block;
+  padding:8px 0;
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  opacity:.92;
+}
+
+.acc__link::before{
+  content:"・";
+  margin-right:1em;
+  opacity:.55;
+}
+
+/* Drawer secondary（ABOUT / CONTACT） */
+.drawer__secondary{
+  margin-top:18px;
+  padding-top:18px;
+  border-top:1px solid var(--line);
+
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.drawer__secondary .sec__link{
+  display:block;
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  opacity:.92;
+  font-variant-numeric: tabular-nums;
+  min-width: 10ch;
+}
+
+/* =========================================================
+   Pointer FX（最前面固定）
 ========================================================= */
 #pointer-fx{
   position:fixed;
@@ -124,6 +233,18 @@ body::after{
   pointer-events:none;
   z-index:9100;
   transform:translate3d(-9999px,-9999px,0);
+  will-change:transform;
+}
+
+#pointer-blob{
+  position:absolute;
+  width:84px;
+  height:84px;
+  border-radius:999px;
+  background:rgba(0,255,90,.85);
+  filter:blur(10px);
+  transform:translate(-50%,-50%) scale(var(--fx-scale));
+  transform-origin:center;
 }
 
 #lockbox{
@@ -131,23 +252,20 @@ body::after{
   opacity:0;
   transition:opacity 120ms ease;
   transform:translate(-50%,-50%) scale(var(--fx-scale));
+  transform-origin:center;
 }
 
 #pointer-fx.is-hot #lockbox{ opacity:1; }
 
-/* =========================================================
-   Lockbox visuals（共通）
-========================================================= */
+/* lockbox visuals（基底） */
 .lockbox__rect{
   width:110px;
   height:110px;
   border:1px solid rgba(17,17,17,.28);
   border-radius:14px;
-  background:transparent;
   position:relative;
 }
 
-/* 中央クロス */
 .lockbox__cross{
   position:absolute;
   left:50%;
@@ -158,15 +276,308 @@ body::after{
 .lockbox__cross--h{ width:64px; height:1px; }
 .lockbox__cross--v{ width:1px; height:64px; }
 
-/* 四隅ティック */
 .lockbox__tick{ position:absolute; background:rgba(17,17,17,.35); }
 .lockbox__tick--t{ top:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
 .lockbox__tick--b{ bottom:6px; left:50%; width:16px; height:1px; transform:translateX(-50%); }
 .lockbox__tick--l{ left:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
 .lockbox__tick--r{ right:6px; top:50%; width:1px; height:16px; transform:translateY(-50%); }
 
-/* 上ラベル */
-.lockbox__rect::before{
+.lockbox__rect::after{
+  content:"CLICK HERE";
+  position:absolute;
+  left:50%;
+  bottom:-18px;
+  transform:translateX(-50%);
+  font-size:10px;
+  letter-spacing:.22em;
+  color:rgba(17,17,17,.55);
+  white-space:nowrap;
+}
+
+/* =========================================================
+   Shop Grid
+========================================================= */
+.shop__grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:26px 18px;
+}
+
+@media(min-width:780px){
+  .shop__grid{ grid-template-columns:repeat(3,1fr); }
+}
+@media(min-width:1120px){
+  .shop__grid{ grid-template-columns:repeat(4,1fr); }
+}
+
+.shop__head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin: 0 0 18px;
+}
+
+.shop__count{
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  opacity:.70;
+  font-variant-numeric: tabular-nums;
+  display:inline-block;
+  min-width: 8ch;
+}
+
+.shop-card__media{ position:relative; overflow:hidden; background:rgba(17,17,17,.06); }
+.shop-card__media::before{ content:""; display:block; padding-top:100%; }
+.shop-card__media img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.shop-card__title{
+  margin:12px 0 6px;
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  line-height:1.35;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.shop-card__price{
+  font-size:11px;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  opacity:.55;
+  line-height:1.2;
+}
+
+.shop-card.is-soldout .shop-card__price{ opacity:.35; }
+
+.shop-card.is-soldout .shop-card__price{
+  opacity: 1;
+  color: #c00000;
+}
+
+.shop-card__subtitle{
+  font-size: inherit;
+  letter-spacing: inherit;
+  opacity: 1;
+}
+
+.product__cta.is-disabled{
+  border-color: rgba(17,17,17,.12);
+  background: rgba(17,17,17,.06);
+  color: rgba(17,17,17,.38);
+  pointer-events: none;
+}
+
+/* =========================================================
+   Modal（Topbarを絶対に覆わない）
+========================================================= */
+.modal-overlay{
+  position:fixed;
+  top:var(--topbar-h);
+  left:0; right:0; bottom:0;
+  background:rgba(0,0,0,.08);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 180ms ease;
+  z-index:4200;
+}
+
+.modal-overlay.is-open{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.modal{
+  position:fixed;
+  top:var(--topbar-h);
+  left:0; right:0; bottom:0;
+  background:#fff;
+  z-index:4300;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translate3d(0,8px,0);
+  transition:opacity 180ms ease, transform 180ms ease;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.modal.is-open{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translate3d(0,0,0);
+}
+
+.modal__body{
+  max-width: 1120px;
+  margin: 0 auto;
+  padding:
+    18px
+    calc(var(--gutter) + env(safe-area-inset-right, 0px))
+    calc(18px + env(safe-area-inset-bottom, 0px))
+    calc(var(--gutter) + env(safe-area-inset-left, 0px));
+}
+
+@media(max-width:600px){
+  .modal .shop-card__title{
+    display:block;
+    -webkit-line-clamp:unset;
+    -webkit-box-orient:unset;
+    overflow:visible;
+    white-space:normal;
+  }
+}
+
+@media(pointer:fine){
+  :root{ --fx-scale:0.5; }
+  html,body,a,button,[role="button"],input,textarea,select,label,summary{ cursor:none !important; }
+}
+
+/* =========================================================
+   PRODUCT DETAIL
+========================================================= */
+.product{
+  scroll-margin-top: calc(var(--topbar-h) + 14px);
+  padding: 28px 0 80px;
+  display:none;
+}
+.product:target{ display:block; }
+
+.product__inner{
+  max-width: 1120px;
+  margin: 0 auto;
+  padding:
+    0
+    calc(var(--gutter) + env(safe-area-inset-right, 0px))
+    0
+    calc(var(--gutter) + env(safe-area-inset-left, 0px));
+}
+
+.product__gallery{
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.product__track{
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  gap: 12px;
+
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.product__slide{
+  margin: 0;
+  scroll-snap-align: start;
+  background: rgba(17,17,17,.06);
+}
+
+.product__slide img{
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.product__hint{ display:none; }
+
+.product__title{
+  margin: 8px 0 10px;
+  font-size: 14px;
+  letter-spacing: .30em;
+  text-transform: uppercase;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.product__subtitle{
+  opacity: .75;
+  font-size: 12px;
+  letter-spacing: .28em;
+}
+
+.product__price{
+  font-size: 12px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  opacity: .65;
+  margin-bottom: 14px;
+}
+
+.product__cta{
+  display: block;
+  width: 100%;
+  padding: 14px 14px;
+  border: 1px solid rgba(17,17,17,.28);
+  border-radius: 14px;
+
+  font-size: 12px;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  text-align: center;
+
+  margin: 10px 0 18px;
+}
+
+.product__block{
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.product__label{
+  display:none;
+}
+
+.product__desc{
+  font-size: 12px;
+  line-height: 1.8;
+  letter-spacing: .02em;
+  opacity: .9;
+}
+
+.product__player{
+  border: 1px solid rgba(17,17,17,.10);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.product__link{
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  opacity: .6;
+}
+
+@media (min-width: 900px){
+  .product__inner{
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .product__gallery{ margin-bottom: 0; }
+  .product__track{ grid-auto-columns: 100%; }
+}
+
+
+/* ロックオンUI：上ラベル（TRIAL / 試聴） */
+.sc-lockbox .lockbox__rect::before{
   content:"TRIAL / 試聴";
   position:absolute;
   left:50%;
@@ -178,9 +589,29 @@ body::after{
   white-space:nowrap;
   pointer-events:none;
 }
+/* =========================================================
+   Product: lockbox (84px 安定)  ← ここは消さない
+========================================================= */
+.sc-lockbox{
+  display:block;
+  width:84px;
+  height:84px;
+}
+.sc-lockbox .lockbox__rect{
+  width:84px;
+  height:84px;
+  border-radius:14px;
+  display:block;
+  box-sizing:border-box;
+}
+.sc-lockbox .lockbox__cross--h{ width:48px; height:1px; }
+.sc-lockbox .lockbox__cross--v{ width:1px; height:48px; }
+.sc-lockbox .lockbox__tick--t{ top:6px; width:14px; }
+.sc-lockbox .lockbox__tick--b{ bottom:6px; width:14px; }
+.sc-lockbox .lockbox__tick--l{ left:6px; height:14px; }
+.sc-lockbox .lockbox__tick--r{ right:6px; height:14px; }
 
-/* 下ラベル */
-.lockbox__rect::after{
+.sc-lockbox .lockbox__rect::after{
   content:"CLICK HERE";
   position:absolute;
   left:50%;
@@ -194,55 +625,61 @@ body::after{
 }
 
 /* =========================================================
-   Trial UI（全商品共通・統一）
+   TRIAL (Session Collection only) – FIX（ここだけ特殊）
 ========================================================= */
-.product .product__trial{
-  margin-top:18px;
+#session-collection .product__trial{
+  margin-top: 18px;
+  padding-top: 0px;
+  border-top: none;
   display:flex;
   align-items:flex-start;
   gap:18px;
-  border-top:none;
 }
 
-/* クリック領域 */
-.product .product__trialLink{
+/* lock + logo のクリック領域（高さ確保が本丸） */
+#session-collection .product__trialLink{
   position:relative;
   width:110px;
-  height:170px;
+  height:170px; /* 110(lock) + ロゴ被せ分の余白 */
   display:block;
   flex-shrink:0;
 }
 
-/* ロックオンを前面 */
-.product .product__trialLink .sc-lockbox{
+#session-collection .product__trialLink .sc-lockbox{
   position:relative;
-  z-index:1;
+  z-index:1;  /* ← ロックオン(枠線)をロゴより前に固定 */
 }
 
-/* SoundCloud ロゴ（背面） */
-.product .product__trialLink::after{
+/* 念のため lockbox を110にする（sc-lockbox自体は84のまま） */
+#session-collection .product__trialLink .lockbox__rect{
+  width:110px;
+  height:110px;
+}
+
+/* SoundCloudロゴを “下に重ねる” */
+#session-collection .product__trialLink::after{
   content:"";
   position:absolute;
   left:0;
-  top:0;
+  top: calc(110px - 110px); /* 被せ量 */
+
   width:110px;
   height:110px;
-  background:url("images/soundcloud.PNG") center / contain no-repeat;
+
+  background: url("images/soundcloud.PNG") center / contain no-repeat;
   opacity:.75;
-  z-index:0;
+  z-index:0;  
   pointer-events:none;
 }
 
-/* HTML上の補助テキストは使わない */
-.product .product__trialText{
+/* ミニマルにするならテキストは非表示（HTMLは残してOK） */
+#session-collection .product__trialText{
   display:none;
 }
 
-/* =========================================================
-   coarse pointer
-========================================================= */
-@media (pointer: coarse){
+/* coarse pointer: 既存PointerFXはそのまま */
+@media (pointer: coarse) {
   #lockbox{
-    transform:translate(-50%,-50%) scale(1.8);
+    transform: translate(-50%, -50%) scale(1.8);
   }
 }
