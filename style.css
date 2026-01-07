@@ -596,7 +596,7 @@ body.is-locked{
 
 .product .product__trialLink .sc-lockbox{
   position:relative;
-  z-index:1;
+  z-index:2;
 }
 
 .product .product__trialLink .lockbox__rect{
@@ -613,7 +613,7 @@ body.is-locked{
   height: var(--trial-size);
   background: url("images/soundcloud.PNG") center / contain no-repeat;
   opacity:.75;
-  z-index:0;
+  z-index:1;
   pointer-events:none;
 }
 
