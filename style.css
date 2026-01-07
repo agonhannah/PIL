@@ -576,19 +576,6 @@ body.is-locked{
 }
 
 
-/* ロックオンUI：上ラベル（TRIAL / 試聴） */
-.sc-lockbox .lockbox__rect::before{
-  content:"TEASER / 試聴";
-  position:absolute;
-  left:50%;
-  top:-22px;
-  transform:translateX(-50%);
-  font-size:11px;
-  letter-spacing:.22em;
-  color:rgba(17,17,17,.55);
-  white-space:nowrap;
-  pointer-events:none;
-}
 /* =========================================================
    Product: lockbox (84px 安定)  ← ここは消さない
 ========================================================= */
