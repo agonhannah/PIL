@@ -598,7 +598,8 @@ body.is-locked{
 .product .product__trialLink{
   position:relative;
   width: var(--trial-size);
-  height: var(--trial-area-h);
+  height: auto !important;
+  padding-bottom: 0 !important; 
   display:block;
   flex-shrink:0;
 }
