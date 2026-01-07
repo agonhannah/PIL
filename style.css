@@ -713,3 +713,18 @@ body.is-locked{
 #session-collection .sc-lockbox .lockbox__rect::after{
   bottom: -14px; /* 例：-18px → -14px で文字が少し上に来る */
 }
+
+/* =========================================
+   Session Collection：CLICK HERE ↔ 次の線を寄せる
+========================================= */
+
+/* ① 試聴リンクの“見えない余白”を削る（ここが一番効く） */
+#session-collection .product__trialLink{
+  height: 128px; /* 170 → 128（まずはこのくらい） */
+}
+
+/* ② 試聴ブロック（1個目）と説明ブロック（2個目）の間隔を詰める */
+#session-collection .product__meta > .product__block + .product__block{
+  margin-top: 6px;   /* 小さいほど線が上がる */
+  padding-top: 10px; /* 線の直下のテキスト開始位置 */
+}
