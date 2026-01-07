@@ -664,3 +664,22 @@ body.is-locked{
 #session-collection .product__trial{
   margin-top: calc(18px + var(--trial-group-offset-y)) !important;
 }
+
+/* ===============================
+   Session Collection: ADD TO BAG 下の「バー＋trial一式」を下げる
+   → product__meta の 1個目（trialブロック）を動かす
+================================ */
+:root{
+  --cta-to-trial-gap: 40px; /* ←ここを増やすほど「囲った一式」が下に落ちる */
+}
+
+/* 1個目 = trialブロック（ここに border-top がある） */
+#session-collection .product__meta > .product__block:nth-of-type(1){
+  margin-top: var(--cta-to-trial-gap) !important;
+}
+
+/* 念のため：ADD TO BAG 下の“線”はこのブロックの border-top を使う */
+#session-collection .product__meta > .product__block:nth-of-type(1){
+  padding-top: 18px !important;
+  border-top: 1px solid var(--line) !important;
+}
