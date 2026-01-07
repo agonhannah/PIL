@@ -611,65 +611,7 @@ body.is-locked{
   pointer-events:none;
 }
 
-/* =========================================================
-   TRIAL (Session Collection only) – FIX（ここだけ特殊）
-========================================================= */
-#session-collection .product__trial{
-  margin-top: 18px;
-  padding-top: 0px;
-  border-top: none;
-  display:flex;
-  align-items:flex-start;
-  gap:18px;
-}
 
-/* lock + logo のクリック領域（高さ確保が本丸） */
-#session-collection .product__trialLink{
-  position:relative;
-  width:110px;
-  height:170px; /* 110(lock) + ロゴ被せ分の余白 */
-  display:block;
-  flex-shrink:0;
-}
-
-#session-collection .product__trialLink .sc-lockbox{
-  position:relative;
-  z-index:1;  /* ← ロックオン(枠線)をロゴより前に固定 */
-}
-
-/* 念のため lockbox を110にする（sc-lockbox自体は84のまま） */
-#session-collection .product__trialLink .lockbox__rect{
-  width:110px;
-  height:110px;
-}
-
-/* SoundCloudロゴを “下に重ねる” */
-#session-collection .product__trialLink::after{
-  content:"";
-  position:absolute;
-  left:0;
-  top: calc(110px - 110px); /* 被せ量 */
-
-  width:110px;
-  height:110px;
-
-  background: url("images/soundcloud.PNG") center / contain no-repeat;
-  opacity:.75;
-  z-index:0;  
-  pointer-events:none;
-}
-
-/* ミニマルにするならテキストは非表示（HTMLは残してOK） */
-#session-collection .product__trialText{
-  display:none;
-}
-
-/* coarse pointer: 既存PointerFXはそのまま */
-@media (pointer: coarse) {
-  #lockbox{
-    transform: translate(-50%, -50%) scale(1.8);
-  }
-}
 
 /* =========================================================
    PATCH: Trial UI unify (ALL products) + tighten divider spacing
