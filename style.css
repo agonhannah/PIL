@@ -648,7 +648,7 @@ body.is-locked{
 #session-collection .product__meta > .product__block:nth-of-type(2){
   position: relative;
   border-top: none;          /* ← 元のバーを消す */
-  padding-top: 18px;         /* ← バーから本文までの余白（好きに） */
+  padding-top: 10px;         /* ← バーから本文までの余白（好きに） */
 }
 
 /* 代わりのバー（位置を top で動かす） */
