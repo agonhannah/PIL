@@ -14,7 +14,7 @@
   --fx-scale: 1;
 
   /* Trial UI tuning */
-  --trial-click-gap: 12px;     /* CLICK HERE をボックスから離す量（大きいほど下へ） */
+  --trial-click-gap: 22px;     /* CLICK HERE をボックスから離す量（大きいほど下へ） */
   --trial-size: 90px;          /* ロゴ&枠のサイズ（正方形） */
   --trial-area-h: 170px;       /* クリック領域の高さ（基本そのままでOK） */
 
