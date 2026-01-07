@@ -684,23 +684,13 @@ body.is-locked{
   pointer-events:none;
 }
 
-/* 2) CLICK HERE の下のアンダーバー（次blockのborder）を “少し上げる”
-   → 試聴ブロックの直後に来る説明ブロックの余白を詰める */
-.product .product__block + .product__block{
-  margin-top: 5px;   /* 元18px → 12px（好みで 10〜14） */
-  padding-top: 5px;  /* 元18px → 12px（好みで 10〜14） */
+
+
+#session-collection .product__trial + .product__block{
+  margin-top: 10px;
+  padding-top: 10px;
 }
 
-/* もし「試聴ブロックの直後だけ」さらに詰めたいならこれを追加で有効化
-.product .product__block:first-of-type + .product__block{
-  margin-top:10px;
-  padding-top:10px;
-}
-*/
 
-/* DEBUG: これで変わらないならキャッシュ or 未反映 */
-#session-collection .product__block + .product__block{
-  margin-top: 5px !important;
-  padding-top: 5px !important;
-  border-top: 3px solid red !important;
-}
+
+
