@@ -20,11 +20,11 @@
   --trial-group-offset-y: 48px;   /* TEASER/枠/ロゴ/CLICK HERE 一式を下げる */
 
   /* CLICK HERE 下のバー（=説明文上の線）調整 */
-  --trial-divider-gap: 0px;      /* 小さいほど上（0が上限） */
+  --trial-divider-gap: 10px;      /* 小さいほど上（0が上限） */
   --desc-top-padding: 18px;      /* 線〜本文の距離 */
 
   /* ADD TO BAG下のバー〜trial一式（囲った部分）を下げる */
-  --cta-to-trial-gap: 18px;      /* ここを増やすほど、バー＆trial一式が下がる */
+  --cta-to-trial-gap: 20px;      /* ここを増やすほど、バー＆trial一式が下がる */
 }
 
 /* =========================================================
