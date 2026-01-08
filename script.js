@@ -473,7 +473,7 @@ $$("[data-home]").forEach((el) => {
   }
 })();
 
-// --- Infinite loop + continuous autoplay (Session Collection only) ---
+// --- Infinite smooth autoplay (Session Collection only / seamless) ---
 (() => {
   const root = document.querySelector('#session-collection');
   if (!root) return;
@@ -481,20 +481,20 @@ $$("[data-home]").forEach((el) => {
   const track = root.querySelector('.product__track');
   if (!track) return;
 
+  // 元スライド（figure.product__slide）
   const originals = Array.from(track.querySelectorAll('.product__slide'));
   if (originals.length <= 1) return;
 
-  // 既にセットアップ済みなら二重に増やさない
-  if (!track.dataset.loopReady) {
+  // すでに構築済みなら二重に増やさない
+  if (track.dataset.loopReady !== "1") {
     const fragHead = document.createDocumentFragment();
     const fragTail = document.createDocumentFragment();
 
-    // 前（prepend）用クローン
-    originals.forEach(slide => fragHead.appendChild(slide.cloneNode(true)));
-    // 後（append）用クローン
-    originals.forEach(slide => fragTail.appendChild(slide.cloneNode(true)));
+    // 前後に同じセットを付けて 3セットにする [clone][orig][clone]
+    originals.forEach((s) => fragHead.appendChild(s.cloneNode(true)));
+    originals.forEach((s) => fragTail.appendChild(s.cloneNode(true)));
 
-    // 3セット構成にする： [clone][original][clone]
+    // 先頭にprepend / 末尾にappend
     track.prepend(fragHead);
     track.append(fragTail);
 
@@ -510,62 +510,86 @@ $$("[data-home]").forEach((el) => {
   };
 
   const getStep = () => {
-    const slide = track.querySelector('.product__slide');
-    if (!slide) return track.clientWidth;
-    const w = slide.getBoundingClientRect().width;
-    return w + getGap();
-  };
+  const first = track.querySelector('.product__slide');
+  if (!first) return 0;
+  const w = first.getBoundingClientRect().width;
+  return w + getGap();
+};
 
   const oneSetWidth = () => getStep() * originalCount;
 
-  // 初期位置を “真ん中セット” の先頭へ
-  const ensureMiddleStart = () => {
+  // 初期位置：必ず“真ん中セット”の先頭へ
+  const jumpToMiddleStart = () => {
     const w = oneSetWidth();
-    // まだレイアウトが確定してない瞬間を避ける
-    if (!w || w < 10) return;
-    // だいたい真ん中にいなければ戻す
-    if (track.scrollLeft < w * 0.5 || track.scrollLeft > w * 1.5) {
-      track.scrollLeft = w;
-    }
+    // 画像読み込み前だと幅が0になることがあるのでガード
+    if (!w) return;
+    track.scrollLeft = w; // 真ん中セットの先頭
   };
 
-  // 無限ループ補正：常に “真ん中セット” に留まらせる
-  const loopFix = () => {
+  // iOS対策：初回と、リサイズ/回転でも真ん中へ寄せる
+  requestAnimationFrame(() => {
+    jumpToMiddleStart();
+    requestAnimationFrame(jumpToMiddleStart);
+  });
+  window.addEventListener('resize', () => {
+    // リサイズ時は見た目がズレるので即センター
+    jumpToMiddleStart();
+  }, { passive: true });
+
+  // “真ん中”から外れたら、同じ見た目位置に瞬間ワープ（見た目は変わらない）
+  const recenterIfNeeded = () => {
     const w = oneSetWidth();
-    if (!w || w < 10) return;
+    if (!w) return;
 
-    // 右に行き過ぎたら1セット戻す（見た目は同じ位置なのでワープが目立ちにくい）
-    if (track.scrollLeft >= w * 2) track.scrollLeft -= w;
-
-    // 左に行き過ぎたら1セット進める
-    if (track.scrollLeft <= 0) track.scrollLeft += w;
+    if (track.scrollLeft < w * 0.8) track.scrollLeft += w;
+    else if (track.scrollLeft > w * 1.2) track.scrollLeft -= w;
   };
 
-  const isOpen = () => location.hash === '#session-collection';
-
-  // ずっとヌルーっと動かす速度（px/frame）
-  const SPEED = 0.35; // 0.25〜0.6くらいで好み調整
-
+  // ここから autoplay（ヌルーっと連続）
   let raf = null;
   let isUser = false;
   let resumeTimer = null;
 
-  const startRAF = () => {
+  const SPEED = 0.8; // ← 速さ（px/frame）0.2〜0.6で好み
+
+  const isOpen = () => location.hash === '#session-collection';
+
+  const start = () => {
     if (raf) cancelAnimationFrame(raf);
 
     const tick = () => {
-      if (isOpen() && !isUser) {
-        track.classList.add('is-autoplay'); // snap off
-        track.scrollLeft += SPEED;
-        loopFix();
+      if (isOpen()) {
+        if (!isUser) {
+          track.classList.add('is-autoplay');
+          track.scrollLeft += SPEED;
+          recenterIfNeeded();
+        } else {
+          track.classList.remove('is-autoplay');
+        }
       } else {
-        track.classList.remove('is-autoplay'); // snap on（好み）
+        track.classList.remove('is-autoplay');
       }
+
       raf = requestAnimationFrame(tick);
     };
 
     raf = requestAnimationFrame(tick);
   };
+
+// 画像読み込み完了後にも再センター（iOSのズレ防止）
+const imgs = Array.from(track.querySelectorAll('img'));
+let loaded = 0;
+const onImgDone = () => {
+  loaded++;
+  if (loaded >= imgs.length) {
+    jumpToMiddleStart();
+    recenterIfNeeded();
+  }
+};
+imgs.forEach(img => {
+  if (img.complete) onImgDone();
+  else img.addEventListener('load', onImgDone, { once: true });
+});
 
   const pauseThenResume = () => {
     isUser = true;
@@ -574,35 +598,25 @@ $$("[data-home]").forEach((el) => {
     if (resumeTimer) clearTimeout(resumeTimer);
     resumeTimer = setTimeout(() => {
       isUser = false;
-      ensureMiddleStart();
-      loopFix();
-    }, 1200);
+      // 触った後も位置を整える（ここでガッとなりにくい）
+      recenterIfNeeded();
+    }, 900);
   };
 
-  // ユーザーが触ったら一時停止
+  // ユーザー操作で一旦止める
   ['touchstart', 'pointerdown', 'wheel'].forEach((ev) => {
     track.addEventListener(ev, pauseThenResume, { passive: true });
   });
 
-  // 手動スクロール中も、端に来たら補正して “123123…” を維持
+  // 手動スクロールでも無限になるように常に補正（見た目は同じ）
   track.addEventListener('scroll', () => {
     if (!isOpen()) return;
-    loopFix();
+    recenterIfNeeded();
   }, { passive: true });
 
-  // 初期化（レイアウト確定後に真ん中へ）
-  requestAnimationFrame(() => {
-    ensureMiddleStart();
-    startRAF();
-  });
-
-  window.addEventListener('resize', () => {
-    ensureMiddleStart();
-  }, { passive: true });
+  start();
 })();
+ 
 
 
-  
-    
-      
-  
+   
