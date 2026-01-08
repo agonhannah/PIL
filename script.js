@@ -489,7 +489,17 @@ $$("[data-home]").forEach((el) => {
   let timer = null;
   let resumeTimer = null;
 
-  const getStep = () => track.clientWidth + 12; // 12 = CSS gap と合わせる（違ったら調整）
+  const getGap = () => {
+    const cs = getComputedStyle(track);
+    // column-gap or gap のどっちか
+    const g = parseFloat(cs.columnGap || cs.gap || "0");
+    return Number.isFinite(g) ? g : 0;
+  };
+
+  const getStep = () => {
+    const w = slides[0].getBoundingClientRect().width;
+    return w + getGap();
+  };
 
   const go = (i) => {
     idx = (i + slides.length) % slides.length;
@@ -498,7 +508,7 @@ $$("[data-home]").forEach((el) => {
 
   const start = () => {
     stop();
-    timer = setInterval(() => go(idx + 1), 4500); // 4.5秒ごと（好みで）
+    timer = setInterval(() => go(idx + 1), 6000); // 6秒ごと（好みで）
   };
 
   const stop = () => {
@@ -509,25 +519,25 @@ $$("[data-home]").forEach((el) => {
   const pauseAndResume = () => {
     stop();
     if (resumeTimer) clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(() => start(), 4500); // 触ったら4.5秒後に再開
+    resumeTimer = setTimeout(start, 6000);
   };
 
-  // ユーザー操作で一旦停止
   ['touchstart', 'pointerdown', 'wheel'].forEach((ev) => {
     track.addEventListener(ev, pauseAndResume, { passive: true });
   });
 
-  // 手動スクロールに合わせて idx を更新（だいたいでOK）
   track.addEventListener('scroll', () => {
     const step = getStep();
     const now = Math.round(track.scrollLeft / step);
     if (Number.isFinite(now)) idx = now;
   }, { passive: true });
 
-  // 「その商品が開いてる時だけ」動かす
+  // 画像読み込みで幅が変わるので、起動をちょい遅らせて安定させる
+  const kick = () => requestAnimationFrame(() => requestAnimationFrame(() => start()));
+
   const tick = () => {
     const isOpen = location.hash === '#session-collection';
-    if (isOpen && !timer) start();
+    if (isOpen && !timer) kick();
     if (!isOpen && timer) stop();
     requestAnimationFrame(tick);
   };
