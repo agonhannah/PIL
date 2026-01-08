@@ -474,95 +474,96 @@ $$("[data-home]").forEach((el) => {
 })();
 
 
-　// --- Continuous Auto slide (Session Collection only / seamless loop) ---
+　// --- Auto slide (continuous loop / Session Collection only) ---
 (() => {
-  const root = document.querySelector('#session-collection');
+  const root = document.querySelector("#session-collection");
   if (!root) return;
 
-  const track = root.querySelector('.product__track');
+  const track = root.querySelector(".product__track");
   if (!track) return;
 
-  const slides = Array.from(track.querySelectorAll('.product__slide'));
+  const slides = Array.from(track.querySelectorAll(".product__slide"));
   if (slides.length <= 1) return;
 
-  // すでに複製済みなら二重に増やさない
-  if (!track.dataset.loopReady) {
-    // 先頭の全スライドを末尾に複製（これでループの“つなぎ目”が見えない）
-    slides.forEach((s) => track.appendChild(s.cloneNode(true)));
-    track.dataset.loopReady = "1";
-  }
+  // 二重初期化防止
+  if (track.dataset.loopInit === "1") return;
+  track.dataset.loopInit = "1";
 
-  // 速度(px/sec) ←ここだけ好みで調整（例: 18〜40）
-  const SPEED = 24;
-
-  let raf = null;
-  let lastT = 0;
-  let paused = false;
-  let resumeTimer = null;
-
-  const originalCount = slides.length;
-
-  const getStep = () => {
-    // gap 12px を足す（CSS gap と合わせる）
-    const first = track.querySelector('.product__slide');
-    if (!first) return track.clientWidth + 12;
-    return first.getBoundingClientRect().width + 12;
-  };
-
-  const getOriginalWidth = () => getStep() * originalCount;
-
-  const loopFix = () => {
-    // 複製分まで進んだら、元の範囲へ一瞬で巻き戻す（見た目は連続）
-    const W = getOriginalWidth();
-    if (track.scrollLeft >= W) {
-      track.scrollLeft -= W;
-    }
-  };
-
-  const tick = (t) => {
-    if (!lastT) lastT = t;
-    const dt = (t - lastT) / 1000;
-    lastT = t;
-
-    if (!paused) {
-      track.scrollLeft += SPEED * dt;
-      loopFix();
-    }
-
-    raf = requestAnimationFrame(tick);
-  };
-
-  const start = () => {
-    if (raf) return;
-    lastT = 0;
-    raf = requestAnimationFrame(tick);
-  };
-
-  const stop = () => {
-    if (raf) cancelAnimationFrame(raf);
-    raf = null;
-  };
-
-  const pauseAndResume = () => {
-    paused = true;
-    if (resumeTimer) clearTimeout(resumeTimer);
-    // 触ったらちょい待ってから再開
-    resumeTimer = setTimeout(() => {
-      paused = false;
-    }, 1200);
-  };
-
-  // ユーザー操作で一旦停止
-  ['touchstart', 'pointerdown', 'wheel'].forEach((ev) => {
-    track.addEventListener(ev, pauseAndResume, { passive: true });
+  // ループ用に1セット複製（後ろに繋げる）
+  slides.forEach((s) => {
+    const c = s.cloneNode(true);
+    c.classList.add("is-clone");
+    c.setAttribute("aria-hidden", "true");
+    track.appendChild(c);
   });
 
-  // 「その商品が開いてる時だけ」動かす
-  const gate = () => {
-    const isOpen = location.hash === '#session-collection';
-    if (isOpen) start();
-    else stop();
-    requestAnimationFrame(gate);
+  let running = false;
+  let raf = 0;
+  let lastTs = 0;
+  let pausedUntil = 0;
+
+  // 元の1セット分の幅（ここを超えたら巻き戻す）
+  let cycleW = 0;
+  const recalc = () => {
+    const first = slides[0];
+    const last = slides[slides.length - 1];
+    cycleW = (last.offsetLeft + last.offsetWidth) - first.offsetLeft;
   };
-  gate();
+
+  // 触ったら一旦止める（勝手に奪わない）
+  const pause = (ms = 2200) => {
+    pausedUntil = performance.now() + ms;
+  };
+
+  ["touchstart", "pointerdown", "wheel"].forEach((ev) => {
+    track.addEventListener(ev, () => pause(2500), { passive: true });
+  });
+  track.addEventListener("scroll", () => pause(1200), { passive: true });
+
+  window.addEventListener("resize", () => {
+    recalc();
+  }, { passive: true });
+
+  // 速度（px/sec）… “ずっとヌルー”はこれで調整
+  const SPEED = 18; // 12〜28くらいが気持ちいい
+
+  const step = (ts) => {
+    raf = requestAnimationFrame(step);
+
+    if (!running) return;
+
+    if (!lastTs) lastTs = ts;
+    const dt = (ts - lastTs) / 1000;
+    lastTs = ts;
+
+    if (ts < pausedUntil) return;
+
+    if (!cycleW) recalc();
+    if (!cycleW) return;
+
+    track.scrollLeft += SPEED * dt;
+
+    // ループ：1セット分を超えたら同じ位置へ巻き戻す（見た目はシームレス）
+    if (track.scrollLeft >= cycleW) {
+      track.scrollLeft -= cycleW;
+    }
+  };
+
+  // 「その商品が開いてる時だけ」動かす
+  const tick = () => {
+    const isOpen = location.hash === "#session-collection";
+    if (isOpen && !running) {
+      running = true;
+      lastTs = 0;
+      pause(600); // 開いた直後ちょい待ってから流す
+    }
+    if (!isOpen && running) {
+      running = false;
+      lastTs = 0;
+    }
+    requestAnimationFrame(tick);
+  };
+
+  requestAnimationFrame(step);
+  tick();
 })();
