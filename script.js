@@ -474,7 +474,7 @@ $$("[data-home]").forEach((el) => {
 })();
 
 
-// --- Continuous marquee slide (Session Collection only) ---
+// --- Infinite smooth autoplay (Session Collection only) ---
 (() => {
   const root = document.querySelector('#session-collection');
   if (!root) return;
@@ -482,97 +482,97 @@ $$("[data-home]").forEach((el) => {
   const track = root.querySelector('.product__track');
   if (!track) return;
 
-  // 元スライド（クローン前）
-  const baseSlides = Array.from(track.querySelectorAll('.product__slide'));
-  if (baseSlides.length <= 1) return;
+  // 元スライド（複製前）
+  const originals = Array.from(track.querySelectorAll('.product__slide'));
+  if (originals.length <= 1) return;
 
-  // ループ用に1回だけ複製（2セットにする）
-  if (!track.dataset.looped) {
-    baseSlides.forEach((s) => track.appendChild(s.cloneNode(true)));
-    track.dataset.looped = "1";
+  // 既に複製済みなら二重に増やさない
+  if (!track.dataset.loopReady) {
+    originals.forEach((slide) => track.appendChild(slide.cloneNode(true)));
+    track.dataset.loopReady = "1";
   }
 
-  let rafId = null;
-  let active = false;
+  const originalCount = originals.length;
 
-  // 速度：小さいほどゆっくり（0.25〜0.8 くらいで調整）
-  let speed = 0.35;
-
-  // gap をCSSから取得
+  // gap をCSSから取得（gridの column-gap）
   const getGap = () => {
     const cs = getComputedStyle(track);
-    const g = cs.columnGap || cs.gap || "0px";
-    const px = parseFloat(g);
-    return Number.isFinite(px) ? px : 0;
+    // column-gap が取れない環境用に gap も見る
+    const g = parseFloat(cs.columnGap || cs.gap || "0");
+    return Number.isFinite(g) ? g : 0;
   };
 
-  // 1セット分の幅（= baseSlides.length * (1枚の幅 + gap)）
-  let step = 0;
-  let loopWidth = 0;
-
-  const recalc = () => {
-    const gap = getGap();
-    // 今のレイアウトでは 1枚 = track幅（grid-auto-columns:100%）なのでこれでOK
-    step = track.clientWidth + gap;
-    loopWidth = step * baseSlides.length;
+  const getStep = () => {
+    // 1枚の幅 + gap
+    const w = originals[0].getBoundingClientRect().width;
+    return w + getGap();
   };
 
-  recalc();
-  window.addEventListener('resize', recalc, { passive: true });
+  let raf = null;
+  let isUserInteracting = false;
+  let resumeTimer = null;
+
+  // 速度（px / frame）: 0.25 くらいで“ヌルー”。速ければ上げる
+  const SPEED = 0.25;
+
+  const isOpen = () => location.hash === '#session-collection';
+
+  const loopFix = () => {
+    const step = getStep();
+    const oneSet = step * originalCount;
+
+    // 2セットのうち “後半に入り過ぎたら” 前半相当に瞬間ワープ
+    if (track.scrollLeft >= oneSet) track.scrollLeft -= oneSet;
+
+    // 左に戻しすぎた時の保険（基本起きにくいけど）
+    if (track.scrollLeft < 0) track.scrollLeft += oneSet;
+  };
 
   const start = () => {
-    if (active) return;
-    active = true;
-    track.classList.add('is-marquee');
+    track.classList.add('is-autoplay');
+    if (raf) cancelAnimationFrame(raf);
 
     const tick = () => {
-      if (!active) return;
-
-      // hash が開いてる時だけ動かす
-      if (location.hash !== '#session-collection') {
-        stop();
+      if (!isOpen()) {
+        track.classList.remove('is-autoplay');
+        raf = requestAnimationFrame(tick);
         return;
       }
 
-      // 進める
-      track.scrollLeft += speed;
-
-      // 1セット分を超えたら “瞬時に” 巻き戻す（シームレス）
-      if (track.scrollLeft >= loopWidth) {
-        track.scrollLeft -= loopWidth;
+      if (!isUserInteracting) {
+        track.scrollLeft += SPEED;
+        loopFix();
       }
 
-      rafId = requestAnimationFrame(tick);
+      raf = requestAnimationFrame(tick);
     };
-
-    rafId = requestAnimationFrame(tick);
+    raf = requestAnimationFrame(tick);
   };
 
-  const stop = () => {
-    active = false;
-    track.classList.remove('is-marquee');
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = null;
+  const pauseThenResume = () => {
+    isUserInteracting = true;
+    track.classList.remove('is-autoplay'); // 手で触ってる間はsnap復活（好み）
+    if (resumeTimer) clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => {
+      isUserInteracting = false;
+      track.classList.add('is-autoplay');
+      // 触った後も綺麗にループ位置へ補正
+      loopFix();
+    }, 1200);
   };
 
-  // ユーザー操作したら一旦止めて、少し後に再開
-  let resumeTimer = null;
-  const pauseAndResume = () => {
-    stop();
-    clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(() => start(), 1200);
-  };
-
+  // ユーザー操作で一旦止める
   ['touchstart', 'pointerdown', 'wheel'].forEach((ev) => {
-    track.addEventListener(ev, pauseAndResume, { passive: true });
+    track.addEventListener(ev, pauseThenResume, { passive: true });
   });
 
-  // 初期化：#session-collection の時だけ開始
-  const watch = () => {
-    const open = location.hash === '#session-collection';
-    if (open && !active) start();
-    if (!open && active) stop();
-    requestAnimationFrame(watch);
-  };
-  watch();
+  // 手動スクロール中も端を超えたらループ補正（= 123123...っぽくなる）
+  track.addEventListener('scroll', () => {
+    if (!isOpen()) return;
+    loopFix();
+  }, { passive: true });
+
+  start();
 })();
+
+
