@@ -474,7 +474,7 @@ $$("[data-home]").forEach((el) => {
 })();
 
 
-// --- Auto slide (Session Collection only) ---
+　// --- Continuous Auto slide (Session Collection only / seamless loop) ---
 (() => {
   const root = document.querySelector('#session-collection');
   if (!root) return;
@@ -485,61 +485,84 @@ $$("[data-home]").forEach((el) => {
   const slides = Array.from(track.querySelectorAll('.product__slide'));
   if (slides.length <= 1) return;
 
-  let idx = 0;
-  let timer = null;
+  // すでに複製済みなら二重に増やさない
+  if (!track.dataset.loopReady) {
+    // 先頭の全スライドを末尾に複製（これでループの“つなぎ目”が見えない）
+    slides.forEach((s) => track.appendChild(s.cloneNode(true)));
+    track.dataset.loopReady = "1";
+  }
+
+  // 速度(px/sec) ←ここだけ好みで調整（例: 18〜40）
+  const SPEED = 24;
+
+  let raf = null;
+  let lastT = 0;
+  let paused = false;
   let resumeTimer = null;
 
-  const getGap = () => {
-    const cs = getComputedStyle(track);
-    // column-gap or gap のどっちか
-    const g = parseFloat(cs.columnGap || cs.gap || "0");
-    return Number.isFinite(g) ? g : 0;
-  };
+  const originalCount = slides.length;
 
   const getStep = () => {
-    const w = slides[0].getBoundingClientRect().width;
-    return w + getGap();
+    // gap 12px を足す（CSS gap と合わせる）
+    const first = track.querySelector('.product__slide');
+    if (!first) return track.clientWidth + 12;
+    return first.getBoundingClientRect().width + 12;
   };
 
-  const go = (i) => {
-    idx = (i + slides.length) % slides.length;
-    track.scrollTo({ left: idx * getStep(), behavior: 'smooth' });
+  const getOriginalWidth = () => getStep() * originalCount;
+
+  const loopFix = () => {
+    // 複製分まで進んだら、元の範囲へ一瞬で巻き戻す（見た目は連続）
+    const W = getOriginalWidth();
+    if (track.scrollLeft >= W) {
+      track.scrollLeft -= W;
+    }
+  };
+
+  const tick = (t) => {
+    if (!lastT) lastT = t;
+    const dt = (t - lastT) / 1000;
+    lastT = t;
+
+    if (!paused) {
+      track.scrollLeft += SPEED * dt;
+      loopFix();
+    }
+
+    raf = requestAnimationFrame(tick);
   };
 
   const start = () => {
-    stop();
-    timer = setInterval(() => go(idx + 1), 6000); // 6秒ごと（好みで）
+    if (raf) return;
+    lastT = 0;
+    raf = requestAnimationFrame(tick);
   };
 
   const stop = () => {
-    if (timer) clearInterval(timer);
-    timer = null;
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
   };
 
   const pauseAndResume = () => {
-    stop();
+    paused = true;
     if (resumeTimer) clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(start, 6000);
+    // 触ったらちょい待ってから再開
+    resumeTimer = setTimeout(() => {
+      paused = false;
+    }, 1200);
   };
 
+  // ユーザー操作で一旦停止
   ['touchstart', 'pointerdown', 'wheel'].forEach((ev) => {
     track.addEventListener(ev, pauseAndResume, { passive: true });
   });
 
-  track.addEventListener('scroll', () => {
-    const step = getStep();
-    const now = Math.round(track.scrollLeft / step);
-    if (Number.isFinite(now)) idx = now;
-  }, { passive: true });
-
-  // 画像読み込みで幅が変わるので、起動をちょい遅らせて安定させる
-  const kick = () => requestAnimationFrame(() => requestAnimationFrame(() => start()));
-
-  const tick = () => {
+  // 「その商品が開いてる時だけ」動かす
+  const gate = () => {
     const isOpen = location.hash === '#session-collection';
-    if (isOpen && !timer) kick();
-    if (!isOpen && timer) stop();
-    requestAnimationFrame(tick);
+    if (isOpen) start();
+    else stop();
+    requestAnimationFrame(gate);
   };
-  tick();
+  gate();
 })();
