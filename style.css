@@ -642,7 +642,10 @@ body.is-locked{
   padding-top: 14px;    /* ← 線から本文の距離 */
 }
 
-/* auto中はsnapを切る（手動スワイプは普通に使える） */
-#session-collection .product__track.is-autoplay{
+　
+
+/* Session Collection: marquee中は snap を切る */
+#session-collection .product__track.is-marquee{
   scroll-snap-type: none;
+  scroll-behavior: auto;
 }
