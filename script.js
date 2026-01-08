@@ -186,28 +186,19 @@
   /* ----------------------------
      TOP：どこにいても「hash無しでリロード」して無地TOPへ戻す（確実版）
   ---------------------------- */
-  // ============================
-  // TOP: どこからでも“無地TOP”へ確実に戻す
-  // - iOS対策：clickだけだと落ちることがあるので pointerdown も拾う
-  // - :target 状態を確実に消すため「replaceでhash無しURLへ遷移」
-  // ============================
   const goHome = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // 1) 商品hash許可フラグを消す
     sessionStorage.removeItem(HASH_FLAG);
 
-    // 2) Drawer / Modal を確実に閉じる
     if (drawer && drawer.classList.contains("is-open")) closeDrawer();
     if (modal && modal.classList.contains("is-open")) closeModal();
 
-    // 3) hash無しURLへ“遷移” (履歴汚さない)
     const url = location.pathname + location.search; // hashなし
     location.replace(url);
   };
 
-  // 既存の $$("[data-home]") の addEventListener は一旦全部消してこれに統一
   $$("[data-home]").forEach((el) => {
     el.addEventListener("pointerdown", goHome, { capture: true });
     el.addEventListener("click", goHome, { capture: true });
@@ -233,7 +224,6 @@
     }, 0);
   };
 
-  // modal内の商品カードクリック：hash許可フラグを立ててから遷移
   if (modal) {
     modal.addEventListener("click", (e) => {
       const link = e.target.closest && e.target.closest("a.shop-card__link");
@@ -335,10 +325,8 @@
   ---------------------------- */
   const fx = $("#pointer-fx");
   if (fx) {
-    let x = -9999,
-      y = -9999;
-    let tx = -9999,
-      ty = -9999;
+    let x = -9999, y = -9999;
+    let tx = -9999, ty = -9999;
 
     let idleTimer = null;
     let dimTimer = null;
@@ -354,10 +342,7 @@
     };
 
     const setTransform = (nx, ny) => {
-      x = nx;
-      y = ny;
-      tx = nx;
-      ty = ny;
+      x = nx; y = ny; tx = nx; ty = ny;
       fx.style.transform = `translate3d(${nx}px, ${ny}px, 0)`;
     };
 
@@ -474,9 +459,15 @@
 })();
 
 
-// --- Infinite smooth autoplay (Session Collection only / seamless)
-// ✅ 手動操作中は「recenter(無限化)」しない＝3枚目で勝手に戻らない
-// ✅ 自動時だけ、3セット構成で“見た目を変えず”無限ループ
+// =========================================================
+// Infinite manual scroll (Session Collection only)
+// - 自動は無し
+// - 手動スクロールを 123123... で無限化
+// - ガクつき対策：
+//   1) 補正は端に寄り切った時だけ（閾値を広く）
+//   2) scroll-snap を補正の瞬間だけ off → 直後に復帰
+//   3) scroll を rAF で1フレーム1回に間引き
+// =========================================================
 (() => {
   const root = document.querySelector('#session-collection');
   if (!root) return;
@@ -484,14 +475,16 @@
   const track = root.querySelector('.product__track');
   if (!track) return;
 
+  // figure.product__slide（元セット）
   const originals = Array.from(track.querySelectorAll('.product__slide'));
   if (originals.length <= 1) return;
 
-  // 3セット化 [clone][orig][clone]（二重増殖防止）
+  // 既に構築済みなら何もしない
   if (track.dataset.loopReady !== "1") {
     const fragHead = document.createDocumentFragment();
     const fragTail = document.createDocumentFragment();
 
+    // [clone][orig][clone]
     originals.forEach((s) => fragHead.appendChild(s.cloneNode(true)));
     originals.forEach((s) => fragTail.appendChild(s.cloneNode(true)));
 
@@ -518,109 +511,115 @@
 
   const oneSetWidth = () => getStep() * originalCount;
 
-  // 初期位置：中央セット先頭へ（[clone][orig][clone] の orig 先頭）
+  const isOpen = () => location.hash === '#session-collection';
+
+  // 中央セット先頭へ（orig の先頭に合わせる）
   const jumpToMiddleStart = () => {
     const w = oneSetWidth();
     if (!w) return;
     track.scrollLeft = w;
   };
 
-  // 中央セットから外れたら同じ見た目の位置へワープ（自動時のみ呼ぶ）
-  const recenterIfNeeded = () => {
-    const w = oneSetWidth();
-    if (!w) return;
-
-    // 中央セットの範囲をざっくり [0.5w, 1.5w] に保つ（急なガッを減らす）
-    if (track.scrollLeft < w * 0.5) track.scrollLeft += w;
-    else if (track.scrollLeft > w * 1.5) track.scrollLeft -= w;
+  // 初回：表示中なら中央へ（画像ロードや幅確定のズレ対策で2回）
+  const primeCentering = () => {
+    if (!isOpen()) return;
+    requestAnimationFrame(() => {
+      jumpToMiddleStart();
+      requestAnimationFrame(jumpToMiddleStart);
+    });
   };
 
-  const isOpen = () => location.hash === '#session-collection';
+  // hashchange で #session-collection に入った瞬間だけ整列（他への干渉防止）
+  window.addEventListener('hashchange', primeCentering, { passive: true });
 
-  // iOS対策：初回とリサイズ時に中央へ
-  requestAnimationFrame(() => {
-    jumpToMiddleStart();
-    requestAnimationFrame(jumpToMiddleStart);
-  });
+  // リサイズ時：開いてる時だけ中央へ
   window.addEventListener('resize', () => {
     if (!isOpen()) return;
     jumpToMiddleStart();
   }, { passive: true });
 
-  // 画像読み込み完了後にも再センター（幅確定後のズレ対策）
+  // 画像読み込み完了後にも一回だけ中央へ
   const imgs = Array.from(track.querySelectorAll('img'));
   let loaded = 0;
   const onImgDone = () => {
     loaded++;
-    if (loaded >= imgs.length) {
-      if (isOpen()) jumpToMiddleStart();
-    }
+    if (loaded >= imgs.length) primeCentering();
   };
   imgs.forEach(img => {
     if (img.complete) onImgDone();
     else img.addEventListener('load', onImgDone, { once: true });
   });
 
-  // ---- user interaction gate（scrollイベントでは立てない）
-  let isUser = false;
-  let userReleaseTimer = null;
+  // ページ直入 / リロードで #session-collection の時は整列
+  primeCentering();
 
-  const userHold = () => {
-    isUser = true;
-    track.classList.remove('is-autoplay');
+  // ---- 無限化の補正（手動スクロール時にだけ働く）
+  let rafPending = false;
+  let isAdjusting = false;
+  let savedSnapType = "";
 
-    if (userReleaseTimer) clearTimeout(userReleaseTimer);
-    // 触ってない状態が少し続いたら解除（慣性スクロール考慮）
-    userReleaseTimer = setTimeout(() => {
-      isUser = false;
-    }, 900);
+  const disableSnapTemporarily = () => {
+    // inline style が無い場合もあるので computed ではなく style を保存して復元
+    savedSnapType = track.style.scrollSnapType || "";
+    track.style.scrollSnapType = "none";
   };
 
-  ['touchstart', 'pointerdown', 'wheel'].forEach((ev) => {
-    track.addEventListener(ev, userHold, { passive: true });
-  });
+  const restoreSnapNextFrame = () => {
+    requestAnimationFrame(() => {
+      track.style.scrollSnapType = savedSnapType;
+    });
+  };
 
-  ['touchend', 'pointerup', 'pointercancel'].forEach((ev) => {
-    track.addEventListener(ev, () => {
-      if (userReleaseTimer) clearTimeout(userReleaseTimer);
-      userReleaseTimer = setTimeout(() => {
-        isUser = false;
-      }, 250);
-    }, { passive: true });
-  });
+  const recenterIfNeeded = () => {
+    if (!isOpen()) return;
+    if (isAdjusting) return;
 
-  // ---- autoplay（dtベースで端末差を吸収）
-  let raf = null;
-  let lastT = 0;
+    const w = oneSetWidth();
+    if (!w) return;
 
-  // 速度：px/sec（好みで調整）
-  const SPEED_PX_PER_SEC = 18;
+    // 中央セットはだいたい [w, 2w)
+    // “端に寄り切った時だけ”補正する（ここが狭いと 3枚目で戻る系バグになる）
+    const leftEdge  = w * 0.20;  // ←広め
+    const rightEdge = w * 2.80;  // ←広め
 
-  const tick = (t) => {
-    if (!lastT) lastT = t;
-    const dt = Math.min(0.05, (t - lastT) / 1000); // 最大50msに制限
-    lastT = t;
+    const x = track.scrollLeft;
 
-    if (isOpen() && !isUser) {
-      track.classList.add('is-autoplay');
-
-      // ✅ ヌルーっと移動
-      track.scrollLeft += SPEED_PX_PER_SEC * dt;
-
-      // ✅ 無限化は自動時のみ
-      recenterIfNeeded();
-    } else {
-      track.classList.remove('is-autoplay');
+    // 端に寄ったら「同じ見た目」になるよう ±w ワープ
+    // （この瞬間に snap が効くとガクつくので一時的に切る）
+    if (x < leftEdge) {
+      isAdjusting = true;
+      disableSnapTemporarily();
+      track.scrollLeft = x + w;
+      restoreSnapNextFrame();
+      isAdjusting = false;
+      return;
     }
 
-    raf = requestAnimationFrame(tick);
+    if (x > rightEdge) {
+      isAdjusting = true;
+      disableSnapTemporarily();
+      track.scrollLeft = x - w;
+      restoreSnapNextFrame();
+      isAdjusting = false;
+      return;
+    }
   };
 
-  raf = requestAnimationFrame(tick);
+  // scroll をそのまま処理すると iOS でガタつくので rAF で間引く
+  track.addEventListener('scroll', () => {
+    if (!isOpen()) return;
+    if (rafPending) return;
+    rafPending = true;
 
-  // 念のため：ページ離脱時に止める（干渉回避）
+    requestAnimationFrame(() => {
+      rafPending = false;
+      recenterIfNeeded();
+    });
+  }, { passive: true });
+
+  // 念のため：ページ離脱で余計な状態を残さない
   window.addEventListener('pagehide', () => {
-    if (raf) cancelAnimationFrame(raf);
-    raf = null;
+    rafPending = false;
+    isAdjusting = false;
   }, { passive: true });
 })();
