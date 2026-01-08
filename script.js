@@ -474,96 +474,112 @@ $$("[data-home]").forEach((el) => {
 })();
 
 
-　// --- Auto slide (continuous loop / Session Collection only) ---
+// --- Continuous auto slide (Session Collection only / seamless loop) ---
 (() => {
-  const root = document.querySelector("#session-collection");
+  const root = document.querySelector('#session-collection');
   if (!root) return;
 
-  const track = root.querySelector(".product__track");
+  const track = root.querySelector('.product__track');
   if (!track) return;
 
-  const slides = Array.from(track.querySelectorAll(".product__slide"));
-  if (slides.length <= 1) return;
+  const GAP = 12;              // CSSの gap:12px と合わせる
+  const SPEED = 18;            // px / sec（好みで 10〜30 くらいで調整）
+  const RESUME_DELAY = 1200;   // 触った後、再開までのms
 
-  // 二重初期化防止
-  if (track.dataset.loopInit === "1") return;
-  track.dataset.loopInit = "1";
+  let raf = null;
+  let lastT = 0;
+  let paused = true;
+  let resumeTimer = null;
 
-  // ループ用に1セット複製（後ろに繋げる）
-  slides.forEach((s) => {
-    const c = s.cloneNode(true);
-    c.classList.add("is-clone");
-    c.setAttribute("aria-hidden", "true");
-    track.appendChild(c);
-  });
+  // クローン（二重化）してシームレスループ用の“余白”を作る
+  const ensureClones = () => {
+    if (track.dataset.loopReady === "1") return;
 
-  let running = false;
-  let raf = 0;
-  let lastTs = 0;
-  let pausedUntil = 0;
+    const originals = Array.from(track.querySelectorAll('.product__slide'));
+    if (originals.length <= 1) return;
 
-  // 元の1セット分の幅（ここを超えたら巻き戻す）
-  let cycleW = 0;
-  const recalc = () => {
-    const first = slides[0];
-    const last = slides[slides.length - 1];
-    cycleW = (last.offsetLeft + last.offsetWidth) - first.offsetLeft;
+    // 末尾に同じスライドを複製
+    originals.forEach((el) => {
+      const clone = el.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      track.appendChild(clone);
+    });
+
+    track.dataset.loopReady = "1";
   };
 
-  // 触ったら一旦止める（勝手に奪わない）
-  const pause = (ms = 2200) => {
-    pausedUntil = performance.now() + ms;
+  const slideW = () => {
+    const first = track.querySelector('.product__slide');
+    if (!first) return track.clientWidth;
+    return first.getBoundingClientRect().width + GAP;
   };
 
-  ["touchstart", "pointerdown", "wheel"].forEach((ev) => {
-    track.addEventListener(ev, () => pause(2500), { passive: true });
-  });
-  track.addEventListener("scroll", () => pause(1200), { passive: true });
+  // “元の並び”の総幅（＝ここを超えたら巻き戻す）
+  const baseWidth = () => {
+    const originals = Array.from(track.querySelectorAll('.product__slide'))
+      .filter(el => el.getAttribute('aria-hidden') !== 'true');
+    return originals.length * slideW();
+  };
 
-  window.addEventListener("resize", () => {
-    recalc();
-  }, { passive: true });
+  const start = () => {
+    if (!paused) return;
+    paused = false;
+    track.classList.add('is-autoplay');
+    track.style.scrollBehavior = 'auto'; // JSで動かすので保険
+    lastT = performance.now();
+    loop();
+  };
 
-  // 速度（px/sec）… “ずっとヌルー”はこれで調整
-  const SPEED = 18; // 12〜28くらいが気持ちいい
+  const stop = () => {
+    paused = true;
+    track.classList.remove('is-autoplay');
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
+  };
 
-  const step = (ts) => {
-    raf = requestAnimationFrame(step);
+  const loop = () => {
+    if (paused) return;
 
-    if (!running) return;
+    const t = performance.now();
+    const dt = Math.min(40, t - lastT);   // 急なdtを抑える
+    lastT = t;
 
-    if (!lastTs) lastTs = ts;
-    const dt = (ts - lastTs) / 1000;
-    lastTs = ts;
+    const dx = (SPEED * dt) / 1000;       // px
+    track.scrollLeft += dx;
 
-    if (ts < pausedUntil) return;
-
-    if (!cycleW) recalc();
-    if (!cycleW) return;
-
-    track.scrollLeft += SPEED * dt;
-
-    // ループ：1セット分を超えたら同じ位置へ巻き戻す（見た目はシームレス）
-    if (track.scrollLeft >= cycleW) {
-      track.scrollLeft -= cycleW;
+    const bw = baseWidth();
+    if (bw > 0 && track.scrollLeft >= bw) {
+      // 先頭へ“瞬間”巻き戻し（見た目は複製があるのでシームレス）
+      track.scrollLeft -= bw;
     }
+
+    raf = requestAnimationFrame(loop);
   };
 
-  // 「その商品が開いてる時だけ」動かす
+  const pauseAndResume = () => {
+    stop();
+    if (resumeTimer) clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => {
+      if (location.hash === '#session-collection') start();
+    }, RESUME_DELAY);
+  };
+
+  // ユーザーが触ったら一旦止める
+  ['touchstart', 'pointerdown', 'wheel'].forEach((ev) => {
+    track.addEventListener(ev, pauseAndResume, { passive: true });
+  });
+
+  // 商品が開いてる時だけ動かす（hashベース）
   const tick = () => {
-    const isOpen = location.hash === "#session-collection";
-    if (isOpen && !running) {
-      running = true;
-      lastTs = 0;
-      pause(600); // 開いた直後ちょい待ってから流す
-    }
-    if (!isOpen && running) {
-      running = false;
-      lastTs = 0;
+    const isOpen = location.hash === '#session-collection';
+    if (isOpen) {
+      ensureClones();
+      if (paused) start();
+    } else {
+      if (!paused) stop();
     }
     requestAnimationFrame(tick);
   };
 
-  requestAnimationFrame(step);
   tick();
 })();
