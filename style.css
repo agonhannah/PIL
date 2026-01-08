@@ -643,9 +643,3 @@ body.is-locked{
 }
 
 　
-
-/* Session Collection: marquee中は snap を切る */
-#session-collection .product__track.is-marquee{
-  scroll-snap-type: none;
-  scroll-behavior: auto;
-}
