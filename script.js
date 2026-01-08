@@ -472,3 +472,64 @@ $$("[data-home]").forEach((el) => {
     requestAnimationFrame(tick);
   }
 })();
+
+
+// --- Auto slide (Session Collection only) ---
+(() => {
+  const root = document.querySelector('#session-collection');
+  if (!root) return;
+
+  const track = root.querySelector('.product__track');
+  if (!track) return;
+
+  const slides = Array.from(track.querySelectorAll('.product__slide'));
+  if (slides.length <= 1) return;
+
+  let idx = 0;
+  let timer = null;
+  let resumeTimer = null;
+
+  const getStep = () => track.clientWidth + 12; // 12 = CSS gap と合わせる（違ったら調整）
+
+  const go = (i) => {
+    idx = (i + slides.length) % slides.length;
+    track.scrollTo({ left: idx * getStep(), behavior: 'smooth' });
+  };
+
+  const start = () => {
+    stop();
+    timer = setInterval(() => go(idx + 1), 4500); // 4.5秒ごと（好みで）
+  };
+
+  const stop = () => {
+    if (timer) clearInterval(timer);
+    timer = null;
+  };
+
+  const pauseAndResume = () => {
+    stop();
+    if (resumeTimer) clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => start(), 4500); // 触ったら4.5秒後に再開
+  };
+
+  // ユーザー操作で一旦停止
+  ['touchstart', 'pointerdown', 'wheel'].forEach((ev) => {
+    track.addEventListener(ev, pauseAndResume, { passive: true });
+  });
+
+  // 手動スクロールに合わせて idx を更新（だいたいでOK）
+  track.addEventListener('scroll', () => {
+    const step = getStep();
+    const now = Math.round(track.scrollLeft / step);
+    if (Number.isFinite(now)) idx = now;
+  }, { passive: true });
+
+  // 「その商品が開いてる時だけ」動かす
+  const tick = () => {
+    const isOpen = location.hash === '#session-collection';
+    if (isOpen && !timer) start();
+    if (!isOpen && timer) stop();
+    requestAnimationFrame(tick);
+  };
+  tick();
+})();
