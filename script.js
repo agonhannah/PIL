@@ -482,7 +482,6 @@ $$("[data-home]").forEach((el) => {
   const track = root.querySelector('.product__track');
   if (!track) return;
 
-  // 元スライド（複製前）
   const originals = Array.from(track.querySelectorAll('.product__slide'));
   if (originals.length <= 1) return;
 
@@ -494,53 +493,70 @@ $$("[data-home]").forEach((el) => {
 
   const originalCount = originals.length;
 
-  // gap をCSSから取得（gridの column-gap）
+  const isOpen = () => location.hash === '#session-collection';
+
   const getGap = () => {
     const cs = getComputedStyle(track);
-    // column-gap が取れない環境用に gap も見る
     const g = parseFloat(cs.columnGap || cs.gap || "0");
     return Number.isFinite(g) ? g : 0;
   };
 
   const getStep = () => {
-    // 1枚の幅 + gap
-    const w = originals[0].getBoundingClientRect().width;
+    const first = track.querySelector('.product__slide');
+    if (!first) return 0;
+    const w = first.getBoundingClientRect().width;
+    if (!w || w < 1) return 0;
     return w + getGap();
+  };
+
+  const oneSet = () => {
+    const step = getStep();
+    if (!step) return 0;
+    return step * originalCount;
+  };
+
+  // ★「端に寄りすぎたら」だけ補正（2セット境界で即戻さない）
+  const wrapIfNeeded = () => {
+    const setW = oneSet();
+    const step = getStep();
+    if (!setW || !step) return;
+
+    // “中央（=2セット目）”を保つための閾値
+    const leftLimit  = step;               // ほぼ先頭付近まで戻ったら
+    const rightLimit = setW + setW - step; // ほぼ末尾付近まで行ったら
+
+    if (track.scrollLeft < leftLimit) {
+      track.scrollLeft += setW;            // 右へワープ（見た目は連続）
+    } else if (track.scrollLeft > rightLimit) {
+      track.scrollLeft -= setW;            // 左へワープ（見た目は連続）
+    }
   };
 
   let raf = null;
   let isUserInteracting = false;
   let resumeTimer = null;
 
-  // 速度（px / frame）: 0.25 くらいで“ヌルー”。速ければ上げる
-  const SPEED = 0.25;
-
-  const isOpen = () => location.hash === '#session-collection';
-
-  const loopFix = () => {
-    const step = getStep();
-    if (!step || step < 1) return; 
-    const oneSet = step * originalCount;
-
-    // 2セットのうち “後半に入り過ぎたら” 前半相当に瞬間ワープ
-    if (track.scrollLeft >= oneSet) track.scrollLeft -= oneSet;
-
-    // 左に戻しすぎた時の保険（基本起きにくいけど）
-    if (track.scrollLeft < 0) track.scrollLeft += oneSet;
-  };
+  // 速度（px / frame）: 0.35〜0.8 くらいが体感しやすい
+  const SPEED = 0.55;
 
   const start = () => {
     track.classList.add('is-autoplay');
     if (raf) cancelAnimationFrame(raf);
-    
+
+    // ★幅が取れるまで待ってから「2セット目先頭」に置く（ここが超重要）
     const waitReady = () => {
-    const step = getStep();
-    if (!step || step < 1) {
-      requestAnimationFrame(waitReady);
-      return;
-    }
-    tick(); // 準備できたら本番へ
-　　};
+      const setW = oneSet();
+      if (!setW) {
+        requestAnimationFrame(waitReady);
+        return;
+      }
+      // 中央スタート（= 2セット目の先頭）
+      if (!track.dataset.loopInit) {
+        track.scrollLeft = setW;
+        track.dataset.loopInit = "1";
+      }
+      tick();
+    };
 
     const tick = () => {
       if (!isOpen()) {
@@ -551,38 +567,35 @@ $$("[data-home]").forEach((el) => {
 
       if (!isUserInteracting) {
         track.scrollLeft += SPEED;
-        loopFix();
+        wrapIfNeeded();
       }
 
       raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
+
+    waitReady();
   };
 
   const pauseThenResume = () => {
     isUserInteracting = true;
-    track.classList.remove('is-autoplay'); // 手で触ってる間はsnap復活（好み）
+
     if (resumeTimer) clearTimeout(resumeTimer);
     resumeTimer = setTimeout(() => {
       isUserInteracting = false;
-      track.classList.add('is-autoplay');
-      // 触った後も綺麗にループ位置へ補正
-      loopFix();
-    }, 1200);
+      wrapIfNeeded();
+    }, 900);
   };
 
-  // ユーザー操作で一旦止める
+  // ユーザー操作で一旦停止（snapは戻さない：ずっとヌルっと優先）
   ['touchstart', 'pointerdown', 'wheel'].forEach((ev) => {
     track.addEventListener(ev, pauseThenResume, { passive: true });
   });
 
-  // 手動スクロール中も端を超えたらループ補正（= 123123...っぽくなる）
+  // 手動スクロール中も端に寄りすぎたら補正
   track.addEventListener('scroll', () => {
     if (!isOpen()) return;
-    loopFix();
+    wrapIfNeeded();
   }, { passive: true });
 
   start();
 })();
-
-
