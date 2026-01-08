@@ -474,7 +474,7 @@ $$("[data-home]").forEach((el) => {
 })();
 
 
-// --- Continuous auto slide (Session Collection only / seamless loop) ---
+// --- Continuous marquee slide (Session Collection only) ---
 (() => {
   const root = document.querySelector('#session-collection');
   if (!root) return;
@@ -482,104 +482,97 @@ $$("[data-home]").forEach((el) => {
   const track = root.querySelector('.product__track');
   if (!track) return;
 
-  const GAP = 12;              // CSSの gap:12px と合わせる
-  const SPEED = 18;            // px / sec（好みで 10〜30 くらいで調整）
-  const RESUME_DELAY = 1200;   // 触った後、再開までのms
+  // 元スライド（クローン前）
+  const baseSlides = Array.from(track.querySelectorAll('.product__slide'));
+  if (baseSlides.length <= 1) return;
 
-  let raf = null;
-  let lastT = 0;
-  let paused = true;
-  let resumeTimer = null;
+  // ループ用に1回だけ複製（2セットにする）
+  if (!track.dataset.looped) {
+    baseSlides.forEach((s) => track.appendChild(s.cloneNode(true)));
+    track.dataset.looped = "1";
+  }
 
-  // クローン（二重化）してシームレスループ用の“余白”を作る
-  const ensureClones = () => {
-    if (track.dataset.loopReady === "1") return;
+  let rafId = null;
+  let active = false;
 
-    const originals = Array.from(track.querySelectorAll('.product__slide'));
-    if (originals.length <= 1) return;
+  // 速度：小さいほどゆっくり（0.25〜0.8 くらいで調整）
+  let speed = 0.35;
 
-    // 末尾に同じスライドを複製
-    originals.forEach((el) => {
-      const clone = el.cloneNode(true);
-      clone.setAttribute('aria-hidden', 'true');
-      track.appendChild(clone);
-    });
-
-    track.dataset.loopReady = "1";
+  // gap をCSSから取得
+  const getGap = () => {
+    const cs = getComputedStyle(track);
+    const g = cs.columnGap || cs.gap || "0px";
+    const px = parseFloat(g);
+    return Number.isFinite(px) ? px : 0;
   };
 
-  const slideW = () => {
-    const first = track.querySelector('.product__slide');
-    if (!first) return track.clientWidth;
-    return first.getBoundingClientRect().width + GAP;
+  // 1セット分の幅（= baseSlides.length * (1枚の幅 + gap)）
+  let step = 0;
+  let loopWidth = 0;
+
+  const recalc = () => {
+    const gap = getGap();
+    // 今のレイアウトでは 1枚 = track幅（grid-auto-columns:100%）なのでこれでOK
+    step = track.clientWidth + gap;
+    loopWidth = step * baseSlides.length;
   };
 
-  // “元の並び”の総幅（＝ここを超えたら巻き戻す）
-  const baseWidth = () => {
-    const originals = Array.from(track.querySelectorAll('.product__slide'))
-      .filter(el => el.getAttribute('aria-hidden') !== 'true');
-    return originals.length * slideW();
-  };
+  recalc();
+  window.addEventListener('resize', recalc, { passive: true });
 
   const start = () => {
-    if (!paused) return;
-    paused = false;
-    track.classList.add('is-autoplay');
-    track.style.scrollBehavior = 'auto'; // JSで動かすので保険
-    lastT = performance.now();
-    loop();
+    if (active) return;
+    active = true;
+    track.classList.add('is-marquee');
+
+    const tick = () => {
+      if (!active) return;
+
+      // hash が開いてる時だけ動かす
+      if (location.hash !== '#session-collection') {
+        stop();
+        return;
+      }
+
+      // 進める
+      track.scrollLeft += speed;
+
+      // 1セット分を超えたら “瞬時に” 巻き戻す（シームレス）
+      if (track.scrollLeft >= loopWidth) {
+        track.scrollLeft -= loopWidth;
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
   };
 
   const stop = () => {
-    paused = true;
-    track.classList.remove('is-autoplay');
-    if (raf) cancelAnimationFrame(raf);
-    raf = null;
+    active = false;
+    track.classList.remove('is-marquee');
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
   };
 
-  const loop = () => {
-    if (paused) return;
-
-    const t = performance.now();
-    const dt = Math.min(40, t - lastT);   // 急なdtを抑える
-    lastT = t;
-
-    const dx = (SPEED * dt) / 1000;       // px
-    track.scrollLeft += dx;
-
-    const bw = baseWidth();
-    if (bw > 0 && track.scrollLeft >= bw) {
-      // 先頭へ“瞬間”巻き戻し（見た目は複製があるのでシームレス）
-      track.scrollLeft -= bw;
-    }
-
-    raf = requestAnimationFrame(loop);
-  };
-
+  // ユーザー操作したら一旦止めて、少し後に再開
+  let resumeTimer = null;
   const pauseAndResume = () => {
     stop();
-    if (resumeTimer) clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(() => {
-      if (location.hash === '#session-collection') start();
-    }, RESUME_DELAY);
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => start(), 1200);
   };
 
-  // ユーザーが触ったら一旦止める
   ['touchstart', 'pointerdown', 'wheel'].forEach((ev) => {
     track.addEventListener(ev, pauseAndResume, { passive: true });
   });
 
-  // 商品が開いてる時だけ動かす（hashベース）
-  const tick = () => {
-    const isOpen = location.hash === '#session-collection';
-    if (isOpen) {
-      ensureClones();
-      if (paused) start();
-    } else {
-      if (!paused) stop();
-    }
-    requestAnimationFrame(tick);
+  // 初期化：#session-collection の時だけ開始
+  const watch = () => {
+    const open = location.hash === '#session-collection';
+    if (open && !active) start();
+    if (!open && active) stop();
+    requestAnimationFrame(watch);
   };
-
-  tick();
+  watch();
 })();
