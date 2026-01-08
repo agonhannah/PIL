@@ -641,3 +641,8 @@ body.is-locked{
   margin-top: 4px;      /* ← CLICK HERE と線の距離（0〜12で調整） */
   padding-top: 14px;    /* ← 線から本文の距離 */
 }
+
+/* auto中はsnapを切る（手動スワイプは普通に使える） */
+#session-collection .product__track.is-autoplay{
+  scroll-snap-type: none;
+}
