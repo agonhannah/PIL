@@ -519,6 +519,7 @@ $$("[data-home]").forEach((el) => {
 
   const loopFix = () => {
     const step = getStep();
+    if (!step || step < 1) return; 
     const oneSet = step * originalCount;
 
     // 2セットのうち “後半に入り過ぎたら” 前半相当に瞬間ワープ
@@ -531,6 +532,15 @@ $$("[data-home]").forEach((el) => {
   const start = () => {
     track.classList.add('is-autoplay');
     if (raf) cancelAnimationFrame(raf);
+    
+    const waitReady = () => {
+    const step = getStep();
+    if (!step || step < 1) {
+      requestAnimationFrame(waitReady);
+      return;
+    }
+    tick(); // 準備できたら本番へ
+　　};
 
     const tick = () => {
       if (!isOpen()) {
