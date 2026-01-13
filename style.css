@@ -682,16 +682,15 @@ body.is-locked{
   display:block;
   margin:0;
   padding:0;
-  font: inherit;              /* ← font-family / size / weight を全部継承 */
+  font: inherit;
   font-size:12px;
   line-height:1.8;
   letter-spacing:.02em;
-  opacity:.9;                 /* ← .product__desc と同じ “薄さ” */
-  white-space:pre-wrap;            /* 数字揃え優先 */
-  overflow-wrap: anywhere;
-  word-break: break-word;  
-  overflow-x:visible;            
-  -webkit-overflow-scrolling: touch;
+  opacity:.9;
+
+  white-space:pre-wrap;
+  word-break:break-word;
+  overflow-x:hidden;
 }
 
 .product__includes .mono{
