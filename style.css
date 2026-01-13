@@ -680,10 +680,15 @@ body.is-locked{
 }
 
 .product__includes{
-  font-family: inherit; /* 見た目は今のフォントのまま */
+  display:block;
+  margin:0;
+  padding:0;
+  font: inherit;              /* ← font-family / size / weight を全部継承 */
   font-size:12px;
   line-height:1.8;
   letter-spacing:.02em;
-  margin:0;
-  white-space:pre;
+  opacity:.9;                 /* ← .product__desc と同じ “薄さ” */
+  white-space:pre;            /* 数字揃え優先 */
+  overflow-x:auto;            /* 横が足りない時だけ横スクロール */
+  -webkit-overflow-scrolling: touch;
 }
