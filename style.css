@@ -193,8 +193,8 @@ body.is-locked{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  font-size:12px;
-  letter-spacing:.32em;
+  font-size:13px;
+  letter-spacing:.34em;
   text-transform:uppercase;
   font-variant-numeric: tabular-nums;
 }
