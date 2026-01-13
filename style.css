@@ -729,7 +729,7 @@ body.is-locked{
 
 /* DEMOリンク(ロックボックス一式)自体も少し上へ */
 #pil-soundpack-vol1 .product__trial{
-  margin-top: 10px;   /* ここで微調整（8〜14くらいで好み） */
+  margin-top: 8px;   /* ここで微調整（8〜14くらいで好み） */
 }
 
 /* DEMOの次（説明文ブロック＝2個目）も Session Collection 寄せで詰める */
@@ -737,3 +737,4 @@ body.is-locked{
   margin-top: 4px;    /* DEMOブロック〜次の線の間 */
   padding-top: 14px;  /* 線〜本文の距離 */
 }
+
