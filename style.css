@@ -645,3 +645,13 @@ body.is-locked{
 /* Shop一覧では demo(lockbox) を出さない（商品詳細だけ表示） */
 .shopview .shop-card__demo { display: none !important; }
 　
+
+/* SOUNDPACK（5:7）だけ縦長にする */
+.shop-card.is-contain .shop-card__media::before{
+  padding-top: 140%; /* 5:7 = 7/5 = 1.4 */
+}
+
+/* SOUNDPACKは見切れないように表示（トリミングしない） */
+.shop-card.is-contain .shop-card__media img{
+  object-fit: contain;
+}
