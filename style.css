@@ -701,3 +701,15 @@ body.is-locked{
 
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
+
+
+/* SOUNDPACKだけ：説明文を Demo(モノスペ) の見た目に寄せる */
+#pil-soundpack-vol1 .product__includes{
+  font-size: 11px;         /* ←ここが効く：本文側を少し下げる */
+}
+
+/* monoはそのまま（ただし列ズレ防止で letter-spacing は切るの推奨） */
+#pil-soundpack-vol1 .product__includes .mono{
+  font-size: 1em;
+  letter-spacing: 0;       /* スペース整列の邪魔になるので0推奨 */
+}
