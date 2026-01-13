@@ -5,7 +5,7 @@
    - Shop Modal (open/close)
    - Shop Card -> Product hash navigation (close modal)
    - Hash guard (prevent product showing on direct load)
-   - Pointer FX 
+   - Pointer FX t
 ========================================================= */
 
 (() => {
