@@ -192,7 +192,7 @@ body.is-locked{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  font-size:13px;
+  font-size:14px;
   letter-spacing:.34em;
   text-transform:uppercase;
   font-variant-numeric: tabular-nums;
@@ -209,7 +209,7 @@ body.is-locked{
 .acc__link{
   display:block;
   padding:8px 0;
-  font-size:12px;
+  font-size:13px;
   letter-spacing:.32em;
   text-transform:uppercase;
   opacity:.92;
