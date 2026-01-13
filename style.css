@@ -1,6 +1,6 @@
 
 
-html{ -webkit-text-size-adjust: 100%; }
+
 
 :root{
   --bg:#ffffff;
@@ -33,6 +33,11 @@ html{ -webkit-text-size-adjust: 100%; }
 ========================================================= */
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
+
+html{
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 
 a, button, #menuBtn, .hamburger, .toplink{
   -webkit-tap-highlight-color: transparent;
