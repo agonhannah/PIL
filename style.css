@@ -738,3 +738,9 @@ body.is-locked{
   padding-top: 14px;  /* 線〜本文の距離 */
 }
 
+/* DEMO / 試聴（lockbox）を少し下げる */
+.lockbox,
+.demo-box,
+.demo-section {
+  margin-top: 24px; /* ← まずは 24px */
+}
