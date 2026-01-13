@@ -671,3 +671,10 @@ body.is-locked{
 .shop-card.is-contain .shop-card__media img{
   object-fit: cover;         /* ← 枠を出さない最大ポイント */
 }
+
+/* =========================================================
+   SOUNDPACK only : change TEASER -> DEMO
+========================================================= */
+#pil-soundpack-vol1 .sc-lockbox .lockbox__rect::before{
+  content:"DEMO / 試聴";
+}
