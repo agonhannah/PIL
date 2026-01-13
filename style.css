@@ -684,19 +684,21 @@ body.is-locked{
   content:"DEMO / 試聴";
 }
 
+/* 説明文（全作品）を demo〜 と同じ等幅に統一 */
 .product__includes{
   display:block;
   margin:0;
   padding:0;
-  font: inherit;
-  font-size:11px;
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
   line-height:1.8;
   letter-spacing:.02em;
   opacity:.9;
 
-  white-space:pre-wrap;
-  word-break:break-word;
-  overflow-x:hidden;
+  white-space:pre-wrap;      /* 改行は活かす */
+  word-break:break-word;     /* 長い単語だけ折る */
+  overflow-x:hidden;         /* 横スクロール禁止 */
 }
 
 .product__includes .mono{
