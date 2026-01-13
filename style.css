@@ -694,6 +694,10 @@ body.is-locked{
 }
 
 .product__includes .mono{
+  font-size: 1em;          /* 親と同じサイズ */
+  line-height: inherit;
+  letter-spacing: inherit;
+  font-weight: inherit;
+
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-variant-numeric: tabular-nums;
 }
