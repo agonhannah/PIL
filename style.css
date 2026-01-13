@@ -677,6 +677,7 @@ body.is-locked{
   object-fit: cover;         /* ← 枠を出さない最大ポイント */
 }
 
+
 /* =========================================================
    SOUNDPACK only : change TEASER -> DEMO
 ========================================================= */
@@ -684,24 +685,35 @@ body.is-locked{
   content:"DEMO / 試聴";
 }
 
-/* 説明文（全作品）を demo〜 と同じ等幅に統一 */
-/* 本文（dhrmaのキュレーション〜）は今の見た目を維持 */
+/* =========================================================
+   Description + Demo table
+   - 本文は今の見た目（Helvetica）
+   - Demo表だけ等幅＆本文と同サイズ
+========================================================= */
+
+/* 本文（dhrmaのキュレーション〜） */
 .product__includes{
+  display:block;
+  margin:0;
+  padding:0;
+
   font-family: Helvetica, Arial, sans-serif;
   font-size:12px;
   line-height:1.8;
   letter-spacing:.02em;
   white-space:pre-wrap;
+  word-break:break-word;
 }
 
-/* Demo表だけ：等幅＋サイズは本文に揃える */
+/* Demo表だけ：等幅＋本文と同サイズ */
 .product__includes .mono{
   display:block;
-  margin-top: 18px;      /* ←本文との間隔、好みで */
+  margin-top:18px; /* 本文と表の間隔（好みで調整） */
+
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 1em;        /* ←本文と同じサイズに揃える（重要） */
-  line-height: 1.9;
-  letter-spacing: 0;     /* ←桁揃え崩れ防止 */
-  white-space: pre;      /* ←列をキレイに揃える */
+  font-size:1em;        /* ←本文と同じサイズ */
+  line-height:1.9;
+  letter-spacing:0;     /* ←桁揃え崩れ防止 */
 
-
+  white-space:pre;      /* ←列をキレイに揃える */
+}
