@@ -458,4 +458,51 @@
   }
 })();
 
+// demo lockbox hook
+(function () {
+  const triggers = document.querySelectorAll(".lockbox-trigger");
+  if (!triggers.length) return;
+
+  const content = document.getElementById("lockbox-content");
+
+  // あなたの既存関数に合わせて名前だけ置き換えてOK
+  // 例: openLockbox(), closeLockbox() が既にあるならそれを使う
+  function openLockboxSafe() {
+    if (typeof window.openLockbox === "function") window.openLockbox();
+    else document.documentElement.classList.add("lockbox-open");
+  }
+
+  triggers.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const url = btn.getAttribute("data-demo-url") || "";
+
+      // URL後付け運用：未設定なら一旦メッセージ
+      if (!url || url === "DEMO_URL") {
+        if (content) {
+          content.innerHTML = `<div class="lockbox-message">demo coming soon</div>`;
+        }
+        openLockboxSafe();
+        return;
+      }
+
+      // SoundCloud/Bandcamp/YouTube等：埋め込み想定
+      // URLがiframe用でない場合は、そのサービスの埋め込みURLにしておくのが確実
+      if (content) {
+        content.innerHTML = `
+          <div class="lockbox-embed">
+            <iframe
+              src="${url}"
+              loading="lazy"
+              frameborder="0"
+              allow="autoplay; encrypted-media"
+              allowfullscreen
+            ></iframe>
+          </div>
+        `;
+      }
+      openLockboxSafe();
+    });
+  });
+})();
+
 
