@@ -685,5 +685,5 @@ body.is-locked{
   line-height:1.8;
   letter-spacing:.02em;
   margin:0;
-  white-space:pre;
+  white-space:pre-wrap;
 }
