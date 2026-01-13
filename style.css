@@ -642,4 +642,6 @@ body.is-locked{
   padding-top: 14px;    /* ← 線から本文の距離 */
 }
 
+/* Shop一覧では demo(lockbox) を出さない（商品詳細だけ表示） */
+.shopview .shop-card__demo { display: none !important; }
 　
