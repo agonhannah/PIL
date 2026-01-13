@@ -691,3 +691,8 @@ body.is-locked{
   overflow-x:auto;            /* 横が足りない時だけ横スクロール */
   -webkit-overflow-scrolling: touch;
 }
+
+.product__includes .mono{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
