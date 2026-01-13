@@ -1,7 +1,6 @@
 
 
 
-
 :root{
   --bg:#ffffff;
   --ink:#111;
@@ -716,4 +715,25 @@ body.is-locked{
   letter-spacing:0;     /* ←桁揃え崩れ防止 */
 
   white-space:pre;      /* ←列をキレイに揃える */
+}
+
+/* =========================================================
+   SOUNDPACK layout tighten (match Session Collection feeling)
+========================================================= */
+
+/* DEMO/試聴ブロック（= product__meta 内 1個目の product__block）を上に詰める */
+#pil-soundpack-vol1 .product__meta > .product__block:nth-of-type(1){
+  margin-top: 12px;   /* BUY直下の余白：18→少し詰める */
+  padding-top: 18px;  /* 線〜DEMOの距離：30→詰める */
+}
+
+/* DEMOリンク(ロックボックス一式)自体も少し上へ */
+#pil-soundpack-vol1 .product__trial{
+  margin-top: 10px;   /* ここで微調整（8〜14くらいで好み） */
+}
+
+/* DEMOの次（説明文ブロック＝2個目）も Session Collection 寄せで詰める */
+#pil-soundpack-vol1 .product__meta > .product__block:nth-of-type(2){
+  margin-top: 4px;    /* DEMOブロック〜次の線の間 */
+  padding-top: 14px;  /* 線〜本文の距離 */
 }
