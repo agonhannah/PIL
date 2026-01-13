@@ -678,3 +678,12 @@ body.is-locked{
 #pil-soundpack-vol1 .sc-lockbox .lockbox__rect::before{
   content:"DEMO / 試聴";
 }
+
+.product__includes{
+  font-family: inherit; /* 見た目は今のフォントのまま */
+  font-size:12px;
+  line-height:1.8;
+  letter-spacing:.02em;
+  margin:0;
+  white-space:pre;
+}
