@@ -643,7 +643,9 @@ body.is-locked{
 }
 
 /* Shop一覧では demo(lockbox) を出さない（商品詳細だけ表示） */
-.shopview .shop-card__demo { display: none !important; }
+.shopview .shop-card__demo {
+  display: none !important;
+}
 　
 
 /* SOUNDPACK（5:7）だけ縦長にする */
