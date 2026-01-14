@@ -756,9 +756,9 @@ body.is-locked{
 :root{
   /* 好みで微調整（Session Collection寄せの初期値） */
   --sp-buy-divider-mt: 18px;   /* BUY → 線まで */
-  --sp-buy-divider-pt: 30px;   /* 線 → DEMOブロックの上余白 */
+  --sp-buy-divider-pt: 32px;   /* 線 → DEMOブロックの上余白 */
   --sp-demo-mt: 18px;          /* DEMO(lockbox)自体の上余白（線からの距離） */
-  --sp-next-divider-mt: 4px;   /* DEMOブロック → 次の線まで */
+  --sp-next-divider-mt: 2px;   /* DEMOブロック → 次の線まで */
   --sp-next-divider-pt: 14px;  /* 次の線 → 本文まで */
 }
 
