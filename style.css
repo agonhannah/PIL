@@ -834,7 +834,7 @@ body.is-locked{
   height: 16px;
   padding: 0 4px;
 
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
 
