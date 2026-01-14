@@ -12,6 +12,10 @@
   <!-- Topbar -->
   <header class="topbar" role="banner">
     <a class="toplink" href="./" data-home aria-label="Back to top">TOP</a>
+    
+    <a class="toplink" href="#bag" id="bagLink" aria-label="Open bag">
+  BAG <span id="cart-count">0</span>
+</a>
 
     <button
       class="hamburger"
@@ -81,6 +85,32 @@
   <main id="main" aria-label="Main">
     <!-- 今はTOPに何も表示しない -->
   </main>
+
+<div class="modal-overlay" id="bagOverlay" hidden></div>
+
+<section class="modal" id="bagModal" aria-hidden="true" aria-label="Bag">
+  <div class="modal__body">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+      <div><b>Bag</b></div>
+      <button type="button" id="bagClose">Close</button>
+    </div>
+
+    <div style="margin-top:12px;">
+      <button id="cart-clear" type="button">Clear</button>
+    </div>
+
+    <div id="cart-list" style="margin-top:12px;"></div>
+
+    <div style="margin-top:12px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+      <div>Total: <b id="cart-total">¥0</b></div>
+      <button id="cart-checkout" type="button">Checkout</button>
+    </div>
+
+    <p style="margin-top:10px; font-size:12px; opacity:.7;">
+      ※ physical が含まれる場合、送料 ¥500 が Checkout で加算されます
+    </p>
+  </div>
+</section>
 
   <!-- =========================================================
        SHOP MODAL
