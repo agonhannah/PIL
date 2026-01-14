@@ -92,27 +92,58 @@ function setupBagModal() {
   const closeBtn = document.getElementById("bagClose");
 
   const bagLinkTop = document.getElementById("bagLink");
-  const bagLinkDrawer = document.getElementById("bagLinkDrawer");
+  const bagLinkDrawer = document.getElementById("bagLinkDrawer"); // もう消すならOK
 
-  function openBag(e) {
+  // Bagを開く直前のURL（商品hash含む）を記録
+  let prevUrl = null;
+
+  function openBag(e){
     if (e) e.preventDefault();
     if (!overlay || !modal) return;
 
+    // いま見てるURLを保存（例: .../#session-collection）
+    prevUrl = location.href;
+
+    // “Bagを開いた” を履歴に積む（URLは #bag にする）
+    // これで Close = back で元のhashに戻れる
+    history.pushState({ bag: true }, "", "#bag");
+
     overlay.hidden = false;
-    modal.hidden = false; // bagModalに hidden 付けてるなら
+    modal.hidden = false;
     modal.setAttribute("aria-hidden", "false");
     modal.classList.add("is-open");
 
     render();
   }
 
-  function closeBag() {
+  function closeBag(){
+    // Bagを開いた履歴があるなら、戻る＝直前の画面へ
+    if (location.hash === "#bag") {
+      history.back();
+      return;
+    }
+
+    // 念のためのフォールバック（何かでhashが変わってた時）
+    if (prevUrl) location.href = prevUrl;
+  }
+
+  // popstate / hashchange で表示状態を同期
+  function syncBagByUrl(){
+    const isBag = location.hash === "#bag";
     if (!overlay || !modal) return;
 
-    overlay.hidden = true;
-    modal.hidden = true; // bagModalに hidden 付けてるなら
-    modal.setAttribute("aria-hidden", "true");
-    modal.classList.remove("is-open");
+    if (isBag) {
+      overlay.hidden = false;
+      modal.hidden = false;
+      modal.setAttribute("aria-hidden", "false");
+      modal.classList.add("is-open");
+      render();
+    } else {
+      overlay.hidden = true;
+      modal.hidden = true;
+      modal.setAttribute("aria-hidden", "true");
+      modal.classList.remove("is-open");
+    }
   }
 
   bagLinkTop?.addEventListener("click", openBag);
@@ -121,8 +152,15 @@ function setupBagModal() {
   closeBtn?.addEventListener("click", closeBag);
   overlay?.addEventListener("click", closeBag);
 
+  window.addEventListener("popstate", syncBagByUrl);
+  window.addEventListener("hashchange", syncBagByUrl);
+
+  // 初期同期
+  syncBagByUrl();
+
+  // Esc で閉じる（気持ちいい）
   window.addEventListener("keydown", (ev) => {
-    if (ev.key === "Escape" && overlay && !overlay.hidden) closeBag();
+    if (ev.key === "Escape" && location.hash === "#bag") closeBag();
   });
 }
 
