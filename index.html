@@ -14,7 +14,7 @@
     <a class="toplink" href="./" data-home aria-label="Back to top">TOP</a>
     
     <a class="toplink" href="#bag" id="bagLink" aria-label="Open bag">
-  BAG <span id="cart-count">0</span>
+  BAG <span id="cart-count-top">0</span>
 </a>
 
     <button
@@ -182,30 +182,6 @@
 
   </div>
 </div>
-
-<!-- CART MODAL -->
-<section class="modal" id="cartModal" aria-hidden="true" aria-label="Bag">
-  <div class="modal__body">
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-      <div><b>Bag</b> <span id="cart-count">0</span></div>
-      <div style="display:flex; gap:10px;">
-        <button id="cart-clear" type="button">Clear</button>
-        <button id="cart-close" type="button">Close</button>
-      </div>
-    </div>
-
-    <div id="cart-list" style="margin-top:12px;"></div>
-
-    <div style="margin-top:12px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
-      <div>Total: <b id="cart-total">¥0</b></div>
-      <button id="cart-checkout" type="button">Checkout</button>
-    </div>
-
-    <p style="margin-top:10px; font-size:12px; opacity:.7;">
-      ※ Checkout は Stripe に遷移します
-    </p>
-  </div>
-</section>
 
 
 
