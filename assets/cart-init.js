@@ -95,78 +95,78 @@ function setupBagModal() {
   const overlay  = document.getElementById("bagOverlay");
   const modal    = document.getElementById("bagModal");
   const closeBtn = document.getElementById("bagClose");
-
-  // Topbar の BAG link
   const bagLinkTop = document.getElementById("bagLink");
-  // Drawer にBAGを置くなら、そこでこのIDを使う（無ければOK）
-  const bagLinkDrawer = document.getElementById("bagLinkDrawer");
 
-  if (!overlay || !modal) {
-    return { openBag: () => {}, closeBag: () => {} };
-  }
+  // Bagを開く直前のhashを保持（フォールバック用）
+  let prevHash = location.hash || "";
 
-  const hasHiddenAttr = modal.hasAttribute("hidden");
+  function openBag(e) {
+    if (e) e.preventDefault();
+    if (!overlay || !modal) return;
 
-  function show() {
+    // 直前のhash（商品ページなど）を保存
+    prevHash = location.hash || "";
+
+    // 履歴に「#bag」を積む（戻り先hashもstateに入れる）
+    history.pushState({ bag: true, fromHash: prevHash }, "", "#bag");
+
+    // 表示
     overlay.hidden = false;
-    if (hasHiddenAttr) modal.hidden = false;
+    modal.hidden = false;
     modal.setAttribute("aria-hidden", "false");
     modal.classList.add("is-open");
     render();
   }
 
-  function hide() {
-    overlay.hidden = true;
-    if (hasHiddenAttr) modal.hidden = true;
-    modal.setAttribute("aria-hidden", "true");
-    modal.classList.remove("is-open");
-  }
-
-  function openBag(e) {
-    if (e) e.preventDefault();
-
-    // すでに開いてたら何もしない
-    if (modal.classList.contains("is-open")) return;
-
-    // hash を変えずに履歴だけ積む（戻る操作を可能にする）
-    history.pushState({ bag: true }, "", location.href);
-
-    show();
-  }
-
   function closeBag() {
-    // Bagを開く時に pushState してるので、基本は back で戻す
-    // ※ URLは同じでも popstate は発火する
-    if (modal.classList.contains("is-open")) {
-      history.back();
-      return;
-    }
-    hide();
+    // 「Bagを開いた時の戻り先」を最優先で使う
+    const st = history.state;
+    const from = (st && st.bag) ? (st.fromHash || "") : prevHash;
+
+    // ★ここが肝：backに頼らず、URLを「元のhash」に戻してBagを閉じる
+    //（replaceStateなので履歴は増えない）
+    history.replaceState(null, "", from || "#");
+
+    // 表示同期（#bag じゃなくなるので閉じる）
+    syncBagByUrl();
   }
 
-  // popstate で「Bag open state」を同期
-  window.addEventListener("popstate", (ev) => {
-    // “bag state” なら開く／それ以外なら閉じる
-    if (ev.state && ev.state.bag) show();
-    else hide();
-  });
+  function syncBagByUrl() {
+    const isBag = location.hash === "#bag";
+    if (!overlay || !modal) return;
 
-  // click handlers
+    if (isBag) {
+      overlay.hidden = false;
+      modal.hidden = false;
+      modal.setAttribute("aria-hidden", "false");
+      modal.classList.add("is-open");
+      render();
+    } else {
+      overlay.hidden = true;
+      modal.hidden = true;
+      modal.setAttribute("aria-hidden", "true");
+      modal.classList.remove("is-open");
+    }
+  }
+
+  // クリックで開く
   bagLinkTop?.addEventListener("click", openBag);
-  bagLinkDrawer?.addEventListener("click", openBag);
 
+  // close / overlay
   closeBtn?.addEventListener("click", closeBag);
   overlay?.addEventListener("click", closeBag);
 
+  // ブラウザBackで #bag が外れたら閉じる / #bag に来たら開く
+  window.addEventListener("popstate", syncBagByUrl);
+  window.addEventListener("hashchange", syncBagByUrl);
+
+  // 初期同期（直リンクで #bag のときもOK）
+  syncBagByUrl();
+
   // Esc
   window.addEventListener("keydown", (ev) => {
-    if (ev.key === "Escape" && modal.classList.contains("is-open")) closeBag();
+    if (ev.key === "Escape" && location.hash === "#bag") closeBag();
   });
-
-  // 初期は閉じておく（CSS側で閉じてても安全）
-  hide();
-
-  return { openBag, closeBag };
 }
 
 function setupAddToCart(openBag) {
