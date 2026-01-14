@@ -81,18 +81,23 @@
   const closeDrawer = () => setOpen(false);
 
   if (menuBtn) {
-    menuBtn.addEventListener(
-      "click",
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+  menuBtn.addEventListener(
+    "click",
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-        const expanded = menuBtn.getAttribute("aria-expanded") === "true";
-        expanded ? closeDrawer() : openDrawer();
-      },
-      { capture: true }
-    );
-  }
+      // ★Bagが開いてたら先に閉じる（因果関係は崩さない）
+      if (window.__bag?.isOpen?.()) {
+        window.__bag.close();
+      }
+
+      const expanded = menuBtn.getAttribute("aria-expanded") === "true";
+      expanded ? closeDrawer() : openDrawer();
+    },
+    { capture: true }
+  );
+}
 
   if (overlay) {
     overlay.addEventListener("click", (e) => {
@@ -505,47 +510,6 @@
   });
 })();
 
-// ===== Bag modal =====
-(() => {
-  const bagModal = document.getElementById("bagModal");
-  const bagOverlay = document.getElementById("bagOverlay");
-  const bagClose = document.getElementById("bagClose");
-  const bagLink = document.getElementById("bagLink");
 
-  if (!bagModal || !bagOverlay || !bagLink) return;
-
-  const open = () => {
-    bagOverlay.hidden = false;
-    bagModal.setAttribute("aria-hidden", "false");
-    document.documentElement.classList.add("is-modal-open");
-  };
-
-  const close = () => {
-    bagOverlay.hidden = true;
-    bagModal.setAttribute("aria-hidden", "true");
-    document.documentElement.classList.remove("is-modal-open");
-    // URLの #bag を消す（戻るが変にならないように）
-    if (location.hash === "#bag") history.replaceState(null, "", location.pathname + location.search);
-  };
-
-  // クリックで開く（hashも付ける）
-  bagLink.addEventListener("click", (e) => {
-    e.preventDefault();
-    location.hash = "#bag";
-    open();
-  });
-
-  bagOverlay.addEventListener("click", close);
-  bagClose?.addEventListener("click", close);
-
-  // hashでの開閉（直リンク/戻る対応）
-  window.addEventListener("hashchange", () => {
-    if (location.hash === "#bag") open();
-    else close();
-  });
-
-  // 初期表示
-  if (location.hash === "#bag") open();
-})();
 
 
