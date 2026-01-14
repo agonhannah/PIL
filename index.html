@@ -285,11 +285,14 @@
 
         <div class="product__price">2750 YEN (tax inc.)</div>
 
-        <a class="product__cta"
-   href="https://paralone.theshop.jp/cart/add?item_id=131287918&quantity=1"
-   target="_blank" rel="noopener">
-  ADD TO BAG
-</a>
+        <form action="https://paralone.theshop.jp/cart/add" method="post">
+  <input type="hidden" name="item_id" value="131287918">
+  <input type="hidden" name="quantity" value="1">
+
+  <button type="submit" class="product__cta">
+    ADD TO BAG
+  </button>
+</form>
 
         <div class="product__block">
           <div class="product__label"> TEASER / 試聴</div>
