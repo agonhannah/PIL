@@ -779,12 +779,7 @@ body.is-locked{
   padding-top: var(--sp-next-divider-pt);
 }
 
-/* 4) 以前の「lockboxを下げる」系の雑な指定を無効化（ガクつき/ズレ原因） */
-.lockbox,
-.demo-box,
-.demo-section{
-  margin-top: 0 !important;
-}
+
 
 
 .legal { display: none; }
