@@ -30,49 +30,50 @@
   <div class="overlay" id="overlay" hidden></div>
 
   <!-- Drawe -->
-  <aside class="drawer" id="drawer" aria-hidden="true">
-    <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
-      <section class="drawer__acc" aria-label="Menu sections">
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer__inner" role="dialog" aria-modal="true" aria-label="Menu">
 
-        <!-- ARCHIVE -->
-        <div class="acc">
-          <button class="acc__btn" type="button" data-acc="archive" aria-expanded="false">
-            <span class="acc__label">Archive</span>
-            <span class="acc__mark" aria-hidden="true">+</span>
-          </button>
+    <section class="drawer__acc" aria-label="Menu sections">
+      <!-- ARCHIVE -->
+      <div class="acc">
+        <button class="acc__btn" type="button" data-acc="archive" aria-expanded="false">
+          <span class="acc__label">Archive</span>
+          <span class="acc__mark" aria-hidden="true">+</span>
+        </button>
 
-          <div class="acc__panel" data-acc-panel="archive" hidden>
-            <nav class="acc__list" aria-label="Archive list">
-              <a class="acc__link" href="#" data-close>Design</a>
-              <a class="acc__link" href="#" data-close>Beat Live</a>
-            </nav>
-          </div>
+        <div class="acc__panel" data-acc-panel="archive" hidden>
+          <nav class="acc__list" aria-label="Archive list">
+            <a class="acc__link" href="#" data-close>Design</a>
+            <a class="acc__link" href="#" data-close>Beat Live</a>
+          </nav>
         </div>
+      </div>
 
-        <!-- SHOP -->
-        <div class="acc">
-          <button class="acc__btn" type="button" data-acc="shop" aria-expanded="true">
-            <span class="acc__label">Shop</span>
-            <span class="acc__mark" aria-hidden="true">−</span>
-          </button>
+      <!-- SHOP -->
+      <div class="acc">
+        <button class="acc__btn" type="button" data-acc="shop" aria-expanded="true">
+          <span class="acc__label">Shop</span>
+          <span class="acc__mark" aria-hidden="true">−</span>
+        </button>
 
-          <div class="acc__panel" data-acc-panel="shop">
-            <nav class="acc__list" aria-label="Shop list">
-              <a class="acc__link" href="#" data-close data-open-modal="shop-all">All</a>
-              <a class="acc__link" href="#" data-close data-open-modal="shop-digital">Digital</a>
-              <a class="acc__link" href="#" data-close data-open-modal="shop-physical">Physical</a>
-            </nav>
-          </div>
+        <div class="acc__panel" data-acc-panel="shop">
+          <nav class="acc__list" aria-label="Shop list">
+            <a class="acc__link" href="#" data-close data-open-modal="shop-all">All</a>
+            <a class="acc__link" href="#" data-close data-open-modal="shop-digital">Digital</a>
+            <a class="acc__link" href="#" data-close data-open-modal="shop-physical">Physical</a>
+          </nav>
         </div>
+      </div>
+    </section>
 
-      </section>
+    <nav class="drawer__secondary" aria-label="Secondary">
+      <a class="sec__link" href="#about" data-close>ABOUT</a>
+      <a class="sec__link" href="mailto:kazukihanamoto.dhrma@gmail.com" data-close>CONTACT</a>
+      <a class="sec__link sec__link--sub" href="#legal" data-close>特定商取引法に基づく表記</a>
+    </nav>
 
-      <nav class="drawer__secondary" aria-label="Secondary">
-        <a class="sec__link" href="#about" data-close>ABOUT</a>
-        <a class="sec__link" href="mailto:kazukihanamoto.dhrma@gmail.com" data-close>CONTACT</a>
-      </nav>
-    </div>
-  </aside>
+  </div>
+</aside>
 
   <!-- =========================================================
        MAIN (TOPには何も出さない / ここは将来About等を置く場所)
@@ -507,26 +508,19 @@ Use    : Royalty-free / Commercial use allowed
   </div>
   
   <!-- 特定商取引法に基づく表記 -->
-<section class="legal" id="legal" aria-label="特定商取引法に基づく表記" hidden >
+<section class="legal" id="legal" aria-label="特定商取引法に基づく表記">
   <div class="legal__inner">
     <h1 class="legal__title">特定商取引法に基づく表記</h1>
 
     <div class="legal__body">
       <dl class="legal__dl">
-        <dt>販売事業者</dt><dd>dhrma（花本和己）</dd>
-
-        <dt>運営統括責任者</dt><dd>花本 和己</dd>
-
+        <dt>販売事業者</dt><dd>Paradice Loner</dd>
+        <dt>運営統括責任者</dt><dd>Paradice Loner</dd>
         <dt>所在地</dt><dd>※請求があった場合、遅滞なく開示します</dd>
-
         <dt>電話番号</dt><dd>※請求があった場合、遅滞なく開示します</dd>
-
         <dt>メールアドレス</dt><dd>kazukihanamoto.dhrma@gmail.com</dd>
-
         <dt>販売価格</dt><dd>各商品ページに表示（消費税込）</dd>
-
         <dt>商品代金以外の必要料金</dt><dd>送料（物販のみ）／振込の場合は振込手数料 等</dd>
-
         <dt>お支払い方法</dt><dd>クレジットカード（Stripe）</dd>
 
         <dt>引渡し時期</dt>
@@ -544,14 +538,13 @@ Use    : Royalty-free / Commercial use allowed
         <dt>動作環境</dt><dd>（デジタル商品の場合）WAV再生可能な環境 等</dd>
       </dl>
 
-      <p class="legal__note">
-        ※ 表記内容は運用に合わせて随時更新します。
-      </p>
+      <p class="legal__note">※ 表記内容は運用に合わせて随時更新します。</p>
 
       <a class="legal__back" href="./" aria-label="Back">BACK</a>
     </div>
   </div>
 </section>
+  
 
   <script src="script.js?v=20260104-2215" defer></script>
 </body>
