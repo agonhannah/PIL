@@ -125,3 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
   render();
   window.addEventListener("cart:updated", render);
 });
+
+const topCount = document.getElementById("cart-count-top");
+if (topCount) topCount.textContent = String(count);
