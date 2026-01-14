@@ -81,7 +81,15 @@ function render() {
   }
 
   totalEl.textContent = yen(total);
-  countEls.forEach((el) => (el.textContent = String(count)));
+  countEls.forEach((el) => {
+  if (count > 0) {
+    el.textContent = String(count);
+    el.hidden = false;   // 黒丸＋数字を表示
+  } else {
+    el.textContent = "";
+    el.hidden = true;    // 黒丸ごと非表示
+  }
+});
 }
 
 // ===== Bag modal（hash変えない / 安定版）=====
