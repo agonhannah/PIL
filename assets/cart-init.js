@@ -1,9 +1,11 @@
 // assets/cart-init.js
-import { addToCart, removeFromCart, setQty, clearCart, getCart, checkout } from "./cart.js";
+import { addToCart, getCart, clearCart, removeFromCart, setQty, checkout } from "./cart.js";
 
-const yen = (n) => "¥" + Number(n || 0).toLocaleString("ja-JP");
+function yen(n) {
+  return "¥" + Number(n || 0).toLocaleString("ja-JP");
+}
 
-function renderCart() {
+function render() {
   const cart = getCart();
 
   const countEl = document.getElementById("cart-count");
@@ -12,103 +14,84 @@ function renderCart() {
 
   if (!countEl || !listEl || !totalEl) return;
 
-  const count = cart.reduce((s, x) => s + (x.qty || 0), 0);
-  const total = cart.reduce((s, x) => s + (x.unitAmount || 0) * (x.qty || 0), 0);
-
-  countEl.textContent = String(count);
-  totalEl.textContent = yen(total);
+  let total = 0;
+  let count = 0;
 
   listEl.innerHTML = "";
 
-  if (!cart.length) {
-    listEl.innerHTML = `<div style="opacity:.7; font-size:12px;">カートは空です</div>`;
-    return;
-  }
-
   for (const item of cart) {
+    total += (item.unitAmount || 0) * item.qty;
+    count += item.qty;
+
     const row = document.createElement("div");
-    row.style.display = "grid";
-    row.style.gridTemplateColumns = "1fr auto auto";
+    row.style.display = "flex";
     row.style.gap = "10px";
     row.style.alignItems = "center";
-    row.style.marginTop = "10px";
+    row.style.margin = "8px 0";
 
     row.innerHTML = `
-      <div>
-        <div style="font-size:13px;">${escapeHtml(item.name || "")}</div>
-        <div style="opacity:.7; font-size:12px;">${yen(item.unitAmount)} × </div>
+      <div style="flex:1;">
+        <div style="font-weight:600;">${item.name}</div>
+        <div style="opacity:.7; font-size:12px;">${item.kind} / ${item.priceId}</div>
       </div>
-
-      <input
-        type="number"
-        min="1"
-        max="99"
-        value="${item.qty || 1}"
-        style="width:70px;"
-        data-qty
-      />
-
-      <button data-remove style="padding:6px 10px;">Remove</button>
+      <input type="number" min="1" max="99" value="${item.qty}" style="width:64px;" />
+      <button type="button">Remove</button>
     `;
 
-    row.querySelector("[data-qty]").addEventListener("change", (e) => {
-      setQty(item.priceId, Number(e.target.value));
+    const qtyInput = row.querySelector("input");
+    const rmBtn = row.querySelector("button");
+
+    qtyInput.addEventListener("change", () => {
+      setQty(item.priceId, qtyInput.value);
     });
 
-    row.querySelector("[data-remove]").addEventListener("click", () => {
+    rmBtn.addEventListener("click", () => {
       removeFromCart(item.priceId);
     });
 
     listEl.appendChild(row);
   }
+
+  countEl.textContent = String(count);
+  totalEl.textContent = yen(total);
 }
 
-function escapeHtml(s) {
-  return String(s)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-// クリックでカート追加
-function bindAddButtons() {
+document.addEventListener("DOMContentLoaded", () => {
+  // Add buttons
   document.addEventListener("click", (e) => {
     const btn = e.target.closest(".btn-add");
     if (!btn) return;
 
     const priceId = btn.dataset.priceId;
+    const name = btn.dataset.name || "Item";
+    const kind = btn.dataset.kind || "digital";
+
     if (!priceId) {
-      alert("この商品に priceId（StripeのPrice ID）が設定されていません");
+      alert("priceId が入ってないです（data-price-id）");
       return;
     }
 
-    const name = btn.dataset.name || "Item";
-    const kind = btn.dataset.kind || "digital";
-    const unitAmount = Number(btn.dataset.price || 0);
+    // unitAmountは表示用。StripeにはpriceId+quantityを送るので、無くてもOK。
+    // ただ、合計表示が欲しいなら unitAmount を入れる。
+    const unitAmount = Number(btn.dataset.unitAmount || btn.dataset.price || 0);
 
     addToCart({
       priceId,
       name,
       kind,
-      unitAmount,
-      qty: 1,
+      unitAmount, // 表示用（¥）
+      qty: 1
     });
   });
-}
 
-// UIボタン
-function bindCartUi() {
+  // UI buttons
   const clearBtn = document.getElementById("cart-clear");
   const checkoutBtn = document.getElementById("cart-checkout");
 
-  if (clearBtn) clearBtn.addEventListener("click", () => clearCart());
-  if (checkoutBtn) checkoutBtn.addEventListener("click", () => checkout());
-}
+  clearBtn?.addEventListener("click", () => clearCart());
+  checkoutBtn?.addEventListener("click", () => checkout());
 
-// 初期化
-bindAddButtons();
-bindCartUi();
-renderCart();
-window.addEventListener("cart:updated", renderCart);
+  // 初回描画 + 更新監視
+  render();
+  window.addEventListener("cart:updated", render);
+});
