@@ -18,9 +18,7 @@ function migrateCartPrices() {
   if (!cart.length) return;
 
   let changed = false;
-
   for (const item of cart) {
-    // 既存カートに unitAmount が無い/0 のものだけ補完
     if (!item.unitAmount || item.unitAmount === 0) {
       const v = PRICE_MAP[item.priceId];
       if (v) {
@@ -42,6 +40,7 @@ function render() {
   const countEl = document.getElementById("cart-count");
   const listEl  = document.getElementById("cart-list");
   const totalEl = document.getElementById("cart-total");
+  const topCount = document.getElementById("cart-count-top"); // ←ヘッダー表示用（任意）
 
   if (!countEl || !listEl || !totalEl) return;
 
@@ -72,26 +71,49 @@ function render() {
     const qtyInput = row.querySelector("input");
     const rmBtn = row.querySelector("button");
 
-    qtyInput.addEventListener("change", () => {
-      setQty(item.priceId, qtyInput.value);
-    });
-
-    rmBtn.addEventListener("click", () => {
-      removeFromCart(item.priceId);
-    });
+    qtyInput.addEventListener("change", () => setQty(item.priceId, qtyInput.value));
+    rmBtn.addEventListener("click", () => removeFromCart(item.priceId));
 
     listEl.appendChild(row);
   }
 
   countEl.textContent = String(count);
   totalEl.textContent = yen(total);
+  if (topCount) topCount.textContent = String(count); // ←ヘッダーの数を更新
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 既存localStorageカートの unitAmount を補完（Total ¥0 対策）
   migrateCartPrices();
 
-  // Add to bag（イベント委譲でOK）
+  // ====== BAG モーダル制御（ここが重要：外に出す）======
+  const overlay = document.getElementById("modalOverlay");
+  const cartModal = document.getElementById("cartModal");
+  const bagBtn = document.getElementById("bagBtn");
+  const closeBtn = document.getElementById("cart-close");
+
+  function openCart() {
+    if (!overlay || !cartModal) return;
+    overlay.hidden = false;
+    cartModal.setAttribute("aria-hidden", "false");
+    cartModal.classList.add("is-open");
+    render();
+  }
+
+  function closeCart() {
+    if (!overlay || !cartModal) return;
+    overlay.hidden = true;
+    cartModal.setAttribute("aria-hidden", "true");
+    cartModal.classList.remove("is-open");
+  }
+
+  bagBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    openCart();
+  });
+  closeBtn?.addEventListener("click", closeCart);
+  overlay?.addEventListener("click", closeCart);
+
+  // ====== Add to bag（イベント委譲）======
   document.addEventListener("click", (e) => {
     const btn = e.target.closest(".btn-add");
     if (!btn) return;
@@ -104,34 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("priceId が入ってないです（data-price-id）");
       return;
     }
-    
-    const overlay = document.getElementById("modalOverlay");
-const cartModal = document.getElementById("cartModal");
-const bagBtn = document.getElementById("bagBtn");
-const closeBtn = document.getElementById("cart-close");
 
-function openCart() {
-  overlay.hidden = false;
-  cartModal.setAttribute("aria-hidden", "false");
-  cartModal.classList.add("is-open"); // CSSなくてもOKだけど後で使える
-  render();
-}
-
-function closeCart() {
-  overlay.hidden = true;
-  cartModal.setAttribute("aria-hidden", "true");
-  cartModal.classList.remove("is-open");
-}
-
-bagBtn?.addEventListener("click", (e) => {
-  e.preventDefault();
-  openCart();
-});
-
-closeBtn?.addEventListener("click", closeCart);
-overlay?.addEventListener("click", closeCart);
-
-    // 表示用。今回のTotal表示に必要
     const unitAmount = Number(btn.dataset.unitAmount || btn.dataset.price || PRICE_MAP[priceId] || 0);
 
     addToCart({
@@ -141,16 +136,15 @@ overlay?.addEventListener("click", closeCart);
       unitAmount,
       qty: 1
     });
+
+    // 追加したらカート開きたいならこれ
+    // openCart();
   });
 
   // UI buttons
   document.getElementById("cart-clear")?.addEventListener("click", () => clearCart());
   document.getElementById("cart-checkout")?.addEventListener("click", () => checkout());
 
-  // 初回描画 + 更新監視
   render();
   window.addEventListener("cart:updated", render);
 });
-
-const topCount = document.getElementById("cart-count-top");
-if (topCount) topCount.textContent = String(count);
