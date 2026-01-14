@@ -1,8 +1,39 @@
 // assets/cart-init.js
 import { addToCart, getCart, clearCart, removeFromCart, setQty, checkout } from "./cart.js";
 
+const CART_KEY = "paradiceloner_cart_v1";
+
 function yen(n) {
   return "¥" + Number(n || 0).toLocaleString("ja-JP");
+}
+
+// priceId -> unitAmount（表示用の円）
+const PRICE_MAP = {
+  "price_1SlmMwKIaoBhTWZC50foHo6u": 2750, // CD
+  "price_1SpMR2KIaoBhTWZChWLVHw3b": 2750, // SOUNDPACK
+};
+
+function migrateCartPrices() {
+  const cart = getCart();
+  if (!cart.length) return;
+
+  let changed = false;
+
+  for (const item of cart) {
+    // 既存カートに unitAmount が無い/0 のものだけ補完
+    if (!item.unitAmount || item.unitAmount === 0) {
+      const v = PRICE_MAP[item.priceId];
+      if (v) {
+        item.unitAmount = v;
+        changed = true;
+      }
+    }
+  }
+
+  if (changed) {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    window.dispatchEvent(new Event("cart:updated"));
+  }
 }
 
 function render() {
@@ -57,7 +88,10 @@ function render() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Add buttons
+  // 既存localStorageカートの unitAmount を補完（Total ¥0 対策）
+  migrateCartPrices();
+
+  // Add to bag（イベント委譲でOK）
   document.addEventListener("click", (e) => {
     const btn = e.target.closest(".btn-add");
     if (!btn) return;
@@ -71,25 +105,21 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // unitAmountは表示用。StripeにはpriceId+quantityを送るので、無くてもOK。
-    // ただ、合計表示が欲しいなら unitAmount を入れる。
-    const unitAmount = Number(btn.dataset.unitAmount || btn.dataset.price || 0);
+    // 表示用。今回のTotal表示に必要
+    const unitAmount = Number(btn.dataset.unitAmount || btn.dataset.price || PRICE_MAP[priceId] || 0);
 
     addToCart({
       priceId,
       name,
       kind,
-      unitAmount, // 表示用（¥）
+      unitAmount,
       qty: 1
     });
   });
 
   // UI buttons
-  const clearBtn = document.getElementById("cart-clear");
-  const checkoutBtn = document.getElementById("cart-checkout");
-
-  clearBtn?.addEventListener("click", () => clearCart());
-  checkoutBtn?.addEventListener("click", () => checkout());
+  document.getElementById("cart-clear")?.addEventListener("click", () => clearCart());
+  document.getElementById("cart-checkout")?.addEventListener("click", () => checkout());
 
   // 初回描画 + 更新監視
   render();
