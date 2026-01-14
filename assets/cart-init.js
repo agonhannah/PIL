@@ -104,6 +104,32 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("priceId が入ってないです（data-price-id）");
       return;
     }
+    
+    const overlay = document.getElementById("modalOverlay");
+const cartModal = document.getElementById("cartModal");
+const bagBtn = document.getElementById("bagBtn");
+const closeBtn = document.getElementById("cart-close");
+
+function openCart() {
+  overlay.hidden = false;
+  cartModal.setAttribute("aria-hidden", "false");
+  cartModal.classList.add("is-open"); // CSSなくてもOKだけど後で使える
+  render();
+}
+
+function closeCart() {
+  overlay.hidden = true;
+  cartModal.setAttribute("aria-hidden", "true");
+  cartModal.classList.remove("is-open");
+}
+
+bagBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  openCart();
+});
+
+closeBtn?.addEventListener("click", closeCart);
+overlay?.addEventListener("click", closeCart);
 
     // 表示用。今回のTotal表示に必要
     const unitAmount = Number(btn.dataset.unitAmount || btn.dataset.price || PRICE_MAP[priceId] || 0);
