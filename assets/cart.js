@@ -14,8 +14,16 @@ function saveCart(items) {
 export function addToCart(item) {
   const cart = loadCart();
   const idx = cart.findIndex(x => x.priceId === item.priceId);
-  if (idx >= 0) cart[idx].qty += item.qty;
-  else cart.push(item);
+
+  if (idx >= 0) {
+    cart[idx].qty += item.qty;
+    // 念のため最新メタも同期
+    cart[idx].name = item.name ?? cart[idx].name;
+    cart[idx].kind = item.kind ?? cart[idx].kind;
+    cart[idx].unitAmount = item.unitAmount ?? cart[idx].unitAmount;
+  } else {
+    cart.push(item);
+  }
   saveCart(cart);
 }
 
