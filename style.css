@@ -846,3 +846,7 @@ body.is-locked{
   color: #fff;
 }
 
+.bag-count[hidden]{
+  display:none !important;
+}
+
