@@ -112,6 +112,9 @@
   </div>
 </section>
 
+
+
+
   <!-- =========================================================
        SHOP MODAL
   ========================================================== -->
@@ -179,6 +182,31 @@
 
   </div>
 </div>
+
+<!-- CART MODAL -->
+<section class="modal" id="cartModal" aria-hidden="true" aria-label="Bag">
+  <div class="modal__body">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+      <div><b>Bag</b> <span id="cart-count">0</span></div>
+      <div style="display:flex; gap:10px;">
+        <button id="cart-clear" type="button">Clear</button>
+        <button id="cart-close" type="button">Close</button>
+      </div>
+    </div>
+
+    <div id="cart-list" style="margin-top:12px;"></div>
+
+    <div style="margin-top:12px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+      <div>Total: <b id="cart-total">¥0</b></div>
+      <button id="cart-checkout" type="button">Checkout</button>
+    </div>
+
+    <p style="margin-top:10px; font-size:12px; opacity:.7;">
+      ※ Checkout は Stripe に遷移します
+    </p>
+  </div>
+</section>
+
 
 
 <!-- ===== SHOP: DIGITAL ===== -->
@@ -528,25 +556,7 @@ Use    : Royalty-free / Commercial use allowed
 </section>
 
 
-<hr />
 
-<section id="cart-ui">
-  <div style="display:flex; align-items:center; gap:12px;">
-    <div><b>Bag</b> <span id="cart-count">0</span></div>
-    <button id="cart-clear">Clear</button>
-  </div>
-
-  <div id="cart-list" style="margin-top:12px;"></div>
-
-  <div style="margin-top:12px; display:flex; align-items:center; gap:12px;">
-    <div>Total: <b id="cart-total">¥0</b></div>
-    <button id="cart-checkout">Checkout</button>
-  </div>
-
-  <p style="margin-top:10px; font-size:12px; opacity:.7;">
-    ※ Checkout は次のステップで Stripe に繋ぎます（今はUI確認用）
-  </p>
-</section>
 
 
   <!-- Pointer FX -->
