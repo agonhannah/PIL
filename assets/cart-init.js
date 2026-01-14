@@ -37,7 +37,7 @@ function migrateCartPrices() {
 function render() {
   const cart = getCart();
 
-  const countEl = document.getElementById("cart-count");
+  const countEl = document.getElementById("cart-count-top") || document.getElementById("cart-count");
   const listEl  = document.getElementById("cart-list");
   const totalEl = document.getElementById("cart-total");
   const topCount = document.getElementById("cart-count-top"); // ←ヘッダー表示用（任意）
@@ -86,10 +86,11 @@ document.addEventListener("DOMContentLoaded", () => {
   migrateCartPrices();
 
   // ====== BAG モーダル制御（ここが重要：外に出す）======
-  const overlay = document.getElementById("modalOverlay");
-  const cartModal = document.getElementById("cartModal");
-  const bagBtn = document.getElementById("bagBtn");
-  const closeBtn = document.getElementById("cart-close");
+  // ====== BAG モーダル制御（bagModal採用）======
+const overlay = document.getElementById("bagOverlay");
+const cartModal = document.getElementById("bagModal");
+const bagBtn = document.getElementById("bagLink");
+const closeBtn = document.getElementById("bagClose");
 
   function openCart() {
     if (!overlay || !cartModal) return;
