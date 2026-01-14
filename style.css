@@ -829,3 +829,16 @@ body.is-locked{
   display: inline-block;
   margin-top: 26px;
 }
+
+/* BAG は常に最前面 */
+#bagOverlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9998; /* drawer / shop overlay より上 */
+}
+
+#bagModal{
+  position: fixed;
+  inset: 0;
+  z-index: 9999; /* overlay より上 */
+}
