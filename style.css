@@ -10,8 +10,13 @@
 
   --radius:14px;
   --gutter:20px;
+  
+  /* topbar tuning */
+  --topbar-pad-top: 24px;   /* ← 18→24 */
+  --topbar-pad-bot: 18px;   /* ← 14→18 */
+  --topbar-btn: 52px;       /* ← 44→52 */
 
-  --topbar-h: calc((18px + env(safe-area-inset-top, 0px)) + 44px + 14px);
+  --topbar-h: calc((var(--topbar-pad-top) + env(safe-area-inset-top, 0px)) + var(--topbar-btn) + var(--topbar-pad-bot));
 
   /* Pointer scale */
   --fx-scale: 1;
@@ -25,6 +30,13 @@
   /* 「CLICK HERE 下のバー（＝説明文の上の線）」だけ動かす */
   --trial-divider-gap: 46px;   /* 小さいほど “上に” 近づく（推奨: 8〜18px） */
   --desc-top-padding: 18px;    /* 線〜本文の距離（基本18でOK） */
+  
+  /* 好みで微調整（Session Collection寄せの初期値） */
+  --sp-buy-divider-mt: 18px;   /* BUY → 線まで */
+  --sp-buy-divider-pt: 30px;   /* 線 → DEMOブロックの上余白 */
+  --sp-demo-mt: 26px;          /* DEMO(lockbox)自体の上余白（線からの距離） */
+  --sp-next-divider-mt: 4px;   /* DEMOブロック → 次の線まで */
+  --sp-next-divider-pt: 14px;  /* 次の線 → 本文まで */
 }
 
 /* =========================================================
@@ -96,26 +108,26 @@ body::after{
   justify-content:space-between;
   align-items:center;
   padding:
-    calc(18px + env(safe-area-inset-top, 0px))
+    calc(var(--topbar-pad-top) + env(safe-area-inset-top, 0px))
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
-    14px
+    var(--topbar-pad-bot)
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
   background:#fff;
 }
 
 .toplink{
-  font-size:14px;
+  font-size:15px;
   letter-spacing:.30em;
   text-transform:uppercase;
   opacity:.80;
-  height:44px;
+  height: var(--topbar-btn);
   display:inline-flex;
   align-items:center;
 }
 
 .hamburger{
-  width:44px;
-  height:44px;
+  width: var(--topbar-btn);
+  height: var(--topbar-btn);
   display:grid;
   place-items:center;
   cursor:pointer;
@@ -718,49 +730,12 @@ body.is-locked{
 }
 
 /* =========================================================
-   SOUNDPACK layout tighten (match Session Collection feeling)
-========================================================= */
-
-/* DEMO/試聴ブロック（= product__meta 内 1個目の product__block）を上に詰める */
-#pil-soundpack-vol1 .product__meta > .product__block:nth-of-type(1){
-  margin-top: 12px;   /* BUY直下の余白：18→少し詰める */
-  padding-top: 18px;  /* 線〜DEMOの距離：30→詰める */
-}
-
-/* DEMOリンク(ロックボックス一式)自体も少し上へ */
-#pil-soundpack-vol1 .product__trial{
-  margin-top: 8px;   /* ここで微調整（8〜14くらいで好み） */
-}
-
-/* DEMOの次（説明文ブロック＝2個目）も Session Collection 寄せで詰める */
-#pil-soundpack-vol1 .product__meta > .product__block:nth-of-type(2){
-  margin-top: 4px;    /* DEMOブロック〜次の線の間 */
-  padding-top: 14px;  /* 線〜本文の距離 */
-}
-
-/* DEMO / 試聴（lockbox）を少し下げる */
-.lockbox,
-.demo-box,
-.demo-section {
-  margin-top: 30px; /* ← まずは 24px */
-}
-
-/* =========================================================
    SOUNDPACK (pil-soundpack-vol1)
    Make layout match Session Collection
    - BUY直下の線の位置
    - 線→DEMO(lockbox)の距離
    - DEMO→説明文の線の位置
 ========================================================= */
-
-:root{
-  /* 好みで微調整（Session Collection寄せの初期値） */
-  --sp-buy-divider-mt: 18px;   /* BUY → 線まで */
-  --sp-buy-divider-pt: 30px;   /* 線 → DEMOブロックの上余白 */
-  --sp-demo-mt: 26px;          /* DEMO(lockbox)自体の上余白（線からの距離） */
-  --sp-next-divider-mt: 4px;   /* DEMOブロック → 次の線まで */
-  --sp-next-divider-pt: 14px;  /* 次の線 → 本文まで */
-}
 
 /* 1) BUY直下の線（= product__block 1個目）を Session Collection と同じに */
 #pil-soundpack-vol1 .product__meta > .product__block:nth-of-type(1){
@@ -785,16 +760,13 @@ body.is-locked{
 .legal { display: none; }
 .legal:target {
   display: block;
-  padding: 72px 16px 48px;
+  padding: 96px 20px 80px; 
 }
 
 
 
 
 /* Tokushoho layout */
-.legal{
-  padding: 96px 20px 80px;
-}
 .legal__inner{
   max-width: 640px;
   margin: 0 auto;
@@ -843,6 +815,7 @@ body.is-locked{
   align-items: center;
   justify-content: center;
   margin-left: auto;
+  margin-right: 6px; 
   width: 32px;
   height: 32px;
 }
