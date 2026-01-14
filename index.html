@@ -488,41 +488,55 @@ Use    : Royalty-free / Commercial use allowed
   </div><!-- /.product__inner -->
 </section>
 
-<button class="add-to-bag"
-  data-sku="cd-session"
-  data-name="[CD] SBK / dhrma Session Collection"
-  data-price-id="price_xxxxxxxxxxxxx"
-  data-kind="physical">
-  Add to Bag
-</button>
+<!-- ====== SHOP / CART UI (minimal) ====== -->
+<section id="shop-mini">
+  <div class="cart-item">
+    <div class="cart-item__title">Paradi(c)e Loner "SOUNDPACK" vol.1</div>
+    <div class="cart-item__price">¥2,750</div>
 
-<button class="add-to-bag"
-  data-sku="soundpack-vol1"
-  data-name="Paradi(c)e Loner “SOUNDPACK” vol.1"
-  data-price-id="price_yyyyyyyyyyyyy"
-  data-kind="digital">
-  Add to Bag
-</button>
+    <button
+      class="btn-add"
+      data-id="sp001"
+      data-name="Paradi(c)e Loner SOUNDPACK vol.1"
+      data-price="2750"
+    >
+      Add to Bag
+    </button>
+  </div>
 
-<script type="module">
-  import { addToCart } from "/assets/cart.js";
+  <div class="cart-item">
+    <div class="cart-item__title">[CD] SBK / dhrma Session Collection [2022-24 Bootlegs]</div>
+    <div class="cart-item__price">¥2,750</div>
 
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".add-to-bag");
-    if (!btn) return;
+    <button
+      class="btn-add"
+      data-id="cd001"
+      data-name="[CD] SBK / dhrma Session Collection"
+      data-price="2750"
+    >
+      Add to Bag
+    </button>
+  </div>
+</section>
+<hr />
 
-    addToCart({
-      sku: btn.dataset.sku,
-      name: btn.dataset.name,
-      priceId: btn.dataset.priceId,
-      kind: btn.dataset.kind, // physical or digital
-      qty: 1
-    });
+<section id="cart-ui">
+  <div style="display:flex; align-items:center; gap:12px;">
+    <div><b>Bag</b> <span id="cart-count">0</span></div>
+    <button id="cart-clear">Clear</button>
+  </div>
 
-    // UIは好みで（トーストとか）
-    alert("Added to bag");
-  });
-</script>
+  <div id="cart-list" style="margin-top:12px;"></div>
+
+  <div style="margin-top:12px; display:flex; align-items:center; gap:12px;">
+    <div>Total: <b id="cart-total">¥0</b></div>
+    <button id="cart-checkout">Checkout</button>
+  </div>
+
+  <p style="margin-top:10px; font-size:12px; opacity:.7;">
+    ※ Checkout は次のステップで Stripe に繋ぎます（今はUI確認用）
+  </p>
+</section>
 
 
   <!-- Pointer FX -->
@@ -591,5 +605,6 @@ Use    : Royalty-free / Commercial use allowed
   
 
   <script src="script.js?v=20260104-2215" defer></script>
+  <script src="assets/cart.js?v=20260114-01" defer></script>
 </body>
 </html>
