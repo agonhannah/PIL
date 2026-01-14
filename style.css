@@ -878,3 +878,8 @@ body.is-locked{
   color: #fff;
 }
 
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
