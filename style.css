@@ -830,17 +830,16 @@ body.is-locked{
   margin-top: 26px;
 }
 
-/* BAG は常に最前面 */
 #bagOverlay{
-  position: fixed;
-  inset: 0;
-  z-index: 9998; /* drawer / shop overlay より上 */
+  top: var(--topbar-h);
+  left: 0; right: 0; bottom: 0;
+  z-index: 5200;
 }
 
 #bagModal{
-  position: fixed;
-  inset: 0;
-  z-index: 9999; /* overlay より上 */
+  top: var(--topbar-h);
+  left: 0; right: 0; bottom: 0;
+  z-index: 5300;
 }
 
 .bag-btn {
@@ -848,6 +847,7 @@ body.is-locked{
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-left: auto;
   width: 32px;
   height: 32px;
 }
@@ -878,8 +878,3 @@ body.is-locked{
   color: #fff;
 }
 
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
