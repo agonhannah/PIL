@@ -58,7 +58,7 @@ export async function checkout() {
   // 住所が必要か（physicalが1つでもあればtrue）
   const needsShipping = cart.some(x => x.kind === "physical");
 
-  const res = await fetch("https://YOUR-WORKER-URL.example.workers.dev/create-checkout", {
+  const res = await  fetch("https://paradiceloner-checkout.xqsmie888888.workers.dev/create-checkout", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
