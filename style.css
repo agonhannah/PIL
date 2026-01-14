@@ -744,3 +744,44 @@ body.is-locked{
 .demo-section {
   margin-top: 30px; /* ← まずは 24px */
 }
+
+/* =========================================================
+   SOUNDPACK (pil-soundpack-vol1)
+   Make layout match Session Collection
+   - BUY直下の線の位置
+   - 線→DEMO(lockbox)の距離
+   - DEMO→説明文の線の位置
+========================================================= */
+
+:root{
+  /* 好みで微調整（Session Collection寄せの初期値） */
+  --sp-buy-divider-mt: 18px;   /* BUY → 線まで */
+  --sp-buy-divider-pt: 30px;   /* 線 → DEMOブロックの上余白 */
+  --sp-demo-mt: 18px;          /* DEMO(lockbox)自体の上余白（線からの距離） */
+  --sp-next-divider-mt: 4px;   /* DEMOブロック → 次の線まで */
+  --sp-next-divider-pt: 14px;  /* 次の線 → 本文まで */
+}
+
+/* 1) BUY直下の線（= product__block 1個目）を Session Collection と同じに */
+#pil-soundpack-vol1 .product__meta > .product__block:nth-of-type(1){
+  margin-top: var(--sp-buy-divider-mt);
+  padding-top: var(--sp-buy-divider-pt);
+}
+
+/* 2) lockbox（DEMO/試聴）位置：これが “動かしたい本丸” */
+#pil-soundpack-vol1 .product__trial{
+  margin-top: var(--sp-demo-mt) !important;
+}
+
+/* 3) DEMOの次の線（= product__block 2個目）も Session Collection と同じに */
+#pil-soundpack-vol1 .product__meta > .product__block:nth-of-type(2){
+  margin-top: var(--sp-next-divider-mt);
+  padding-top: var(--sp-next-divider-pt);
+}
+
+/* 4) 以前の「lockboxを下げる」系の雑な指定を無効化（ガクつき/ズレ原因） */
+.lockbox,
+.demo-box,
+.demo-section{
+  margin-top: 0 !important;
+}
