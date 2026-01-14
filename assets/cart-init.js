@@ -90,45 +90,45 @@ function setupBagModal() {
   const overlay = document.getElementById("bagOverlay");
   const modal   = document.getElementById("bagModal");
   const closeBtn = document.getElementById("bagClose");
-
   const bagLinkTop = document.getElementById("bagLink");
-  const bagLinkDrawer = document.getElementById("bagLinkDrawer"); // もう消すならOK
 
-  // Bagを開く直前のURL（商品hash含む）を記録
-  let prevUrl = null;
+  // Bagを開く直前のhash（#session-collection等）を保存
+  let prevHash = "";
 
-  function openBag(e){
+  function openBag(e) {
     if (e) e.preventDefault();
     if (!overlay || !modal) return;
 
-    // いま見てるURLを保存（例: .../#session-collection）
-    prevUrl = location.href;
+    // 直前のhashを記録（商品ページ/ショップなど）
+    prevHash = location.hash || "";
 
-    // “Bagを開いた” を履歴に積む（URLは #bag にする）
-    // これで Close = back で元のhashに戻れる
-    history.pushState({ bag: true }, "", "#bag");
+    // #bag に遷移（履歴に積む）
+    if (location.hash !== "#bag") {
+      history.pushState({ bag: true, from: prevHash }, "", "#bag");
+    }
 
     overlay.hidden = false;
-    modal.hidden = false;
+    modal.hidden = false; // ← HTMLで hidden を付けた前提
     modal.setAttribute("aria-hidden", "false");
     modal.classList.add("is-open");
 
     render();
   }
 
-  function closeBag(){
-    // Bagを開いた履歴があるなら、戻る＝直前の画面へ
+  function closeBag() {
+    // #bag なら back で元へ（商品hashへ戻る）
     if (location.hash === "#bag") {
       history.back();
       return;
     }
 
-    // 念のためのフォールバック（何かでhashが変わってた時）
-    if (prevUrl) location.href = prevUrl;
+    // 念のため：hashがズレてたら prevHash に戻す
+    if (prevHash) {
+      location.hash = prevHash;
+    }
   }
 
-  // popstate / hashchange で表示状態を同期
-  function syncBagByUrl(){
+  function syncBagByUrl() {
     const isBag = location.hash === "#bag";
     if (!overlay || !modal) return;
 
@@ -145,6 +145,21 @@ function setupBagModal() {
       modal.classList.remove("is-open");
     }
   }
+
+  bagLinkTop?.addEventListener("click", openBag);
+  closeBtn?.addEventListener("click", closeBag);
+  overlay?.addEventListener("click", closeBag);
+
+  window.addEventListener("popstate", syncBagByUrl);
+  window.addEventListener("hashchange", syncBagByUrl);
+
+  // 初期同期（直リンクで #bag 来ても正しく開く）
+  syncBagByUrl();
+
+  window.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape" && location.hash === "#bag") closeBag();
+  });
+}
 
   bagLinkTop?.addEventListener("click", openBag);
   bagLinkDrawer?.addEventListener("click", openBag);
