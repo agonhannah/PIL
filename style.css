@@ -13,7 +13,7 @@
 
   --topbar-h: calc((18px + env(safe-area-inset-top, 0px)) + 44px + 14px);
 
-  /* Pointer FX scale */
+  /* Pointer scale */
   --fx-scale: 1;
 
   /* Trial UI tuning */
