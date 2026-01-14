@@ -84,22 +84,28 @@ function render() {
   countEls.forEach((el) => (el.textContent = String(count)));
 }
 
-// ===== Bag modal (history使わない安定版) =====
+// ===== Bag modal（hash変えない / 安定版）=====
 function setupBagModal() {
   const overlay    = document.getElementById("bagOverlay");
   const modal      = document.getElementById("bagModal");
   const closeBtn   = document.getElementById("bagClose");
   const bagLinkTop = document.getElementById("bagLink");
 
-  if (!overlay || !modal) return { openBag: () => {}, closeBag: () => {} };
+  // DOMが無い環境でも死なない
+  if (!overlay || !modal) {
+    const noop = () => {};
+    return { openBag: noop, closeBag: noop, isOpen: () => false };
+  }
 
-  let prevHash = "";      // 開く前に居たhash
+  let prevHash = "";   // 開く前に居たhash（商品ページ等）
   let openFlag = false;
 
   function openBag(e) {
     if (e) e.preventDefault();
 
-    prevHash = location.hash || ""; // 商品hashを保持
+    // 現在地（商品hash）を保持
+    prevHash = location.hash || "";
+
     overlay.hidden = false;
     modal.hidden = false;
     modal.setAttribute("aria-hidden", "false");
@@ -116,25 +122,36 @@ function setupBagModal() {
     modal.classList.remove("is-open");
     openFlag = false;
 
-    // ★商品ページに戻す（hashがあればそれへ）
-    // hash guard が居ても「元のhashに戻す」だけなので衝突しにくい
+    // ★元のhashへ戻す（商品ページに戻る）
+    // この版は #bag を使わないので「戻す」だけ
     if (prevHash !== (location.hash || "")) {
       location.hash = prevHash || "";
     }
   }
 
+  // topbar BAG クリックで開く
   bagLinkTop?.addEventListener("click", openBag);
+
+  // close / overlay
   closeBtn?.addEventListener("click", closeBag);
   overlay?.addEventListener("click", closeBag);
 
+  // Esc
   window.addEventListener("keydown", (ev) => {
     if (ev.key === "Escape" && openFlag) closeBag();
   });
 
-  return { openBag, closeBag };
+  // ★外部（script.js）から触れるように公開（ハンバーガー連携用）
+  window.__bag = {
+    open: openBag,
+    close: closeBag,
+    isOpen: () => openFlag,
+  };
+
+  return { openBag, closeBag, isOpen: () => openFlag };
 }
 
-// ===== Add to cart (これだけは絶対に生かす) =====
+// ===== Add to cart =====
 function setupAddToCart(openBag) {
   document.addEventListener("click", (e) => {
     const btn = e.target.closest(".btn-add");
@@ -155,7 +172,7 @@ function setupAddToCart(openBag) {
 
     addToCart({ priceId, name, kind, unitAmount, qty: 1 });
 
-    // 追加した瞬間にBagを開きたいなら ON
+    // 追加した瞬間にBagを開く（今の挙動キープ）
     openBag?.();
   });
 }
@@ -176,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
     render();
     window.addEventListener("cart:updated", render);
   } catch (err) {
-    // これが出たら “確実にJSが死んでる”
     console.error("[cart-init] fatal:", err);
     alert("cart-init.js が途中で死んでます。Console を見てください。");
   }
