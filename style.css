@@ -792,3 +792,40 @@ body.is-locked{
   display: block;
   padding: 72px 16px 48px;
 }
+
+
+
+
+/* Tokushoho layout */
+.legal{
+  padding: 96px 20px 80px;
+}
+.legal__inner{
+  max-width: 640px;
+  margin: 0 auto;
+}
+.legal__title{
+  font-size: 14px;
+  letter-spacing: .18em;
+  margin: 0 0 28px;
+}
+.legal__h{
+  font-size: 12px;
+  letter-spacing: .16em;
+  margin: 22px 0 10px;
+}
+.legal__p{
+  font-size: 12px;
+  line-height: 1.9;
+  margin: 0 0 8px;
+  opacity: .9;
+}
+.legal__note{
+  margin-top: 26px;
+  font-size: 11px;
+  opacity: .7;
+}
+.legal__back{
+  display: inline-block;
+  margin-top: 26px;
+}
