@@ -488,6 +488,41 @@ Use    : Royalty-free / Commercial use allowed
   </div><!-- /.product__inner -->
 </section>
 
+<button class="add-to-bag"
+  data-sku="cd-session"
+  data-name="[CD] SBK / dhrma Session Collection"
+  data-price-id="price_xxxxxxxxxxxxx"
+  data-kind="physical">
+  Add to Bag
+</button>
+
+<button class="add-to-bag"
+  data-sku="soundpack-vol1"
+  data-name="Paradi(c)e Loner “SOUNDPACK” vol.1"
+  data-price-id="price_yyyyyyyyyyyyy"
+  data-kind="digital">
+  Add to Bag
+</button>
+
+<script type="module">
+  import { addToCart } from "/assets/cart.js";
+
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".add-to-bag");
+    if (!btn) return;
+
+    addToCart({
+      sku: btn.dataset.sku,
+      name: btn.dataset.name,
+      priceId: btn.dataset.priceId,
+      kind: btn.dataset.kind, // physical or digital
+      qty: 1
+    });
+
+    // UIは好みで（トーストとか）
+    alert("Added to bag");
+  });
+</script>
 
 
   <!-- Pointer FX -->
