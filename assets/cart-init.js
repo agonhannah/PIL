@@ -42,16 +42,15 @@ function render() {
 
   // カウント表示（複数箇所あってOK）
   const countEls = [
-    document.getElementById("cart-count-top"),    // 今のtopbar
-    document.getElementById("cart-count"),        // 予備
-    document.getElementById("cart-count-drawer"), // 将来使うなら
+    document.getElementById("cart-count-top"),
+    document.getElementById("cart-count"),
+    document.getElementById("cart-count-drawer"),
   ].filter(Boolean);
 
   if (!listEl || !totalEl) return;
 
   let total = 0;
   let count = 0;
-
   listEl.innerHTML = "";
 
   for (const item of cart) {
@@ -88,85 +87,111 @@ function render() {
 
 /**
  * Bag modal controller
- * - 重要：URLのhashは変えない（商品 :target を維持するため）
- * - history.pushState を使って「Close = back」を実現
+ * - URL(hash)は変えない（商品 :target を維持）
+ * - history.pushState で Close/back を成立させる（URLは同じまま）
+ * - Drawer/Shopが開いていたかは「イベント」で通知（script.js側で復元）
  */
 function setupBagModal() {
-  const overlay  = document.getElementById("bagOverlay");
-  const modal    = document.getElementById("bagModal");
-  const closeBtn = document.getElementById("bagClose");
+  const overlay    = document.getElementById("bagOverlay");
+  const modal      = document.getElementById("bagModal");
+  const closeBtn   = document.getElementById("bagClose");
   const bagLinkTop = document.getElementById("bagLink");
 
-  // Bagを開く直前のhashを保持（フォールバック用）
-  let prevHash = location.hash || "";
+  if (!overlay || !modal) {
+    // DOMが無いなら何もしない
+    return { openBag: () => {}, closeBag: () => {}, isOpen: () => false };
+  }
 
-  function openBag(e) {
-    if (e) e.preventDefault();
-    if (!overlay || !modal) return;
+  let isOpenFlag = false;
 
-    // 直前のhash（商品ページなど）を保存
-    prevHash = location.hash || "";
+  // “どこからBagを開いたか” を保存（script.jsで使うなら）
+  let lastContext = null;
 
-    // 履歴に「#bag」を積む（戻り先hashもstateに入れる）
-    history.pushState({ bag: true, fromHash: prevHash }, "", "#bag");
-
-    // 表示
+  function show() {
     overlay.hidden = false;
     modal.hidden = false;
     modal.setAttribute("aria-hidden", "false");
     modal.classList.add("is-open");
+    isOpenFlag = true;
     render();
   }
 
-  function closeBag() {
-    // 「Bagを開いた時の戻り先」を最優先で使う
-    const st = history.state;
-    const from = (st && st.bag) ? (st.fromHash || "") : prevHash;
+  function hide() {
+    overlay.hidden = true;
+    modal.hidden = true;
+    modal.setAttribute("aria-hidden", "true");
+    modal.classList.remove("is-open");
+    isOpenFlag = false;
 
-    // ★ここが肝：backに頼らず、URLを「元のhash」に戻してBagを閉じる
-    //（replaceStateなので履歴は増えない）
-    history.replaceState(null, "", from || "#");
-
-    // 表示同期（#bag じゃなくなるので閉じる）
-    syncBagByUrl();
+    // Bag閉じたあと「元のUIに戻してね」を通知
+    window.dispatchEvent(
+      new CustomEvent("bag:closed", { detail: { context: lastContext } })
+    );
   }
 
-  function syncBagByUrl() {
-    const isBag = location.hash === "#bag";
-    if (!overlay || !modal) return;
+  function detectContext() {
+    // hashは変えないので、最低限だけ取る
+    // 例：商品ページなら "#session-collection" が入ってる
+    const hash = location.hash || "";
 
-    if (isBag) {
-      overlay.hidden = false;
-      modal.hidden = false;
-      modal.setAttribute("aria-hidden", "false");
-      modal.classList.add("is-open");
-      render();
+    // shop modal / drawer は script.js 管轄なので、
+    // ここでは「たぶん開いてる」を推測せず、通知だけ出す
+    return {
+      hash,
+      // 追加で何か識別したいなら、ここに入れていく
+      ts: Date.now(),
+    };
+  }
+
+  function openBag(e) {
+    if (e) e.preventDefault();
+
+    // すでに開いてたら何もしない
+    if (isOpenFlag) {
+      show();
+      return;
+    }
+
+    // 開く直前の状態（復帰用ヒント）
+    lastContext = detectContext();
+
+    // ★URLは変えずに履歴だけ1個積む（重要）
+    history.pushState({ bag: true }, "", location.href);
+
+    // 開く
+    show();
+
+    // Bagを開いた通知（必要ならscript.jsが受け取れる）
+    window.dispatchEvent(
+      new CustomEvent("bag:opened", { detail: { context: lastContext } })
+    );
+  }
+
+  function closeBag() {
+    // “back” が成功する環境ならそれで閉じる
+    // popstate で hide() が走るのでここでは何もしない
+    if (isOpenFlag) {
+      history.back();
     } else {
-      overlay.hidden = true;
-      modal.hidden = true;
-      modal.setAttribute("aria-hidden", "true");
-      modal.classList.remove("is-open");
+      hide();
     }
   }
 
-  // クリックで開く
-  bagLinkTop?.addEventListener("click", openBag);
+  // Back/Forward で bag state が外れたら閉じる
+  window.addEventListener("popstate", () => {
+    // Bagを開いてるときに「戻った」なら閉じる
+    if (isOpenFlag) hide();
+  });
 
-  // close / overlay
+  bagLinkTop?.addEventListener("click", openBag);
   closeBtn?.addEventListener("click", closeBag);
   overlay?.addEventListener("click", closeBag);
 
-  // ブラウザBackで #bag が外れたら閉じる / #bag に来たら開く
-  window.addEventListener("popstate", syncBagByUrl);
-  window.addEventListener("hashchange", syncBagByUrl);
-
-  // 初期同期（直リンクで #bag のときもOK）
-  syncBagByUrl();
-
-  // Esc
   window.addEventListener("keydown", (ev) => {
-    if (ev.key === "Escape" && location.hash === "#bag") closeBag();
+    if (ev.key === "Escape" && isOpenFlag) closeBag();
   });
+
+  return { openBag, closeBag, isOpen: () => isOpenFlag };
 }
 
 function setupAddToCart(openBag) {
@@ -187,15 +212,9 @@ function setupAddToCart(openBag) {
       btn.dataset.unitAmount || btn.dataset.price || PRICE_MAP[priceId] || 0
     );
 
-    addToCart({
-      priceId,
-      name,
-      kind,
-      unitAmount,
-      qty: 1,
-    });
+    addToCart({ priceId, name, kind, unitAmount, qty: 1 });
 
-    // 追加した瞬間にBagを開きたい場合はON
+    // 追加直後にBagを開きたいならON
     // openBag?.();
   });
 }
@@ -208,8 +227,8 @@ function setupCartUIButtons() {
 document.addEventListener("DOMContentLoaded", () => {
   migrateCartPrices();
 
-  const { openBag } = setupBagModal();
-  setupAddToCart(openBag);
+  const bag = setupBagModal();          // ← 必ず return される
+  setupAddToCart(bag.openBag);          // ← ここで死なない
   setupCartUIButtons();
 
   render();
