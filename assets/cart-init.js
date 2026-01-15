@@ -36,15 +36,13 @@ function migrateCartPrices() {
 
 function render() {
   const cart = getCart();
-
   const listEl = document.getElementById("cart-list");
   const subtotalEl = document.getElementById("cart-subtotal");
 
-  // ✅ empty UI
+  // ★追加：空表示用の要素を取る
   const emptyEl = document.querySelector(".cart-empty");
   const summaryEl = document.querySelector(".cart-summary");
   const noteEl = document.querySelector(".cart-note");
-  const buyBtn = document.getElementById("cart-checkout");
 
   const countEls = [
     document.getElementById("cart-count-top"),
@@ -54,30 +52,23 @@ function render() {
 
   if (!listEl || !subtotalEl) return;
 
-  // ===== 空カート判定 =====
-const isEmpty = !cart || cart.length === 0;
+  const isEmpty = !cart || cart.length === 0;
 
-// 空表示
-if (emptyEl) emptyEl.hidden = !isEmpty;
+  // ★空/通常の表示切り替え
+  if (emptyEl) emptyEl.hidden = !isEmpty;
+  if (summaryEl) summaryEl.hidden = isEmpty;  // ← 小計+BUY+Close をまとめて消す
+  if (noteEl) noteEl.hidden = isEmpty;
+  listEl.hidden = isEmpty;
 
-// 通常UIは空のとき全部消す
-if (listEl) listEl.hidden = isEmpty;
-if (summaryEl) summaryEl.hidden = isEmpty;
-if (noteEl) noteEl.hidden = isEmpty;
-
-// 念のため BUY も直接
-if (buyBtn) buyBtn.hidden = isEmpty;
-
-if (isEmpty) {
-  subtotalEl.textContent = yen(0);
-
-  countEls.forEach((el) => {
-    el.textContent = "";
-    el.hidden = true;
-  });
-
-  return; // ← ここ超重要
-}
+  // 空ならここで終了（これがないと下でまた描画される）
+  if (isEmpty) {
+    subtotalEl.textContent = yen(0);
+    countEls.forEach((el) => {
+      el.textContent = "";
+      el.hidden = true;
+    });
+    listEl.innerHTML = ""; // 念のため
+    return
 
   // ===== ここから通常描画 =====
   let subtotal = 0;
