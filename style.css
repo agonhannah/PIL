@@ -20,7 +20,6 @@
   /* Trial UI tuning */
   --trial-click-gap: 22px;
   --trial-size: 90px;
-  --trial-area-h: 170px;
   --trial-group-offset-y: 12px;
 
   /* SOUNDPACK tuning (match Session Collection) */
@@ -533,7 +532,6 @@ body.is-locked{
   padding-top: 30px;
   border-top: 1px solid var(--line);
 }
-.product__label{ display:none; }
 
 @media (min-width: 900px){
   .product__inner{
@@ -824,20 +822,22 @@ body.is-locked{
 }
 
 .cart-summary-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:baseline;
+  display: flex;
+  justify-content: flex-end;   /* 右寄せ */
+  gap: 16px;
+
+  font-size: 12px;             /* ← 削除と同サイズ */
+  letter-spacing: .14em;
+  opacity: .75;
 }
 
 .cart-summary-label{
-  font-size:12px;
-  letter-spacing:.18em;
-  opacity:.7;
+  text-align: right;
 }
 
 .cart-summary-value{
-  font-size:12px;
-  letter-spacing:.18em;
+  text-align: right;
+  min-width: 10ch; 
   font-variant-numeric: tabular-nums;
 }
 
@@ -857,34 +857,28 @@ body.is-locked{
   background:#fff;
 }
 
-
-
-
-
-
-
-
-
-
-.cart-checkout{
-  display:block;
-  width:100%;
-  padding:14px 14px;
-
-  border:1px solid rgba(17,17,17,.28);
-  border-radius:14px;
-
-  font-size:12px;
-  letter-spacing:.32em;
-  text-transform:uppercase;
-  text-align:center;
-
-  margin:14px 0 0;
-  background:transparent;
+.cart-note{
+  margin-top: 14px;
+  font-size: 12px;             /* ← 削除と同じ */
+  letter-spacing: .14em;
+  line-height: 1.8;
+  opacity: .75;
 }
-.cart-checkout:active{
-  background: rgba(17,17,17,.04);
+
+
+.bag-close--bottom{
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+
+  text-align: center;
+  font-size: 12px;             /* ← 削除と同じ */
+  letter-spacing: .14em;
+  opacity: .75;
+
+  text-decoration: underline;
 }
+
 
 
 
