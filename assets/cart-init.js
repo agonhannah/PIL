@@ -37,16 +37,12 @@ function migrateCartPrices() {
 function render() {
   const cart = getCart();
 
-  const modal = document.getElementById("bagModal");
-  if (!modal) return;
+  const listEl = document.getElementById("cart-list");
+  const subtotalEl = document.getElementById("cart-subtotal");
 
-  const listEl = modal.querySelector("#cart-list");
-  const subtotalEl = modal.querySelector("#cart-subtotal");
-
-  // ★必ず bagModal の中だけを対象にする
-  const emptyEl = modal.querySelector(".cart-empty");
-  const summaryEl = modal.querySelector(".cart-summary");
-  const noteEl = modal.querySelector(".cart-note");
+  const emptyEl = document.getElementById("cart-empty");
+  const summaryEl = document.getElementById("cart-summary");
+  const noteEl = document.getElementById("cart-note");
 
   const countEls = [
     document.getElementById("cart-count-top"),
@@ -58,13 +54,19 @@ function render() {
 
   const isEmpty = !cart || cart.length === 0;
 
-  // 空/通常の表示切替（bagModal内のやつだけ）
-  if (emptyEl) emptyEl.hidden = !isEmpty;
-  if (summaryEl) summaryEl.hidden = isEmpty;
-  if (noteEl) noteEl.hidden = isEmpty;
-  listEl.hidden = isEmpty;
+  // ★まず一旦「確実に」状態を揃える（残留対策）
+  if (emptyEl) emptyEl.hidden = true;
+  if (summaryEl) summaryEl.hidden = false;
+  if (noteEl) noteEl.hidden = false;
+  listEl.hidden = false;
 
+  // 空/通常の切替
   if (isEmpty) {
+    if (emptyEl) emptyEl.hidden = false;
+    if (summaryEl) summaryEl.hidden = true;
+    if (noteEl) noteEl.hidden = true;
+    listEl.hidden = true;
+
     subtotalEl.textContent = yen(0);
     listEl.innerHTML = "";
     countEls.forEach((el) => { el.textContent = ""; el.hidden = true; });
