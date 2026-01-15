@@ -850,3 +850,130 @@ body.is-locked{
   display:none !important;
 }
 
+/* ===== Cart layout (HYKE-ish) ===== */
+
+.cart-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  padding: 10px 0 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  letter-spacing: .18em;
+  opacity: .85;
+}
+
+.cart-head-left{ flex:1; }
+.cart-head-right{ width: 120px; text-align:right; }
+
+.cart-row{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.cart-left{
+  display:flex;
+  gap:14px;
+  flex:1;
+  min-width:0;
+}
+
+.cart-thumb{
+  width: 74px;
+  height: 74px;
+  border-radius: 12px;
+  overflow:hidden;
+  background: rgba(17,17,17,.06);
+  flex-shrink:0;
+}
+
+.cart-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.cart-meta{
+  min-width:0;
+}
+
+.cart-name{
+  font-size: 13px;
+  line-height: 1.35;
+  letter-spacing: .06em;
+  word-break: break-word;
+}
+
+.cart-sub{
+  margin-top: 8px;
+  font-size: 11px;
+  letter-spacing: .14em;
+  opacity: .55;
+  text-transform: lowercase;
+}
+
+.cart-remove{
+  margin-top: 12px;
+  font-size: 12px;
+  letter-spacing: .14em;
+  opacity: .75;
+  text-decoration: underline;
+}
+
+.cart-right{
+  width: 160px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+}
+
+.cart-price{
+  font-size: 13px;
+  letter-spacing: .10em;
+}
+
+.cart-qtybox{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.cart-qtylabel{
+  font-size: 12px;
+  letter-spacing: .14em;
+  opacity: .75;
+}
+
+.cart-qty{
+  width: 92px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid rgba(17,17,17,.22);
+  border-radius: 10px;
+  background:#fff;
+  font-size: 13px;
+  text-align:right;
+}
+
+.cart-foot{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  padding: 18px 0 6px;
+}
+
+.cart-foot-label{
+  font-size: 12px;
+  letter-spacing: .18em;
+  opacity: .85;
+}
+
+.cart-foot-total{
+  font-size: 14px;
+  letter-spacing: .10em;
+}
