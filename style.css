@@ -1,6 +1,3 @@
-
-
-
 :root{
   --bg:#ffffff;
   --ink:#111;
@@ -10,31 +7,26 @@
 
   --radius:14px;
   --gutter:20px;
-  
-  /* topbar tuning */
-  --topbar-pad-top: 24px;   /* ← 18→24 */
-  --topbar-pad-bot: 18px;   /* ← 14→18 */
-  --topbar-btn: 52px;       /* ← 44→52 */
 
+  /* topbar tuning */
+  --topbar-pad-top: 24px;   /* 18→24 */
+  --topbar-pad-bot: 18px;   /* 14→18 */
+  --topbar-btn: 52px;       /* 44→52 */
   --topbar-h: calc((var(--topbar-pad-top) + env(safe-area-inset-top, 0px)) + var(--topbar-btn) + var(--topbar-pad-bot));
 
   /* Pointer scale */
   --fx-scale: 1;
 
   /* Trial UI tuning */
-  --trial-click-gap: 22px;     /* CLICK HERE をボックスから離す量（大きいほど下へ） */
-  --trial-size: 90px;          /* ロゴ&枠のサイズ（正方形） */
-  --trial-area-h: 170px;       /* クリック領域の高さ（基本そのままでOK） */
-  --trial-group-offset-y: 12px; /* ← これを 8px とか 12px にすると全体が下がる */
+  --trial-click-gap: 22px;
+  --trial-size: 90px;
+  --trial-area-h: 170px;
+  --trial-group-offset-y: 12px;
 
-  /* 「CLICK HERE 下のバー（＝説明文の上の線）」だけ動かす */
-  --trial-divider-gap: 46px;   /* 小さいほど “上に” 近づく（推奨: 8〜18px） */
-  --desc-top-padding: 18px;    /* 線〜本文の距離（基本18でOK） */
-  
-  /* 好みで微調整（Session Collection寄せの初期値） */
+  /* SOUNDPACK tuning (match Session Collection) */
   --sp-buy-divider-mt: 18px;   /* BUY → 線まで */
   --sp-buy-divider-pt: 30px;   /* 線 → DEMOブロックの上余白 */
-  --sp-demo-mt: 26px;          /* DEMO(lockbox)自体の上余白（線からの距離） */
+  --sp-demo-mt: 26px;          /* DEMO(lockbox)自体の上余白 */
   --sp-next-divider-mt: 4px;   /* DEMOブロック → 次の線まで */
   --sp-next-divider-pt: 14px;  /* 次の線 → 本文まで */
 }
@@ -125,6 +117,41 @@ body::after{
   align-items:center;
 }
 
+/* Bag button (topbar) */
+.bag-btn{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-left:auto;
+  margin-right:6px;
+  width:32px;
+  height:32px;
+}
+.bag-btn img{
+  width:22px;
+  height:22px;
+  display:block;
+}
+.bag-count{
+  position:absolute;
+  top:-4px;
+  right:-6px;
+  min-width:16px;
+  height:16px;
+  padding:0 4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:10px;
+  line-height:1;
+  border-radius:999px;
+  background:#111;
+  color:#fff;
+}
+.bag-count[hidden]{ display:none !important; }
+
+/* Hamburger */
 .hamburger{
   width: var(--topbar-btn);
   height: var(--topbar-btn);
@@ -133,14 +160,12 @@ body::after{
   cursor:pointer;
   padding:0;
 }
-
 .hamburger__lines{
   width:22px;
   display:flex;
   flex-direction:column;
   gap:5px;
 }
-
 .hamburger__lines span{
   width:22px;
   height:1px;
@@ -148,7 +173,6 @@ body::after{
   transition:transform 180ms ease, opacity 180ms ease;
   transform-origin:center;
 }
-
 #menuBtn.is-open .hamburger__lines span:nth-child(1){
   transform: translateY(6px) rotate(45deg);
 }
@@ -171,14 +195,12 @@ body::after{
   pointer-events:none;
   transition:transform 420ms ease, visibility 0s linear 420ms;
 }
-
 .drawer.is-open{
   transform:translateX(0);
   visibility:visible;
   pointer-events:auto;
   transition:transform 420ms ease;
 }
-
 .drawer__inner{
   height:100%;
   padding:
@@ -189,7 +211,6 @@ body::after{
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
 }
-
 body.is-locked{
   overflow:hidden;
   touch-action:none;
@@ -209,13 +230,11 @@ body.is-locked{
   text-transform:uppercase;
   font-variant-numeric: tabular-nums;
 }
-
 .acc__mark{
   font-size:22px;
   font-weight:200;
   opacity:.6;
 }
-
 .acc__panel{ padding:6px 0 14px; }
 
 .acc__link{
@@ -226,7 +245,6 @@ body.is-locked{
   text-transform:uppercase;
   opacity:.92;
 }
-
 .acc__link::before{
   content:"・";
   margin-right:1em;
@@ -242,7 +260,6 @@ body.is-locked{
   flex-direction:column;
   gap:12px;
 }
-
 .drawer__secondary .sec__link{
   display:block;
   font-size:12px;
@@ -264,7 +281,6 @@ body.is-locked{
   transform:translate3d(-9999px,-9999px,0);
   will-change:transform;
 }
-
 #pointer-blob{
   position:absolute;
   width:84px;
@@ -275,7 +291,6 @@ body.is-locked{
   transform:translate(-50%,-50%) scale(var(--fx-scale));
   transform-origin:center;
 }
-
 #lockbox{
   position:absolute;
   opacity:0;
@@ -293,7 +308,6 @@ body.is-locked{
   border-radius:14px;
   position:relative;
 }
-
 .lockbox__cross{
   position:absolute;
   left:50%;
@@ -331,7 +345,6 @@ body.is-locked{
   align-items:flex-end;
   margin: 0 0 18px;
 }
-
 .shop__count{
   font-size:12px;
   letter-spacing:.32em;
@@ -376,6 +389,14 @@ body.is-locked{
 .shop-card.is-soldout .shop-card__price{ opacity: 1; color:#c00000; }
 .shop-card__subtitle{ font-size: inherit; letter-spacing: inherit; opacity: 1; }
 
+/* Shop一覧では demo(lockbox) を出さない（商品詳細だけ表示） */
+.shopview .shop-card__demo{ display:none !important; }
+
+/* SOUNDPACK card (5:7, no frame) */
+.shop-card.is-contain .shop-card__media{ background:none; }
+.shop-card.is-contain .shop-card__media::before{ padding-top:140%; } /* 5:7 */
+.shop-card.is-contain .shop-card__media img{ object-fit:cover; }
+
 /* =========================================================
    Modal（Topbarを絶対に覆わない）
 ========================================================= */
@@ -411,7 +432,6 @@ body.is-locked{
   pointer-events:auto;
   transform:translate3d(0,0,0);
 }
-
 .modal__body{
   max-width: 1120px;
   margin: 0 auto;
@@ -481,7 +501,6 @@ body.is-locked{
   font-weight: 400;
   line-height: 1.25;
 }
-
 .product__price{
   font-size: 12px;
   letter-spacing: .28em;
@@ -489,7 +508,6 @@ body.is-locked{
   opacity: .65;
   margin-bottom: 14px;
 }
-
 .product__cta{
   display:block;
   width:100%;
@@ -502,7 +520,6 @@ body.is-locked{
   text-align:center;
   margin:10px 0 18px;
 }
-
 .product__cta.is-disabled{
   border-color: rgba(17,17,17,.12);
   background: rgba(17,17,17,.06);
@@ -510,36 +527,13 @@ body.is-locked{
   pointer-events:none;
 }
 
-/* ★ここが「ADD TO BAG 下のバー」＝標準に戻す */
+/* ADD TO BAG 下のバー（標準） */
 .product__block{
   margin-top: 18px;
   padding-top: 30px;
   border-top: 1px solid var(--line);
 }
-
 .product__label{ display:none; }
-
-.product__desc{
-  font-size:12px;
-  line-height:1.8;
-  letter-spacing:.02em;
-  opacity:.9;
-}
-
-.product__player{
-  border:1px solid rgba(17,17,17,.10);
-  border-radius:14px;
-  overflow:hidden;
-}
-
-.product__link{
-  display:inline-block;
-  margin-top:10px;
-  font-size:11px;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  opacity:.6;
-}
 
 @media (min-width: 900px){
   .product__inner{
@@ -655,54 +649,16 @@ body.is-locked{
 
 /* Session Collection の “説明文ブロック（2個目）” だけ詰める */
 #session-collection .product__meta > .product__block:nth-of-type(2){
-  margin-top: 4px;      /* ← CLICK HERE と線の距離（0〜12で調整） */
-  padding-top: 14px;    /* ← 線から本文の距離 */
+  margin-top: 4px;
+  padding-top: 14px;
 }
 
-/* Shop一覧では demo(lockbox) を出さない（商品詳細だけ表示） */
-.shopview .shop-card__demo {
-  display: none !important;
-}
-　
-
-/* SOUNDPACK（5:7）だけ縦長にする */
-.shop-card.is-contain .shop-card__media::before{
-  padding-top: 140%; /* 5:7 = 7/5 = 1.4 */
-}
-
-
-
-/* ===============================
-   Soundpack card (5:7, no frame)
-================================ */
-
-.shop-card.is-contain .shop-card__media{
-  background: none;          /* ← 枠の原因を消す */
-}
-
-.shop-card.is-contain .shop-card__media::before{
-  padding-top: 140%;         /* 5:7 = 7 / 5 = 1.4 */
-}
-
-.shop-card.is-contain .shop-card__media img{
-  object-fit: cover;         /* ← 枠を出さない最大ポイント */
-}
-
-
-/* =========================================================
-   SOUNDPACK only : change TEASER -> DEMO
-========================================================= */
+/* SOUNDPACK only : change TEASER -> DEMO */
 #pil-soundpack-vol1 .sc-lockbox .lockbox__rect::before{
   content:"DEMO / 試聴";
 }
 
-/* =========================================================
-   Description + Demo table
-   - 本文は今の見た目（Helvetica）
-   - Demo表だけ等幅＆本文と同サイズ
-========================================================= */
-
-/* 本文（dhrmaのキュレーション〜） */
+/* Description + Demo table */
 .product__includes{
   display:block;
   margin:0;
@@ -715,163 +671,68 @@ body.is-locked{
   white-space:pre-wrap;
   word-break:break-word;
 }
-
-/* Demo表だけ：等幅＋本文と同サイズ */
 .product__includes .mono{
   display:block;
-  margin-top:18px; /* 本文と表の間隔（好みで調整） */
+  margin-top:18px;
 
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:1em;        /* ←本文と同じサイズ */
+  font-size:1em;
   line-height:1.9;
-  letter-spacing:0;     /* ←桁揃え崩れ防止 */
-
-  white-space:pre;      /* ←列をキレイに揃える */
+  letter-spacing:0;
+  white-space:pre;
 }
 
-/* =========================================================
-   SOUNDPACK (pil-soundpack-vol1)
-   Make layout match Session Collection
-   - BUY直下の線の位置
-   - 線→DEMO(lockbox)の距離
-   - DEMO→説明文の線の位置
-========================================================= */
-
-/* 1) BUY直下の線（= product__block 1個目）を Session Collection と同じに */
+/* SOUNDPACK (pil-soundpack-vol1) : match Session Collection */
 #pil-soundpack-vol1 .product__meta > .product__block:nth-of-type(1){
   margin-top: var(--sp-buy-divider-mt);
   padding-top: var(--sp-buy-divider-pt);
 }
-
-/* 2) lockbox（DEMO/試聴）位置：これが “動かしたい本丸” */
 #pil-soundpack-vol1 .product__trial{
   margin-top: var(--sp-demo-mt) !important;
 }
-
-/* 3) DEMOの次の線（= product__block 2個目）も Session Collection と同じに */
 #pil-soundpack-vol1 .product__meta > .product__block:nth-of-type(2){
   margin-top: var(--sp-next-divider-mt);
   padding-top: var(--sp-next-divider-pt);
 }
 
-
-
-
-.legal { display: none; }
-.legal:target {
-  display: block;
-  padding: 96px 20px 80px; 
+/* =========================================================
+   Legal page
+========================================================= */
+.legal{ display:none; }
+.legal:target{
+  display:block;
+  padding: 96px 20px 80px;
 }
+.legal__inner{ max-width:640px; margin:0 auto; }
+.legal__title{ font-size:14px; letter-spacing:.18em; margin:0 0 28px; }
+.legal__h{ font-size:12px; letter-spacing:.16em; margin:22px 0 10px; }
+.legal__p{ font-size:12px; line-height:1.9; margin:0 0 8px; opacity:.9; }
+.legal__note{ margin-top:26px; font-size:11px; opacity:.7; }
+.legal__back{ display:inline-block; margin-top:26px; }
 
-
-
-
-/* Tokushoho layout */
-.legal__inner{
-  max-width: 640px;
-  margin: 0 auto;
-}
-.legal__title{
-  font-size: 14px;
-  letter-spacing: .18em;
-  margin: 0 0 28px;
-}
-.legal__h{
-  font-size: 12px;
-  letter-spacing: .16em;
-  margin: 22px 0 10px;
-}
-.legal__p{
-  font-size: 12px;
-  line-height: 1.9;
-  margin: 0 0 8px;
-  opacity: .9;
-}
-.legal__note{
-  margin-top: 26px;
-  font-size: 11px;
-  opacity: .7;
-}
-.legal__back{
-  display: inline-block;
-  margin-top: 26px;
-}
-
+/* =========================================================
+   Bag modal layers
+========================================================= */
 #bagOverlay{
   top: var(--topbar-h);
-  left: 0; right: 0; bottom: 0;
-  z-index: 5200;
+  left:0; right:0; bottom:0;
+  z-index:5200;
 }
-
 #bagModal{
   top: var(--topbar-h);
-  left: 0; right: 0; bottom: 0;
-  z-index: 5300;
+  left:0; right:0; bottom:0;
+  z-index:5300;
 }
 
-.bag-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: auto;
-  margin-right: 6px; 
-  width: 32px;
-  height: 32px;
-}
-
-.bag-btn img {
-  width: 22px;
-  height: 22px;
-  display: block;
-}
-
-.bag-count {
-  position: absolute;
-  top: -4px;
-  right: -6px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 10px;
-  line-height: 1;
-  border-radius: 999px;
-
-  background: #111;
-  color: #fff;
-}
-
-.bag-count[hidden]{
-  display:none !important;
-}
-
-/* ===== Cart layout (HYKE-ish) ===== */
-
-.cart-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  padding: 10px 0 14px;
-  border-bottom: 1px solid var(--line);
-  font-size: 12px;
-  letter-spacing: .18em;
-  opacity: .85;
-}
-
-.cart-head-left{ flex:1; }
-.cart-head-right{ width: 120px; text-align:right; }
-
+/* =========================================================
+   Cart layout (HYKE-ish)
+========================================================= */
 .cart-row{
   display:flex;
   justify-content:space-between;
   gap:14px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--line);
+  padding:16px 0;
+  border-bottom:1px solid var(--line);
 }
 
 .cart-left{
@@ -880,100 +741,95 @@ body.is-locked{
   flex:1;
   min-width:0;
 }
-
 .cart-thumb{
-  width: 74px;
-  height: 74px;
-  border-radius: 12px;
+  width:74px;
+  height:74px;
+  border-radius:12px;
   overflow:hidden;
   background: rgba(17,17,17,.06);
   flex-shrink:0;
 }
-
 .cart-thumb img{
   width:100%;
   height:100%;
   object-fit:cover;
   display:block;
 }
-
-.cart-meta{
-  min-width:0;
-}
-
+.cart-meta{ min-width:0; }
 .cart-name{
-  font-size: 13px;
-  line-height: 1.35;
-  letter-spacing: .06em;
-  word-break: break-word;
+  font-size:13px;
+  line-height:1.35;
+  letter-spacing:.06em;
+  word-break:break-word;
 }
-
 .cart-sub{
-  margin-top: 8px;
-  font-size: 11px;
-  letter-spacing: .14em;
-  opacity: .55;
-  text-transform: lowercase;
-}
-
-.cart-remove{
-  margin-top: 12px;
-  font-size: 12px;
-  letter-spacing: .14em;
-  opacity: .75;
-  text-decoration: underline;
+  margin-top:8px;
+  font-size:11px;
+  letter-spacing:.14em;
+  opacity:.55;
+  text-transform:lowercase;
 }
 
 .cart-right{
-  width: 160px;
+  width:160px;
   display:flex;
   flex-direction:column;
   align-items:flex-end;
   gap:10px;
 }
-
 .cart-price{
-  font-size: 13px;
-  letter-spacing: .10em;
+  font-size:13px;
+  letter-spacing:.10em;
 }
 
 .cart-qtybox{
   display:flex;
-  align-items:center;
+  flex-direction:column;
+  align-items:flex-end;
   gap:10px;
 }
-
 .cart-qtylabel{
-  font-size: 12px;
-  letter-spacing: .14em;
-  opacity: .75;
+  font-size:12px;
+  letter-spacing:.14em;
+  opacity:.75;
 }
-
 .cart-qty{
-  width: 92px;
-  height: 38px;
-  padding: 0 10px;
-  border: 1px solid rgba(17,17,17,.22);
-  border-radius: 10px;
+  width:92px;
+  height:38px;
+  padding:0 10px;
+  border:1px solid rgba(17,17,17,.22);
+  border-radius:10px;
   background:#fff;
-  font-size: 13px;
+  font-size:13px;
   text-align:right;
 }
+.cart-remove{
+  font-size:12px;
+  letter-spacing:.14em;
+  opacity:.75;
+  text-decoration:underline;
+}
 
-.cart-foot{
+/* 小計：左ラベル / 右金額（右寄せ） */
+.cart-summary{
   display:flex;
+  align-items:baseline;
   justify-content:space-between;
-  align-items:flex-end;
-  padding: 18px 0 6px;
-}
+  gap:12px;
 
-.cart-foot-label{
-  font-size: 12px;
-  letter-spacing: .18em;
-  opacity: .85;
+  margin-top:22px;
+  padding-top:18px;
+  border-top:1px solid var(--line);
 }
-
-.cart-foot-total{
-  font-size: 14px;
-  letter-spacing: .10em;
+.cart-summary__label{
+  font-size:12px;
+  letter-spacing:.18em;
+  opacity:.7;
+}
+.cart-summary__value{
+  font-size:12px;
+  letter-spacing:.18em;
+  font-variant-numeric: tabular-nums;
+  text-align:right;
+  min-width:10ch;
 }
