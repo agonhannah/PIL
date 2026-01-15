@@ -35,13 +35,7 @@ function migrateCartPrices() {
 }
 
 function render() {
-  const raw = getCart() || [];
-  const cart = raw.filter((it) => Number(it.qty || 0) > 0);
-
-  // qty=0のゴミがあれば掃除（任意だが強い）
-  if (cart.length !== raw.length) {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  }
+  const cart = getCart() || [];
 
   const listEl = document.getElementById("cart-list");
   const subtotalEl = document.getElementById("cart-subtotal");
@@ -60,12 +54,13 @@ function render() {
 
   const isEmpty = cart.length === 0;
 
-  // 空/通常 切替
+  // ★切替
   if (emptyEl) emptyEl.hidden = !isEmpty;
   if (summaryEl) summaryEl.hidden = isEmpty;
   if (noteEl) noteEl.hidden = isEmpty;
   listEl.hidden = isEmpty;
 
+  // ★空なら終了
   if (isEmpty) {
     subtotalEl.textContent = yen(0);
     listEl.innerHTML = "";
@@ -76,7 +71,7 @@ function render() {
     return;
   }
 
-  // ===== ここから通常描画 =====
+  // ===== 通常描画 =====
   let subtotal = 0;
   let count = 0;
   listEl.innerHTML = "";
@@ -84,6 +79,7 @@ function render() {
   for (const item of cart) {
     const qty = Number(item.qty || 0);
     const unit = Number(item.unitAmount || 0);
+
     subtotal += unit * qty;
     count += qty;
 
@@ -95,7 +91,6 @@ function render() {
         <div class="cart-thumb">
           ${item.img ? `<img src="${item.img}" alt="" loading="lazy" decoding="async">` : ``}
         </div>
-
         <div class="cart-meta">
           <div class="cart-name">${item.name || ""}</div>
           <div class="cart-sub">${item.kind || ""}</div>
