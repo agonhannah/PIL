@@ -925,4 +925,5 @@ body.is-locked{
   opacity:.6;
 }
 
+[hidden] { display: none !important; }
 
