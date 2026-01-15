@@ -36,8 +36,8 @@ function migrateCartPrices() {
 
 function render() {
   const cart = getCart();
-  const listEl  = document.getElementById("cart-list");
-  const totalEl = document.getElementById("cart-total");
+  const listEl = document.getElementById("cart-list");
+  const subtotalEl = document.getElementById("cart-subtotal");
 
   const countEls = [
     document.getElementById("cart-count-top"),
@@ -45,7 +45,7 @@ function render() {
     document.getElementById("cart-count-drawer"),
   ].filter(Boolean);
 
-  if (!listEl || !totalEl) return;
+  if (!listEl || !subtotalEl) return;
 
   let total = 0;
   let count = 0;
@@ -57,52 +57,53 @@ function render() {
     count += item.qty;
 
     const row = document.createElement("div");
-    
-
     row.className = "cart-row";
 
-row.innerHTML = `
-  <div class="cart-left">
-    <div class="cart-thumb">
-      ${item.img ? `<img src="${item.img}" alt="" loading="lazy" decoding="async">` : ``}
-    </div>
+    row.innerHTML = `
+      <div class="cart-left">
+        <div class="cart-thumb">
+          ${item.img ? `<img src="${item.img}" alt="" loading="lazy" decoding="async">` : ``}
+        </div>
 
-    <div class="cart-meta">
-      <div class="cart-name">${item.name}</div>
-      <div class="cart-sub">${item.kind}</div>
-      <button class="cart-remove" type="button">削除</button>
-    </div>
-  </div>
+        <div class="cart-meta">
+          <div class="cart-name">${item.name}</div>
+          <div class="cart-sub">${item.kind}</div>
+        </div>
+      </div>
 
-  <div class="cart-right">
-    <div class="cart-price">${yen(item.unitAmount)}</div>
+      <div class="cart-right">
+        <div class="cart-price">${yen(item.unitAmount)}</div>
 
-    <div class="cart-qtybox">
-      <div class="cart-qtylabel">数量</div>
-      <input class="cart-qty" type="number" min="1" max="99" value="${item.qty}" inputmode="numeric" />
-    </div>
-  </div>
-`;
+        <div class="cart-qtybox">
+          <div class="cart-qtylabel">数量</div>
+          <input class="cart-qty" type="number" min="1" max="99" value="${item.qty}" inputmode="numeric" />
+          <button class="cart-remove" type="button">削除</button>
+        </div>
+      </div>
+    `;
 
     const qtyInput = row.querySelector(".cart-qty");
     const rmBtn = row.querySelector(".cart-remove");
 
     qtyInput?.addEventListener("change", () => setQty(item.priceId, qtyInput.value));
-rmBtn?.addEventListener("click", () => removeFromCart(item.priceId));
+    rmBtn?.addEventListener("click", () => removeFromCart(item.priceId));
 
     listEl.appendChild(row);
   }
 
-  totalEl.textContent = yen(total);
+  // 小計
+  subtotalEl.textContent = yen(total);
+
+  // バッジ
   countEls.forEach((el) => {
-  if (count > 0) {
-    el.textContent = String(count);
-    el.hidden = false;   // 黒丸＋数字を表示
-  } else {
-    el.textContent = "";
-    el.hidden = true;    // 黒丸ごと非表示
-  }
-});
+    if (count > 0) {
+      el.textContent = String(count);
+      el.hidden = false;
+    } else {
+      el.textContent = "";
+      el.hidden = true;
+    }
+  });
 }
 
 // ===== Bag modal（hash変えない / 安定版）=====
@@ -200,7 +201,6 @@ function setupAddToCart(openBag) {
 }
 
 function setupCartUIButtons() {
-  document.getElementById("cart-clear")?.addEventListener("click", () => clearCart());
   document.getElementById("cart-checkout")?.addEventListener("click", () => checkout());
 }
 
