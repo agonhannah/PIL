@@ -811,24 +811,24 @@ body.is-locked{
 .cart-divider{
   height:1px;
   background: var(--line);
-  margin: 18px 0;
+  margin: 22px 0;
 }
 
 .cart-summary{
   display:flex;
   flex-direction:column;
-  gap:14px;
-  padding: 4px 0;
+  gap:18px;
+  padding: 10px 0;
 }
 
 .cart-summary-row{
   display: flex;
   justify-content: flex-end;   /* 右寄せ */
   gap: 16px;
-
   font-size: 12px;             /* ← 削除と同サイズ */
   letter-spacing: .14em;
   opacity: .75;
+  padding: 6px 0;
 }
 
 .cart-summary-label{
@@ -848,17 +848,16 @@ body.is-locked{
   padding:14px 14px;
   border:1px solid rgba(17,17,17,.28);
   border-radius:14px;
-
   font-size:12px;
   letter-spacing:.32em;
   text-transform:uppercase;
   text-align:center;
-
   background:#fff;
+  margin-top: 6px;
 }
 
 .cart-note{
-  margin-top: 14px;
+  margin-top: 18px;
   font-size: 12px;             /* ← 削除と同じ */
   letter-spacing: .14em;
   line-height: 1.8;
@@ -869,8 +868,8 @@ body.is-locked{
 .bag-close--bottom{
   display: block;
   width: 100%;
-  margin-top: 14px;
-
+  margin-top: 18px;
+  padding: 4px 0;
   text-align: center;
   font-size: 12px;             /* ← 削除と同じ */
   letter-spacing: .14em;
