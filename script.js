@@ -36,24 +36,40 @@
   ---------------------------- */
   const HASH_FLAG = "pc_allow_product_hash";
 
-  const getProductIds = () =>
-    $$(".product[id]").map((el) => el.id).filter(Boolean);
+const getProductIds = () =>
+  $$(".product[id]").map((el) => el.id).filter(Boolean);
 
-  const isProductHash = (hash) => {
-    if (!hash || hash.length < 2) return false;
-    const id = hash.slice(1);
-    return getProductIds().includes(id);
-  };
+const isProductHash = (hash) => {
+  if (!hash || hash.length < 2) return false;
+  const id = hash.slice(1);
+  return getProductIds().includes(id);
+};
 
-  const clearHashToHome = () => {
-    const url = location.pathname + location.search; // hash無し
-    history.replaceState(null, "", url);
-    window.scrollTo(0, 0);
-  };
+// ✅ 追加：どこからでも「商品hashへ行く直前」に許可フラグを立てる
+document.addEventListener(
+  "click",
+  (e) => {
+    const a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
 
-  if (isProductHash(location.hash) && !sessionStorage.getItem(HASH_FLAG)) {
-    clearHashToHome();
-  }
+    const href = a.getAttribute("href") || "";
+    if (isProductHash(href)) {
+      sessionStorage.setItem(HASH_FLAG, "1");
+    }
+  },
+  { capture: true }
+);
+
+const clearHashToHome = () => {
+  const url = location.pathname + location.search; // hash無し
+  history.replaceState(null, "", url);
+  window.scrollTo(0, 0);
+};
+
+if (isProductHash(location.hash) && !sessionStorage.getItem(HASH_FLAG)) {
+  clearHashToHome();
+}
+  
 
   /* ----------------------------
      Drawer
