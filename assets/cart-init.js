@@ -37,14 +37,16 @@ function migrateCartPrices() {
 function render() {
   const cart = getCart();
 
-  const modal = document.getElementById("bagModal"); // ★追加
-  const listEl = modal?.querySelector("#cart-list"); // ★modal内に限定
-  const subtotalEl = modal?.querySelector("#cart-subtotal"); // ★modal内に限定
+  const modal = document.getElementById("bagModal");
+  if (!modal) return;
 
-  // ★追加：空表示用の要素を modal 内から取る
-  const emptyEl = modal?.querySelector(".cart-empty");
-  const summaryEl = modal?.querySelector(".cart-summary");
-  const noteEl = modal?.querySelector(".cart-note");
+  const listEl = modal.querySelector("#cart-list");
+  const subtotalEl = modal.querySelector("#cart-subtotal");
+
+  // ★必ず bagModal の中だけを対象にする
+  const emptyEl = modal.querySelector(".cart-empty");
+  const summaryEl = modal.querySelector(".cart-summary");
+  const noteEl = modal.querySelector(".cart-note");
 
   const countEls = [
     document.getElementById("cart-count-top"),
@@ -52,10 +54,11 @@ function render() {
     document.getElementById("cart-count-drawer"),
   ].filter(Boolean);
 
-  if (!modal || !listEl || !subtotalEl) return;
+  if (!listEl || !subtotalEl) return;
 
   const isEmpty = !cart || cart.length === 0;
 
+  // 空/通常の表示切替（bagModal内のやつだけ）
   if (emptyEl) emptyEl.hidden = !isEmpty;
   if (summaryEl) summaryEl.hidden = isEmpty;
   if (noteEl) noteEl.hidden = isEmpty;
@@ -68,9 +71,7 @@ function render() {
     return;
   }
 
-  // ↓↓↓ ここから下は、今の「通常描画」そのままでOK
-
-  // ===== ここから通常描画 =====
+  // ===== 通常描画 =====
   let subtotal = 0;
   let count = 0;
 
@@ -91,7 +92,6 @@ function render() {
         <div class="cart-thumb">
           ${item.img ? `<img src="${item.img}" alt="" loading="lazy" decoding="async">` : ``}
         </div>
-
         <div class="cart-meta">
           <div class="cart-name">${item.name || ""}</div>
           <div class="cart-sub">${item.kind || ""}</div>
@@ -100,7 +100,6 @@ function render() {
 
       <div class="cart-right">
         <div class="cart-price">${yen(unit)}</div>
-
         <div class="cart-qtybox">
           <div class="cart-qtylabel">数量</div>
           <input class="cart-qty" type="number" min="1" max="99" value="${Math.max(1, qty)}" inputmode="numeric" />
@@ -118,10 +117,8 @@ function render() {
     listEl.appendChild(row);
   }
 
-  // 小計
   subtotalEl.textContent = yen(subtotal);
 
-  // バッジ
   countEls.forEach((el) => {
     if (count > 0) {
       el.textContent = String(count);
