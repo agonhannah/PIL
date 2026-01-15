@@ -19,6 +19,13 @@ const PRODUCT_HASH_MAP = {
   "price_1SpMR2KIaoBhTWZChWLVHw3b": "#pil-soundpack-vol1",
 };
 
+function scrollTopHard() {
+  requestAnimationFrame(() => {
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => window.scrollTo(0, 0));
+  });
+  setTimeout(() => window.scrollTo(0, 0), 50);
+}
 
 function migrateCartPrices() {
   const cart = getCart();
@@ -163,7 +170,7 @@ function setupBagModal() {
     modal.setAttribute("aria-hidden", "false");
     modal.classList.add("is-open");
     openFlag = true;
-
+    document.body.classList.add("is-locked");
     render();
   }
 
@@ -173,10 +180,11 @@ function setupBagModal() {
     modal.setAttribute("aria-hidden", "true");
     modal.classList.remove("is-open");
     openFlag = false;
-
+    document.body.classList.remove("is-locked");
     if (prevHash !== (location.hash || "")) {
       location.hash = prevHash || "";
     }
+    scrollTopHard(); 
   }
 
   bagLinkTop?.addEventListener("click", openBag);
@@ -249,6 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
       bag.closeBag();
       setTimeout(() => {
         location.hash = hash;
+        scrollTopHard();
       }, 0);
     });
 
