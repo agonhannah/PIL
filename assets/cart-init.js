@@ -35,7 +35,13 @@ function migrateCartPrices() {
 }
 
 function render() {
-  const cart = getCart();
+  const raw = getCart() || [];
+  const cart = raw.filter((it) => Number(it.qty || 0) > 0);
+
+  // qty=0のゴミがあれば掃除（任意だが強い）
+  if (cart.length !== raw.length) {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  }
 
   const listEl = document.getElementById("cart-list");
   const subtotalEl = document.getElementById("cart-subtotal");
@@ -52,37 +58,32 @@ function render() {
 
   if (!listEl || !subtotalEl) return;
 
-  const isEmpty = !cart || cart.length === 0;
+  const isEmpty = cart.length === 0;
 
-  // ★まず一旦「確実に」状態を揃える（残留対策）
-  if (emptyEl) emptyEl.hidden = true;
-  if (summaryEl) summaryEl.hidden = false;
-  if (noteEl) noteEl.hidden = false;
-  listEl.hidden = false;
+  // 空/通常 切替
+  if (emptyEl) emptyEl.hidden = !isEmpty;
+  if (summaryEl) summaryEl.hidden = isEmpty;
+  if (noteEl) noteEl.hidden = isEmpty;
+  listEl.hidden = isEmpty;
 
-  // 空/通常の切替
   if (isEmpty) {
-    if (emptyEl) emptyEl.hidden = false;
-    if (summaryEl) summaryEl.hidden = true;
-    if (noteEl) noteEl.hidden = true;
-    listEl.hidden = true;
-
     subtotalEl.textContent = yen(0);
     listEl.innerHTML = "";
-    countEls.forEach((el) => { el.textContent = ""; el.hidden = true; });
+    countEls.forEach((el) => {
+      el.textContent = "";
+      el.hidden = true;
+    });
     return;
   }
 
-  // ===== 通常描画 =====
+  // ===== ここから通常描画 =====
   let subtotal = 0;
   let count = 0;
-
   listEl.innerHTML = "";
 
   for (const item of cart) {
     const qty = Number(item.qty || 0);
     const unit = Number(item.unitAmount || 0);
-
     subtotal += unit * qty;
     count += qty;
 
@@ -94,6 +95,7 @@ function render() {
         <div class="cart-thumb">
           ${item.img ? `<img src="${item.img}" alt="" loading="lazy" decoding="async">` : ``}
         </div>
+
         <div class="cart-meta">
           <div class="cart-name">${item.name || ""}</div>
           <div class="cart-sub">${item.kind || ""}</div>
@@ -102,6 +104,7 @@ function render() {
 
       <div class="cart-right">
         <div class="cart-price">${yen(unit)}</div>
+
         <div class="cart-qtybox">
           <div class="cart-qtylabel">数量</div>
           <input class="cart-qty" type="number" min="1" max="99" value="${Math.max(1, qty)}" inputmode="numeric" />
