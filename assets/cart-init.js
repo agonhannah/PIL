@@ -39,7 +39,6 @@ function render() {
   const listEl = document.getElementById("cart-list");
   const subtotalEl = document.getElementById("cart-subtotal");
 
-  // ★追加：空表示用の要素を取る
   const emptyEl = document.querySelector(".cart-empty");
   const summaryEl = document.querySelector(".cart-summary");
   const noteEl = document.querySelector(".cart-note");
@@ -54,21 +53,24 @@ function render() {
 
   const isEmpty = !cart || cart.length === 0;
 
-  // ★空/通常の表示切り替え
+  // 空/通常の表示切り替え
   if (emptyEl) emptyEl.hidden = !isEmpty;
-  if (summaryEl) summaryEl.hidden = isEmpty;  // ← 小計+BUY+Close をまとめて消す
+  if (summaryEl) summaryEl.hidden = isEmpty;
   if (noteEl) noteEl.hidden = isEmpty;
   listEl.hidden = isEmpty;
 
-  // 空ならここで終了（これがないと下でまた描画される）
+  // 空ならここで終了
   if (isEmpty) {
     subtotalEl.textContent = yen(0);
+    listEl.innerHTML = "";
+
     countEls.forEach((el) => {
       el.textContent = "";
       el.hidden = true;
     });
-    listEl.innerHTML = ""; // 念のため
-    return
+
+    return; // ← セミコロン＋閉じ括弧OK
+  }
 
   // ===== ここから通常描画 =====
   let subtotal = 0;
