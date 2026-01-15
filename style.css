@@ -833,3 +833,8 @@ body.is-locked{
   text-align:right;
   min-width:10ch;
 }
+
+/* 最後のカート行だけ下線を消して、summaryの線だけ残す */
+.cart-row:last-child{
+  border-bottom: none;
+}
