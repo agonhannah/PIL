@@ -36,7 +36,7 @@ function migrateCartPrices() {
 
 function render() {
   const cart = getCart();
-  const listEl = document.getElementById("cart-list");
+  const listEl  = document.getElementById("cart-list");
   const subtotalEl = document.getElementById("cart-subtotal");
 
   const countEls = [
@@ -47,7 +47,7 @@ function render() {
 
   if (!listEl || !subtotalEl) return;
 
-  let total = 0;
+  let subtotal = 0;
   let count = 0;
 
   listEl.innerHTML = "";
