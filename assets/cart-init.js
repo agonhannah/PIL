@@ -40,10 +40,10 @@ function render() {
   const listEl = document.getElementById("cart-list");
   const subtotalEl = document.getElementById("cart-subtotal");
 
-  // あなたのHTMLは class なので querySelector が正しい
-  const emptyEl = document.querySelector(".cart-empty");
-  const summaryEl = document.querySelector(".cart-summary");
-  const noteEl = document.querySelector(".cart-note");
+  // ✅ HTMLが id なので id で取る（ここが本体）
+  const emptyEl = document.getElementById("cart-empty");
+  const summaryEl = document.getElementById("cart-summary");
+  const noteEl = document.getElementById("cart-note");
 
   const countEls = [
     document.getElementById("cart-count-top"),
@@ -55,15 +55,12 @@ function render() {
 
   const isEmpty = !cart || cart.length === 0;
 
-  // ✅ 空/通常の表示切り替え（これが「EMPTY残る」対策の本体）
+  // ✅ 空/通常の表示切り替え
   if (emptyEl) emptyEl.hidden = !isEmpty;
-  if (summaryEl) summaryEl.hidden = isEmpty; // 小計+BUY+Close をまとめて消す
+  if (summaryEl) summaryEl.hidden = isEmpty;
   if (noteEl) noteEl.hidden = isEmpty;
-
-  // list は「空の時は隠す」でもいいし、空でも表示でもOK
   listEl.hidden = isEmpty;
 
-  // 空ならここで終了
   if (isEmpty) {
     subtotalEl.textContent = yen(0);
     listEl.innerHTML = "";
@@ -74,10 +71,9 @@ function render() {
     return;
   }
 
-  // ===== ここから通常描画 =====
+  // ===== 通常描画 =====
   let subtotal = 0;
   let count = 0;
-
   listEl.innerHTML = "";
 
   for (const item of cart) {
@@ -89,13 +85,11 @@ function render() {
 
     const row = document.createElement("div");
     row.className = "cart-row";
-
     row.innerHTML = `
       <div class="cart-left">
         <div class="cart-thumb">
           ${item.img ? `<img src="${item.img}" alt="" loading="lazy" decoding="async">` : ``}
         </div>
-
         <div class="cart-meta">
           <div class="cart-name">${item.name || ""}</div>
           <div class="cart-sub">${item.kind || ""}</div>
@@ -122,10 +116,8 @@ function render() {
     listEl.appendChild(row);
   }
 
-  // 小計
   subtotalEl.textContent = yen(subtotal);
 
-  // バッジ
   countEls.forEach((el) => {
     if (count > 0) {
       el.textContent = String(count);
