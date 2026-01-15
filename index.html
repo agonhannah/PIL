@@ -91,35 +91,29 @@
 
 <section class="modal" id="bagModal" hidden aria-hidden="true" aria-label="Bag">
   <div class="modal__body">
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-      <div><b>Bag</b></div>
-      <button type="button" id="bagClose">Close</button>
+    <div class="bag-head">
+      <div class="bag-title"><b>Bag</b></div>
+      <button type="button" id="bagClose" class="bag-close">Close</button>
     </div>
 
-    <div style="margin-top:12px;">
-      <button id="cart-clear" type="button">Clear</button>
+    <!-- 一覧 -->
+    <div id="cart-list" class="cart-list"></div>
+
+    <!-- 小計（バーの下） + Checkout（黒ボタン） -->
+    <div class="cart-summary">
+      <div class="cart-subtotal">
+        <div class="cart-subtotal__label">小計</div>
+        <div class="cart-subtotal__value" id="cart-subtotal">¥0</div>
+      </div>
+
+      <button id="cart-checkout" type="button" class="cart-checkout">
+        ご購入手続きへ
+      </button>
+
+      <p class="cart-note">
+        ※ physical が含まれる場合、送料 ¥500 が Checkout で加算されます
+      </p>
     </div>
-    
-    <div class="cart-head">
-  <div class="cart-head-left">商品名</div>
-  <div class="cart-head-right">価格</div>
-</div>
-
-<div class="cart-foot">
-  <div class="cart-foot-label">小計</div>
-  <div class="cart-foot-total"><b id="cart-total">¥0</b></div>
-</div>
-
-    <div id="cart-list" style="margin-top:12px;"></div>
-
-    <div style="margin-top:12px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
-      <div>Total: <b id="cart-total">¥0</b></div>
-      <button id="cart-checkout" type="button">Checkout</button>
-    </div>
-
-    <p style="margin-top:10px; font-size:12px; opacity:.7;">
-      ※ physical が含まれる場合、送料 ¥500 が Checkout で加算されます
-    </p>
   </div>
 </section>
 
