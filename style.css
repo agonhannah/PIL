@@ -827,7 +827,7 @@ body.is-locked{
   gap: 16px;
   font-size: 12px;             /* ← 削除と同サイズ */
   letter-spacing: .14em;
-  opacity: .75;
+  opacity: .85;
   padding: 6px 0;
 }
 
