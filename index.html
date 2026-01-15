@@ -13,7 +13,7 @@
   <header class="topbar" role="banner">
     <a class="toplink" href="./" data-home aria-label="Back to top">TOP</a>
     
-    <a class="bag-btn" href="#bag" id="bagLink" aria-label="Open bag">
+    <a class="bag-btn" href="#" id="bagLink" aria-label="Open bag">
   <img src="images/bag.png" alt="" aria-hidden="true">
   <span class="bag-count" id="cart-count-top" hidden>0</span>
 </a>
@@ -95,25 +95,24 @@
       <button type="button" id="bagClose" class="bag-close">Close</button>
     </div>
 
-    <!-- 一覧 -->
-  <div class="cart-divider"></div>
+    <!-- 一覧（JSがここに行を追加する） -->
+    <div id="cart-list" class="cart-list"></div>
 
-<div class="cart-summary">
-  <div class="cart-summary-row">
-    <div class="cart-summary-label">小計</div>
-    <div class="cart-summary-value">¥2,750</div>
+    <!-- 小計 + BUY（2本バーの間に入る枠） -->
+    <div class="cart-summaryWrap">
+      <div class="cart-summary">
+        <div class="cart-summary__label">小計</div>
+        <div class="cart-summary__value" id="cart-subtotal">¥0</div>
+      </div>
+
+      <button id="cart-checkout" type="button" class="cart-checkout">BUY</button>
+    </div>
+
+    <p class="cart-note">
+      ※ physical が含まれる場合、送料 ¥500 が Checkout で加算されます
+    </p>
   </div>
-
-  <button class="cart-buy">BUY</button>
-</div>
-
-<div class="cart-divider"></div>
-
-<p class="cart-note">
-※ physical が含まれる場合、送料 ¥500 が Checkout で加算されます
-</p>
-  </div><!-- /.modal__body -->
-</section><!-- /#bagModal -->
+</section>
 
 
 
