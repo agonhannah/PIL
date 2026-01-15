@@ -55,26 +55,29 @@ function render() {
   if (!listEl || !subtotalEl) return;
 
   // ===== 空カート判定 =====
-  const isEmpty = !cart || cart.length === 0;
+const isEmpty = !cart || cart.length === 0;
 
-  // ✅ 空のとき：list/summary/note/buyを隠して empty を出す
-  if (emptyEl) emptyEl.hidden = !isEmpty;
-  if (listEl) listEl.hidden = isEmpty;
-  if (summaryEl) summaryEl.hidden = isEmpty;
-  if (noteEl) noteEl.hidden = isEmpty;
+// 空表示
+if (emptyEl) emptyEl.hidden = !isEmpty;
 
-  // buyBtn は cart-summary の中にいるけど念のため
-  if (buyBtn) buyBtn.hidden = isEmpty;
+// 通常UIは空のとき全部消す
+if (listEl) listEl.hidden = isEmpty;
+if (summaryEl) summaryEl.hidden = isEmpty;
+if (noteEl) noteEl.hidden = isEmpty;
 
-  // 空のときは小計を0にして終了（バッジも0）
-  if (isEmpty) {
-    subtotalEl.textContent = yen(0);
-    countEls.forEach((el) => {
-      el.textContent = "";
-      el.hidden = true;
-    });
-    return;
-  }
+// 念のため BUY も直接
+if (buyBtn) buyBtn.hidden = isEmpty;
+
+if (isEmpty) {
+  subtotalEl.textContent = yen(0);
+
+  countEls.forEach((el) => {
+    el.textContent = "";
+    el.hidden = true;
+  });
+
+  return; // ← ここ超重要
+}
 
   // ===== ここから通常描画 =====
   let subtotal = 0;
