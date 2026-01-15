@@ -100,30 +100,27 @@
 
     <!-- カート一覧 -->
     <div id="cart-list"></div>
-    
-    <div class="cart-empty" hidden>
+
+<div id="cart-empty" class="cart-empty" hidden>
   <div class="cart-empty__inner">
     <div class="cart-empty__en">YOUR CART IS EMPTY</div>
     <div class="cart-empty__jp">カートは空です</div>
   </div>
 </div>
 
-    <!-- 小計 + BUY -->
-    <div class="cart-summary">
-      <div class="cart-summary-row">
-        <div class="cart-summary-label">小計</div>
-        <div class="cart-summary-value" id="cart-subtotal">¥0</div>
-      </div>
+<div id="cart-summary" class="cart-summary">
+  <div class="cart-summary-row">
+    <div class="cart-summary-label">小計</div>
+    <div class="cart-summary-value" id="cart-subtotal">¥0</div>
+  </div>
 
-      <button class="cart-buy" id="cart-checkout" type="button">BUY</button>
+  <button class="cart-buy" id="cart-checkout" type="button">BUY</button>
+  <button type="button" id="bagClose" class="bag-close bag-close--bottom">Close</button>
+</div>
 
-      <!-- ✅ Close を BUY の下に -->
-      <button type="button" id="bagClose" class="bag-close bag-close--bottom">Close</button>
-    </div>
-
-    <p class="cart-note">
-      ※ physical が含まれる場合、送料 ¥500 が Checkout で加算されます
-    </p>
+<p id="cart-note" class="cart-note">
+  ※ physical が含まれる場合、送料 ¥500 が Checkout で加算されます
+</p>
 
   </div>
 </section>
