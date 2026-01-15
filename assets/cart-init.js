@@ -1,10 +1,10 @@
 // assets/cart-init.js
+import { addToCart, getCart, removeFromCart, setQty, checkout } from "./cart.js";
+
 if (window.__cartInitLoaded) {
   console.warn("[cart-init] already loaded, skip");
 } else {
   window.__cartInitLoaded = true;
-
-  import { addToCart, getCart, clearCart, removeFromCart, setQty, checkout } from "./cart.js";
 
   const CART_KEY = "paradiceloner_cart_v1";
 
@@ -12,14 +12,15 @@ if (window.__cartInitLoaded) {
     return "¥" + Number(n || 0).toLocaleString("ja-JP");
   }
 
+  // priceId -> unitAmount（表示用の円）
   const PRICE_MAP = {
-    "price_1SlmMwKIaoBhTWZC50foHo6u": 2750,
-    "price_1SpMR2KIaoBhTWZChWLVHw3b": 2750,
+    "price_1SlmMwKIaoBhTWZC50foHo6u": 2750, // CD
+    "price_1SpMR2KIaoBhTWZChWLVHw3b": 2750, // SOUNDPACK
   };
 
   function migrateCartPrices() {
     const cart = getCart();
-    if (!cart.length) return;
+    if (!cart || !cart.length) return;
 
     let changed = false;
     for (const item of cart) {
@@ -31,6 +32,7 @@ if (window.__cartInitLoaded) {
         }
       }
     }
+
     if (changed) {
       localStorage.setItem(CART_KEY, JSON.stringify(cart));
       window.dispatchEvent(new Event("cart:updated"));
@@ -38,14 +40,15 @@ if (window.__cartInitLoaded) {
   }
 
   function render() {
-    const cart = getCart();
+    const cart = getCart() || [];
+
     const listEl = document.getElementById("cart-list");
     const subtotalEl = document.getElementById("cart-subtotal");
 
-    // ★ここは querySelector より「id固定」にすると事故が減る
-    const emptyEl = document.getElementById("cart-empty");
-    const summaryEl = document.getElementById("cart-summary");
-    const noteEl = document.getElementById("cart-note");
+    // HTMLは class なので querySelector で取る（id前提にしない）
+    const emptyEl = document.querySelector(".cart-empty");
+    const summaryEl = document.querySelector(".cart-summary");
+    const noteEl = document.querySelector(".cart-note");
 
     const countEls = [
       document.getElementById("cart-count-top"),
@@ -55,13 +58,16 @@ if (window.__cartInitLoaded) {
 
     if (!listEl || !subtotalEl) return;
 
-    const isEmpty = !cart || cart.length === 0;
+    const isEmpty = cart.length === 0;
 
+    // 空/通常の表示切り替え（ここが“empty残る”の本体）
     if (emptyEl) emptyEl.hidden = !isEmpty;
-    if (summaryEl) summaryEl.hidden = isEmpty; // 小計+BUY+Close を消す
+    if (summaryEl) summaryEl.hidden = isEmpty; // 小計 + BUY + Close をまとめて隠す
     if (noteEl) noteEl.hidden = isEmpty;
+
     listEl.hidden = isEmpty;
 
+    // 空なら描画終了
     if (isEmpty) {
       subtotalEl.textContent = yen(0);
       listEl.innerHTML = "";
@@ -72,19 +78,22 @@ if (window.__cartInitLoaded) {
       return;
     }
 
+    // ===== 通常描画 =====
     let subtotal = 0;
     let count = 0;
+
     listEl.innerHTML = "";
 
     for (const item of cart) {
-      const qty = Number(item.qty || 0);
-      const unit = Number(item.unitAmount || 0);
+      const qty = Math.max(1, Number(item.qty || 1));
+      const unit = Number(item.unitAmount || PRICE_MAP[item.priceId] || 0);
 
       subtotal += unit * qty;
       count += qty;
 
       const row = document.createElement("div");
       row.className = "cart-row";
+
       row.innerHTML = `
         <div class="cart-left">
           <div class="cart-thumb">
@@ -101,7 +110,7 @@ if (window.__cartInitLoaded) {
 
           <div class="cart-qtybox">
             <div class="cart-qtylabel">数量</div>
-            <input class="cart-qty" type="number" min="1" max="99" value="${Math.max(1, qty)}" inputmode="numeric" />
+            <input class="cart-qty" type="number" min="1" max="99" value="${qty}" inputmode="numeric" />
             <button class="cart-remove" type="button">削除</button>
           </div>
         </div>
@@ -129,6 +138,7 @@ if (window.__cartInitLoaded) {
     });
   }
 
+  // ===== Bag modal（hash変えない / 安定版）=====
   function setupBagModal() {
     const overlay = document.getElementById("bagOverlay");
     const modal = document.getElementById("bagModal");
@@ -180,26 +190,29 @@ if (window.__cartInitLoaded) {
     return { openBag, closeBag, isOpen: () => openFlag };
   }
 
+  // ===== Add to cart =====
   function setupAddToCart(openBag) {
     document.addEventListener("click", (e) => {
-      const btn = e.target.closest(".btn-add");
+      const btn = e.target.closest?.(".btn-add");
       if (!btn) return;
 
       const priceId = btn.dataset.priceId;
-      const name = btn.dataset.name || "Item";
-      const kind = btn.dataset.kind || "digital";
-      const img = btn.dataset.img || "";
-
       if (!priceId) {
         alert("priceId が入ってないです（data-price-id）");
         return;
       }
+
+      const name = btn.dataset.name || "Item";
+      const kind = btn.dataset.kind || "digital";
+      const img = btn.dataset.img || "";
 
       const unitAmount = Number(
         btn.dataset.unitAmount || btn.dataset.price || PRICE_MAP[priceId] || 0
       );
 
       addToCart({ priceId, name, kind, img, unitAmount, qty: 1 });
+
+      // 追加した瞬間にBagを開く（現挙動キープ）
       openBag?.();
     });
   }
