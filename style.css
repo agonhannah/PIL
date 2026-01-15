@@ -838,3 +838,23 @@ body.is-locked{
 .cart-row:last-child{
   border-bottom: none;
 }
+
+.cart-checkout{
+  display:block;
+  width:100%;
+  padding:14px 14px;
+
+  border:1px solid rgba(17,17,17,.28);
+  border-radius:14px;
+
+  font-size:12px;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  text-align:center;
+
+  margin:14px 0 0;
+  background:transparent;
+}
+.cart-checkout:active{
+  background: rgba(17,17,17,.04);
+}
