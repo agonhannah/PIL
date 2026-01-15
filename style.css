@@ -805,6 +805,7 @@ body.is-locked{
   font-size:12px;
   letter-spacing:.14em;
   opacity:.75;
+  margin-bottom: 10px
   text-decoration:underline;
 }
 
@@ -818,7 +819,7 @@ body.is-locked{
   display:flex;
   flex-direction:column;
   gap:18px;
-  padding: 10px 0;
+  padding: 6px 0;
 }
 
 .cart-summary-row{
