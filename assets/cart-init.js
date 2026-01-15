@@ -62,17 +62,33 @@ function render() {
     row.style.alignItems = "center";
     row.style.margin = "8px 0";
 
-    row.innerHTML = `
-      <div style="flex:1;">
-        <div style="font-weight:600;">${item.name}</div>
-        <div style="opacity:.7; font-size:12px;">${item.kind} / ${item.priceId}</div>
-      </div>
-      <input type="number" min="1" max="99" value="${item.qty}" style="width:64px;" />
-      <button type="button">Remove</button>
-    `;
+    row.className = "cart-row";
 
-    const qtyInput = row.querySelector("input");
-    const rmBtn = row.querySelector("button");
+row.innerHTML = `
+  <div class="cart-left">
+    <div class="cart-thumb">
+      ${item.img ? `<img src="${item.img}" alt="" loading="lazy" decoding="async">` : ``}
+    </div>
+
+    <div class="cart-meta">
+      <div class="cart-name">${item.name}</div>
+      <div class="cart-sub">${item.kind}</div>
+      <button class="cart-remove" type="button">削除</button>
+    </div>
+  </div>
+
+  <div class="cart-right">
+    <div class="cart-price">${yen(item.unitAmount)}</div>
+
+    <div class="cart-qtybox">
+      <div class="cart-qtylabel">数量</div>
+      <input class="cart-qty" type="number" min="1" max="99" value="${item.qty}" inputmode="numeric" />
+    </div>
+  </div>
+`;
+
+    const qtyInput = row.querySelector(".cart-qty");
+    const rmBtn = row.querySelector(".cart-remove");
 
     qtyInput.addEventListener("change", () => setQty(item.priceId, qtyInput.value));
     rmBtn.addEventListener("click", () => removeFromCart(item.priceId));
@@ -168,6 +184,7 @@ function setupAddToCart(openBag) {
     const priceId = btn.dataset.priceId;
     const name = btn.dataset.name || "Item";
     const kind = btn.dataset.kind || "digital";
+    const img  = btn.dataset.img || "";
 
     if (!priceId) {
       alert("priceId が入ってないです（data-price-id）");
