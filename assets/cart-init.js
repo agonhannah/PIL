@@ -57,10 +57,7 @@ function render() {
     count += item.qty;
 
     const row = document.createElement("div");
-    row.style.display = "flex";
-    row.style.gap = "10px";
-    row.style.alignItems = "center";
-    row.style.margin = "8px 0";
+    
 
     row.className = "cart-row";
 
@@ -90,8 +87,8 @@ row.innerHTML = `
     const qtyInput = row.querySelector(".cart-qty");
     const rmBtn = row.querySelector(".cart-remove");
 
-    qtyInput.addEventListener("change", () => setQty(item.priceId, qtyInput.value));
-    rmBtn.addEventListener("click", () => removeFromCart(item.priceId));
+    qtyInput?.addEventListener("change", () => setQty(item.priceId, qtyInput.value));
+rmBtn?.addEventListener("click", () => removeFromCart(item.priceId));
 
     listEl.appendChild(row);
   }
@@ -195,7 +192,7 @@ function setupAddToCart(openBag) {
       btn.dataset.unitAmount || btn.dataset.price || PRICE_MAP[priceId] || 0
     );
 
-    addToCart({ priceId, name, kind, unitAmount, qty: 1 });
+    addToCart({ priceId, name, kind, img, unitAmount, qty: 1 });
 
     // 追加した瞬間にBagを開く（今の挙動キープ）
     openBag?.();
