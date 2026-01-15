@@ -13,6 +13,13 @@ const PRICE_MAP = {
   "price_1SpMR2KIaoBhTWZChWLVHw3b": 2750, // SOUNDPACK
 };
 
+// priceId -> product hash
+const PRODUCT_HASH_MAP = {
+  "price_1SlmMwKIaoBhTWZC50foHo6u": "#session-collection",
+  "price_1SpMR2KIaoBhTWZChWLVHw3b": "#pil-soundpack-vol1",
+};
+
+
 function migrateCartPrices() {
   const cart = getCart();
   if (!cart.length) return;
@@ -85,28 +92,31 @@ function render() {
 
     const row = document.createElement("div");
     row.className = "cart-row";
-    row.innerHTML = `
-      <div class="cart-left">
-        <div class="cart-thumb">
-          ${item.img ? `<img src="${item.img}" alt="" loading="lazy" decoding="async">` : ``}
-        </div>
-        <div class="cart-meta">
-          <div class="cart-name">${item.name || ""}</div>
-          <div class="cart-sub">${item.kind || ""}</div>
-        </div>
-      </div>
+    const productHash = PRODUCT_HASH_MAP[item.priceId] || "#";
 
-      <div class="cart-right">
-        <div class="cart-price">${yen(unit)}</div>
+row.innerHTML = `
+  <a class="cart-left cart-jump" href="${productHash}" data-cart-jump="${productHash}">
+    <div class="cart-thumb">
+      ${item.img ? `<img src="${item.img}" alt="" loading="lazy" decoding="async">` : ``}
+    </div>
+    <div class="cart-meta">
+      <div class="cart-name">${item.name || ""}</div>
+      <div class="cart-sub">${item.kind || ""}</div>
+    </div>
+  </a>
 
-        <div class="cart-qtybox">
-          <div class="cart-qtylabel">数量</div>
-          <input class="cart-qty" type="number" min="1" max="99" value="${Math.max(1, qty)}" inputmode="numeric" />
-          <button class="cart-remove" type="button">削除</button>
-        </div>
-      </div>
-    `;
+  <div class="cart-right">
+    <div class="cart-price">${yen(unit)}</div>
 
+    <div class="cart-qtybox">
+      <div class="cart-qtylabel">数量</div>
+      <input class="cart-qty" type="number" min="1" max="99" value="${Math.max(1, qty)}" inputmode="numeric" />
+      <button class="cart-remove" type="button">削除</button>
+    </div>
+  </div>
+`;
+    
+    
     const qtyInput = row.querySelector(".cart-qty");
     const rmBtn = row.querySelector(".cart-remove");
 
@@ -218,6 +228,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const bag = setupBagModal();
     setupAddToCart(bag.openBag);
     setupCartUIButtons();
+
+    // cart内クリックで商品ページへ（画像/タイトル）
+    document.getElementById("cart-list")?.addEventListener("click", (e) => {
+      const a = e.target.closest?.("[data-cart-jump]");
+      if (!a) return;
+
+      // 数量/削除周りのクリックは無視（誤爆防止）
+      if (e.target.closest(".cart-qtybox")) return;
+
+      e.preventDefault();
+
+      const hash = a.getAttribute("data-cart-jump");
+      if (!hash || hash === "#") return;
+
+      // hash guard 対策（script.js の HASH_FLAG と同じ文字列）
+      sessionStorage.setItem("pc_allow_product_hash", "1");
+
+      // bag を閉じてから遷移
+      bag.closeBag();
+      setTimeout(() => {
+        location.hash = hash;
+      }, 0);
+    });
 
     render();
     window.addEventListener("cart:updated", render);
