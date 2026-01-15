@@ -36,8 +36,15 @@ function migrateCartPrices() {
 
 function render() {
   const cart = getCart();
+
   const listEl = document.getElementById("cart-list");
   const subtotalEl = document.getElementById("cart-subtotal");
+
+  // ✅ empty UI
+  const emptyEl = document.querySelector(".cart-empty");
+  const summaryEl = document.querySelector(".cart-summary");
+  const noteEl = document.querySelector(".cart-note");
+  const buyBtn = document.getElementById("cart-checkout");
 
   const countEls = [
     document.getElementById("cart-count-top"),
@@ -47,6 +54,29 @@ function render() {
 
   if (!listEl || !subtotalEl) return;
 
+  // ===== 空カート判定 =====
+  const isEmpty = !cart || cart.length === 0;
+
+  // ✅ 空のとき：list/summary/note/buyを隠して empty を出す
+  if (emptyEl) emptyEl.hidden = !isEmpty;
+  if (listEl) listEl.hidden = isEmpty;
+  if (summaryEl) summaryEl.hidden = isEmpty;
+  if (noteEl) noteEl.hidden = isEmpty;
+
+  // buyBtn は cart-summary の中にいるけど念のため
+  if (buyBtn) buyBtn.hidden = isEmpty;
+
+  // 空のときは小計を0にして終了（バッジも0）
+  if (isEmpty) {
+    subtotalEl.textContent = yen(0);
+    countEls.forEach((el) => {
+      el.textContent = "";
+      el.hidden = true;
+    });
+    return;
+  }
+
+  // ===== ここから通常描画 =====
   let subtotal = 0;
   let count = 0;
 
