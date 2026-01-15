@@ -811,7 +811,7 @@ body.is-locked{
 .cart-divider{
   height:1px;
   background: var(--line);
-  margin: 28px 0;
+  margin: 32px 0;
 }
 
 .cart-summary{
