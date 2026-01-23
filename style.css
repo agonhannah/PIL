@@ -1030,21 +1030,23 @@ body.is-locked .masthead{
   letter-spacing: .32em;
   text-transform: uppercase;
   font-weight: 400;
-  color: #111;
+  color: #fff;
 }
 
 .hero-more{
   font-size: 11px;
   letter-spacing: .32em;
   text-transform: uppercase;
-  opacity: .75;
+  color: #fff;            /* ← 白 */
+  opacity: .85;
 
   padding-bottom: 2px;
-  border-bottom: 1px solid rgba(17,17,17,.4);
+  border-bottom: 1px solid rgba(255,255,255,.6); /* 白の下線 */
 }
 
 .hero-more:hover{
   opacity: 1;
+  border-bottom-color: rgba(255,255,255,.9);
 }
 
 
