@@ -73,7 +73,7 @@ body{
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   overflow-x:hidden;
-  padding-top: calc(var(--topbar-h) + var(--masthead-h));
+  padding-top: var(--topbar-h) ;
 }
 
 /* noise */
@@ -118,40 +118,32 @@ body::after{
 }
 
 .masthead{
-  position: absolute;
-  top: calc(var(--topbar-h) + 18px);
+  position: fixed;  /* absolute → fixed */
+  top: var(--topbar-h);
   left: 50%;
   transform: translateX(-50%);
-  z-index: 50;
-  text-align: center;
-  /* 白い長方形が不要なら背景なし */
-  background: transparent;
-  padding: 0;
-}
-
-/* ===== 商品ページ時：mastheadを“通常フロー”に戻して、商品と一緒にスクロールさせる ===== */
-body:has(.product:target) .masthead{
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
-
-  z-index: 1;
-  margin: 18px auto 0;     /* ここで詰め具合調整 */
-  padding: 0;              /* 余白が残るならここ */
-}
-
-/* 商品ページ時：mastheadと商品が重ならないように（念のため） */
-body:has(.product:target) .product{
-  padding-top: 18px; /* 0でもOK。重なるなら増やす */
+  z-index: 200;     /* heroより上、productより下にする */
+  width: 100%;
+  pointer-events: none; /* 触れなくてOKなら */
 }
 
 .masthead__inner{
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 18px calc(var(--gutter) + env(safe-area-inset-right, 0px)) 0
+           calc(var(--gutter) + env(safe-area-inset-left, 0px));
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
+
+/* 商品ページ表示中は product を masthead の上に被せる */
+body:has(.product:target) .product:target{
+  position: relative;
+  z-index: 500; /* masthead(200)より上 */
+  background: var(--bg); /* これが“隠す”役 */
+}
+
+
 
 .masthead__brand{
   font-size: 14px;
