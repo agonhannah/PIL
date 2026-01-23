@@ -1072,4 +1072,18 @@ body:has(.product:target) .masthead{
   visibility: hidden !important;
 }
 
+@media (pointer: coarse){
+  #pointer-blob{
+    filter: blur(5px); /* ← 今の10pxの半分 */
+  }
+}
+
+@media (pointer: coarse){
+  #pointer-blob{
+    width:42px;
+    height:42px;
+    filter: blur(5px);
+  }
+}
+
 
