@@ -1003,3 +1003,8 @@ body:has(.product:target) .hero{
 body:has(.product:target) .masthead{
   display: none;
 }
+
+/* 商品ページ時：商品ブロックを上に詰める */
+.product:target{
+  padding-top: 0 !important;
+}
