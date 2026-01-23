@@ -99,7 +99,7 @@ function render() {
 
     const row = document.createElement("div");
     row.className = "cart-row";
-    const productHash = PRODUCT_HASH_MAP[item.priceId] || "#";
+    const productHash = item.slug ? `#${item.slug}` : "#";
 
 row.innerHTML = `
   <a class="cart-left cart-jump" href="${productHash}" data-cart-jump="${productHash}">
@@ -220,6 +220,7 @@ function setupAddToCart(openBag) {
       btn.dataset.unitAmount || btn.dataset.price || PRICE_MAP[priceId] || 0
     );
 
+    const slug = btn.dataset.productSlug || "";
     addToCart({ priceId, name, kind, img, unitAmount, qty: 1 });
     openBag?.();
   });
