@@ -265,11 +265,25 @@ function setupAddToCart(openBag) {
 }
 
 function setupCartUIButtons() {
-  document
-    .getElementById("cart-checkout")
-    ?.addEventListener("click", () => checkout());
-}
+  const btn = document.getElementById("cart-checkout");
+  if (!btn) return;
 
+  let busy = false;
+
+  btn.addEventListener("click", async () => {
+    if (busy) return;
+    busy = true;
+    btn.disabled = true;
+    try {
+      await checkout();
+    } finally {
+      // checkout() は Stripe に遷移するので通常ここには戻らないけど、
+      // エラー時は戻るので復帰させる
+      busy = false;
+      btn.disabled = false;
+    }
+  });
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   try {
@@ -292,10 +306,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const hash = a.getAttribute("data-cart-jump");
       if (!hash || hash === "#") return;
 
-      // hash guard 対策（script.js の HASH_FLAG と同じ文字列）
       sessionStorage.setItem("pc_allow_product_hash", "1");
 
-      // bag を閉じてから遷移
       bag.closeBag();
       setTimeout(() => {
         location.hash = hash;
