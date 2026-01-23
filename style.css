@@ -998,3 +998,8 @@ body.is-locked .masthead{
 body:has(.product:target) .hero{
   display: none;
 }
+
+/* 商品ページが表示されている時は隠す */
+body:has(.product:target) .masthead{
+  display: none;
+}
