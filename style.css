@@ -253,8 +253,15 @@ body::after{
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
 }
+
 body.is-locked{
   overflow:hidden;
+}
+
+/* drawer / modal が出てる時は masthead を隠す */
+body.is-locked .masthead{
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* =========================================================
