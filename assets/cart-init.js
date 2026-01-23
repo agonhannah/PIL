@@ -198,7 +198,10 @@ function setupBagModal() {
   let openFlag = false;
 
   function openBag(e) {
-    if (e) e.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation?.();
+    }
     prevHash = location.hash || "";
 
     overlay.hidden = false;
@@ -223,9 +226,9 @@ function setupBagModal() {
     scrollTopHard();
   }
 
-  bagLinkTop?.addEventListener("click", openBag);
-  closeBtn?.addEventListener("click", closeBag);
-  overlay?.addEventListener("click", closeBag);
+  bagLinkTop?.addEventListener("click", openBag, { capture: true });
+  closeBtn?.addEventListener("click", closeBag, { capture: true });
+  overlay?.addEventListener("click", closeBag, { capture: true });
 
   window.addEventListener("keydown", (ev) => {
     if (ev.key === "Escape" && openFlag) closeBag();
@@ -238,51 +241,107 @@ function setupBagModal() {
 
 // ===== Add to cart =====
 function setupAddToCart(openBag) {
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".btn-add");
-    if (!btn) return;
+  document.addEventListener(
+    "click",
+    (e) => {
+      const btn = e.target.closest?.(".btn-add");
+      if (!btn) return;
 
-    const priceId = btn.dataset.priceId;
-    const name = btn.dataset.name || "Item";
-    const kind = btn.dataset.kind || "digital";
-    const img = btn.dataset.img || "";
+      e.preventDefault();
+      e.stopPropagation();
 
-    if (!priceId) {
-      alert("priceId が入ってないです（data-price-id）");
-      return;
-    }
+      const priceId = btn.dataset.priceId;
+      const name = btn.dataset.name || "Item";
+      const kind = btn.dataset.kind || "digital";
+      const img = btn.dataset.img || "";
 
-    const unitAmount = Number(
-      btn.dataset.unitAmount || btn.dataset.price || PRICE_MAP[priceId] || 0
-    );
+      if (!priceId) {
+        alert("priceId が入ってないです（data-price-id）");
+        return;
+      }
 
-    // HTML: data-product-slug="session-collection" を想定（dataset.productSlug）
-    const slug = String(btn.dataset.productSlug || "").trim();
+      const unitAmount = Number(
+        btn.dataset.unitAmount || btn.dataset.price || PRICE_MAP[priceId] || 0
+      );
 
-    addToCart({ priceId, name, kind, img, unitAmount, qty: 1, slug });
-    openBag?.();
-  });
+      // HTML: data-product-slug="session-collection" を想定（dataset.productSlug）
+      const slug = String(btn.dataset.productSlug || "").trim();
+
+      addToCart({ priceId, name, kind, img, unitAmount, qty: 1, slug });
+      openBag?.();
+    },
+    { capture: true }
+  );
 }
 
+// ===== Cart: jump to product hash =====
+function setupCartJump(bag) {
+  const list = document.getElementById("cart-list");
+  if (!list) return;
+
+  list.addEventListener(
+    "click",
+    (e) => {
+      const a = e.target.closest?.("[data-cart-jump]");
+      if (!a) return;
+
+      // 数量/削除周りのクリックは無視（誤爆防止）
+      if (e.target.closest(".cart-qtybox")) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const hash = a.getAttribute("data-cart-jump");
+      if (!hash || hash === "#") return;
+
+      // hash guard 対策（script.js と同じ）
+      sessionStorage.setItem("pc_allow_product_hash", "1");
+
+      bag.closeBag();
+      setTimeout(() => {
+        location.hash = hash;
+        scrollTopHard();
+      }, 0);
+    },
+    { capture: true }
+  );
+}
+
+// ===== Checkout button (BUY) =====
 function setupCartUIButtons() {
   const btn = document.getElementById("cart-checkout");
   if (!btn) return;
 
   let busy = false;
 
-  btn.addEventListener("click", async () => {
+  // iOS対策：clickだけに頼らない
+  const handler = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (busy) return;
     busy = true;
-    btn.disabled = true;
+
+    // button でも a でも効くロック
+    btn.setAttribute("aria-busy", "true");
+    btn.style.pointerEvents = "none";
+
     try {
-      await checkout();
+      await checkout(); // Stripeへ遷移する想定
+    } catch (err) {
+      console.error("[cart-init] checkout failed:", err);
+      alert("決済へ進めませんでした。Console を確認してください。");
     } finally {
-      // checkout() は Stripe に遷移するので通常ここには戻らないけど、
-      // エラー時は戻るので復帰させる
       busy = false;
-      btn.disabled = false;
+      btn.setAttribute("aria-busy", "false");
+      btn.style.pointerEvents = "";
     }
-  });
+  };
+
+  // captureで先に拾う（他JSのstopPropagationに負けない）
+  btn.addEventListener("pointerdown", handler, { capture: true });
+  btn.addEventListener("click", handler, { capture: true });
+  btn.addEventListener("touchend", handler, { capture: true });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -292,31 +351,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const bag = setupBagModal();
     setupAddToCart(bag.openBag);
     setupCartUIButtons();
-
-    // cart内クリックで商品ページへ（画像/タイトル）
-    document.getElementById("cart-list")?.addEventListener("click", (e) => {
-      const a = e.target.closest?.("[data-cart-jump]");
-      if (!a) return;
-
-      // 数量/削除周りのクリックは無視（誤爆防止）
-      if (e.target.closest(".cart-qtybox")) return;
-
-      e.preventDefault();
-
-      const hash = a.getAttribute("data-cart-jump");
-      if (!hash || hash === "#") return;
-
-      sessionStorage.setItem("pc_allow_product_hash", "1");
-
-      bag.closeBag();
-      setTimeout(() => {
-        location.hash = hash;
-        scrollTopHard();
-      }, 0);
-    });
+    setupCartJump(bag);
 
     render();
     window.addEventListener("cart:updated", render);
+
+    // デバッグ：買いボタン存在確認（不要なら消してOK）
+    // console.log("[cart-init] cart-checkout:", !!document.getElementById("cart-checkout"));
   } catch (err) {
     console.error("[cart-init] fatal:", err);
     alert("cart-init.js が途中で死んでます。Console を見てください。");
