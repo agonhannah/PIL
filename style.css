@@ -1000,6 +1000,7 @@ body.is-locked .masthead{
   width: 100%;
   position: relative;
   margin-top: var(--masthead-h);
+  overflow: hidden;
 }
 
 .hero img{
