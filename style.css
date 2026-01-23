@@ -995,3 +995,6 @@ body.is-locked .masthead{
   display: block;
 }
 
+body:has(.product:target) .hero{
+  display: none;
+}
