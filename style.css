@@ -128,7 +128,7 @@ body::after{
   display: grid;
   place-items: center;
   text-align: center;
-  background: #fff;        /* ← これで「最初は白」になる */
+  background: #transparent;        /* ← これで「最初は白」になる */
   pointer-events: none;    /* 触れなくてOKなら。必要なら消してOK */
 }
 
@@ -998,6 +998,7 @@ body.is-locked .masthead{
 .hero{
   width: 100%;
   position: relative;
+  margin-top: var(--masthead-h);
 }
 
 .hero img{
