@@ -120,7 +120,7 @@ body::after{
 
 .masthead{
   position: fixed;
-  top: calc(var(--topbar-h) +18px);
+  top: calc(var(--topbar-h) );
   left: 0;
   right: 0;
   height: var(--masthead-h);
