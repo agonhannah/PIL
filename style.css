@@ -3,6 +3,7 @@
   --ink:#111;
   --muted:rgba(17,17,17,.58);
   --masthead-h: 84px;
+  --masthead-offset-y: -8px;
   --line:rgba(17,17,17,.18);
   --panel:#ffffff;
 
@@ -120,7 +121,7 @@ body::after{
 
 .masthead{
   position: fixed;
-  top: calc(var(--topbar-h) );
+  top: calc(var(--topbar-h) + var(--masthead-offset-y));
   left: 0;
   right: 0;
   height: var(--masthead-h);
