@@ -7,22 +7,27 @@ function yen(n) {
   return "¥" + Number(n || 0).toLocaleString("ja-JP");
 }
 
-// priceId -> unitAmount（表示用の円）
+// priceId -> unitAmount（表示用の円 / 旧カート救済用）
 const PRICE_MAP = {
-  "price_1SsGhoKIaoBhTWZCtnxZMP9m": 2750, // CD
-  "price_1SsGhkKIaoBhTWZC4ID0xUnI": 2750, // SOUNDPACK
+  "price_1SsGhoKIaoBhTWZCtnxZMP9m": 2750, // CD (new)
+  "price_1SsGhkKIaoBhTWZC4ID0xUnI": 2750, // SOUNDPACK (new)
+
+  // 任意：旧IDも救済するなら
+  "price_1SlmMwKIaoBhTWZC50foHo6u": 2750, // CD (old)
+  "price_1SpMR2KIaoBhTWZChWLVHw3b": 2750, // SOUNDPACK (old)
 };
 
 // priceId -> product hash（旧カート救済用。基本は slug を優先）
 const PRODUCT_HASH_MAP = {
-  "price_1SsGhoKIaoBhTWZCtnxZMP9m": "#session-collection",   // CD (new)
-  "price_1SsGhkKIaoBhTWZC4ID0xUnI": "#pil-soundpack-vol1",    // SOUNDPACK (new)
+  "price_1SsGhoKIaoBhTWZCtnxZMP9m": "#session-collection", // CD (new)
+  "price_1SsGhkKIaoBhTWZC4ID0xUnI": "#pil-soundpack-vol1",  // SOUNDPACK (new)
 
-  // もし「過去のカート」が残ってるなら旧IDも残してOK（任意）
-  "price_1SlmMwKIaoBhTWZC50foHo6u": "#session-collection",   // CD (old)
-  "price_1SpMR2KIaoBhTWZChWLVHw3b": "#pil-soundpack-vol1",    // SOUNDPACK (old)
+  // 任意：旧IDも救済するなら
+  "price_1SlmMwKIaoBhTWZC50foHo6u": "#session-collection", // CD (old)
+  "price_1SpMR2KIaoBhTWZChWLVHw3b": "#pil-soundpack-vol1",  // SOUNDPACK (old)
 };
 
+// priceId -> slug（旧カート救済用）
 const SLUG_MAP = {
   "price_1SsGhoKIaoBhTWZCtnxZMP9m": "session-collection",
   "price_1SsGhkKIaoBhTWZC4ID0xUnI": "pil-soundpack-vol1",
@@ -40,7 +45,12 @@ function scrollTopHard() {
   setTimeout(() => window.scrollTo(0, 0), 50);
 }
 
-function migrateCartPrices() {
+/**
+ * 旧カート救済：
+ * - unitAmount が無い / 0 の場合に PRICE_MAP で補完
+ * - slug が無い / 空の場合に SLUG_MAP で補完
+ */
+function migrateCart() {
   const cart = getCart();
   if (!cart.length) return;
 
@@ -48,7 +58,8 @@ function migrateCartPrices() {
 
   for (const item of cart) {
     // unitAmount 救済（表示用）
-    if (!item.unitAmount || item.unitAmount === 0) {
+    const curUnit = Number(item.unitAmount || 0);
+    if (!curUnit) {
       const v = PRICE_MAP[item.priceId];
       if (v) {
         item.unitAmount = v;
@@ -56,8 +67,9 @@ function migrateCartPrices() {
       }
     }
 
-    // ✅ slug 救済（カート→商品ページジャンプ用）
-    if (!item.slug) {
+    // slug 救済（カート→商品ページジャンプ用）
+    const curSlug = String(item.slug || "").trim();
+    if (!curSlug) {
       const s = SLUG_MAP[item.priceId];
       if (s) {
         item.slug = s;
@@ -78,7 +90,6 @@ function render() {
   const listEl = document.getElementById("cart-list");
   const subtotalEl = document.getElementById("cart-subtotal");
 
-  // ✅ HTMLが id なので id で取る（ここが本体）
   const emptyEl = document.getElementById("cart-empty");
   const summaryEl = document.getElementById("cart-summary");
   const noteEl = document.getElementById("cart-note");
@@ -93,7 +104,7 @@ function render() {
 
   const isEmpty = !cart || cart.length === 0;
 
-  // ✅ 空/通常の表示切り替え
+  // 空/通常の表示切り替え
   if (emptyEl) emptyEl.hidden = !isEmpty;
   if (summaryEl) summaryEl.hidden = isEmpty;
   if (noteEl) noteEl.hidden = isEmpty;
@@ -115,7 +126,7 @@ function render() {
   listEl.innerHTML = "";
 
   for (const item of cart) {
-    const qty = Number(item.qty || 0);
+    const qty = Math.max(1, Number(item.qty || 0));
     const unit = Number(item.unitAmount || 0);
 
     subtotal += unit * qty;
@@ -123,31 +134,32 @@ function render() {
 
     const row = document.createElement("div");
     row.className = "cart-row";
-    const productHash = item.slug ? `#${item.slug}` : (PRODUCT_HASH_MAP[item.priceId] || "#");
 
-row.innerHTML = `
-  <a class="cart-left cart-jump" href="${productHash}" data-cart-jump="${productHash}">
-    <div class="cart-thumb">
-      ${item.img ? `<img src="${item.img}" alt="" loading="lazy" decoding="async">` : ``}
-    </div>
-    <div class="cart-meta">
-      <div class="cart-name">${item.name || ""}</div>
-      <div class="cart-sub">${item.kind || ""}</div>
-    </div>
-  </a>
+    const slug = String(item.slug || "").trim();
+    const productHash = slug ? `#${slug}` : (PRODUCT_HASH_MAP[item.priceId] || "#");
 
-  <div class="cart-right">
-    <div class="cart-price">${yen(unit)}</div>
+    row.innerHTML = `
+      <a class="cart-left cart-jump" href="${productHash}" data-cart-jump="${productHash}">
+        <div class="cart-thumb">
+          ${item.img ? `<img src="${item.img}" alt="" loading="lazy" decoding="async">` : ``}
+        </div>
+        <div class="cart-meta">
+          <div class="cart-name">${item.name || ""}</div>
+          <div class="cart-sub">${item.kind || ""}</div>
+        </div>
+      </a>
 
-    <div class="cart-qtybox">
-      <div class="cart-qtylabel">数量</div>
-      <input class="cart-qty" type="number" min="1" max="99" value="${Math.max(1, qty)}" inputmode="numeric" />
-      <button class="cart-remove" type="button">削除</button>
-    </div>
-  </div>
-`;
-    
-    
+      <div class="cart-right">
+        <div class="cart-price">${yen(unit)}</div>
+
+        <div class="cart-qtybox">
+          <div class="cart-qtylabel">数量</div>
+          <input class="cart-qty" type="number" min="1" max="99" value="${qty}" inputmode="numeric" />
+          <button class="cart-remove" type="button">削除</button>
+        </div>
+      </div>
+    `;
+
     const qtyInput = row.querySelector(".cart-qty");
     const rmBtn = row.querySelector(".cart-remove");
 
@@ -208,7 +220,7 @@ function setupBagModal() {
     if (prevHash !== (location.hash || "")) {
       location.hash = prevHash || "";
     }
-    scrollTopHard(); 
+    scrollTopHard();
   }
 
   bagLinkTop?.addEventListener("click", openBag);
@@ -244,8 +256,10 @@ function setupAddToCart(openBag) {
       btn.dataset.unitAmount || btn.dataset.price || PRICE_MAP[priceId] || 0
     );
 
-    const slug = btn.dataset.productSlug || "";
-addToCart({ priceId, name, kind, img, unitAmount, qty: 1, slug });
+    // HTML: data-product-slug="session-collection" を想定（dataset.productSlug）
+    const slug = String(btn.dataset.productSlug || "").trim();
+
+    addToCart({ priceId, name, kind, img, unitAmount, qty: 1, slug });
     openBag?.();
   });
 }
@@ -256,7 +270,7 @@ function setupCartUIButtons() {
 
 document.addEventListener("DOMContentLoaded", () => {
   try {
-    migrateCartPrices();
+    migrateCart();
 
     const bag = setupBagModal();
     setupAddToCart(bag.openBag);
