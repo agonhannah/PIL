@@ -117,31 +117,32 @@ body::after{
   align-items:center;
 }
 
+
 .masthead{
-  position: fixed;  /* absolute → fixed */
+  position: fixed;
   top: var(--topbar-h);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 200;     /* heroより上、productより下にする */
-  width: 100%;
-  pointer-events: none; /* 触れなくてOKなら */
+  left: 0;
+  right: 0;
+  height: var(--masthead-h);
+  z-index: 100;            /* topbar(9000)より下でOK */
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: #fff;        /* ← これで「最初は白」になる */
+  pointer-events: none;    /* 触れなくてOKなら。必要なら消してOK */
 }
 
+/* 中身のセンタリング保険 */
 .masthead__inner{
   width: 100%;
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 18px calc(var(--gutter) + env(safe-area-inset-right, 0px)) 0
-           calc(var(--gutter) + env(safe-area-inset-left, 0px));
-  text-align: center;
+  padding: 0 calc(var(--gutter) + env(safe-area-inset-left, 0px));
+  padding-right: calc(var(--gutter) + env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* 商品ページ表示中は product を masthead の上に被せる */
-body:has(.product:target) .product:target{
-  position: relative;
-  z-index: 500; /* masthead(200)より上 */
-  background: var(--bg); /* これが“隠す”役 */
-}
+
 
 
 
@@ -1007,9 +1008,20 @@ body.is-locked .masthead{
 
 
 
-/* 商品ページ表示中は top hero を隠す */
+body:has(.product:target){
+  padding-top: var(--topbar-h);
+}
+
+/* 商品ページ本体をmastheadより上にして、白で被せる */
+body:has(.product:target) .product{
+  position: relative;
+  z-index: 200;          /* masthead(100)より上 */
+  background: #fff;      /* ここが無いと透ける */
+}
+
+/* 商品ページ表示中は hero を隠す（これは今のままでOK） */
 body:has(.product:target) .hero{
-  display: none !important;
+  display:none !important;
 }
 
 
