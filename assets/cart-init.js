@@ -265,8 +265,11 @@ function setupAddToCart(openBag) {
 }
 
 function setupCartUIButtons() {
-  document.getElementById("cart-checkout")?.addEventListener("click", () => checkout());
+  
+  document.getElementById("cart-checkout")
+  ?.addEventListener("click", () => { alert("BUY clicked"); checkout(); });
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   try {
