@@ -364,6 +364,24 @@ document.addEventListener("DOMContentLoaded", () => {
     setupAddToCart(bag.openBag);
     setupCartJump(bag);
 
+    // ===== Stripe cancel から戻ったら Bag を開く =====
+    (() => {
+      try {
+        const u = new URL(location.href);
+        if (u.searchParams.get("bag") === "1") {
+          u.searchParams.delete("bag");
+          history.replaceState(null, "", u.pathname + u.search + u.hash);
+
+          // Bag open
+          window.__bag?.open?.();
+          // 必要なら描画も強制
+          // render();
+        }
+      } catch (e) {
+        console.warn("[cart-init] openBagIfRequested failed:", e);
+      }
+    })();
+
     // ★BUY強制
     setupCheckoutHard();
 
