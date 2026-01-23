@@ -118,14 +118,32 @@ body::after{
 }
 
 .masthead{
-  position: fixed;
-  top: calc(var(--topbar-h) + 6px);
+  position: absolute;
+  top: calc(var(--topbar-h) + 18px);
   left: 50%;
   transform: translateX(-50%);
-  z-index: 8000;
+  z-index: 50;
+  text-align: center;
+  /* 白い長方形が不要なら背景なし */
   background: transparent;
-  text-shadow: 0 2px 12px rgba(255,255,255,.65);
-  pointer-events: none;
+  padding: 0;
+}
+
+/* ===== 商品ページ時：mastheadを“通常フロー”に戻して、商品と一緒にスクロールさせる ===== */
+body:has(.product:target) .masthead{
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+
+  z-index: 1;
+  margin: 18px auto 0;     /* ここで詰め具合調整 */
+  padding: 0;              /* 余白が残るならここ */
+}
+
+/* 商品ページ時：mastheadと商品が重ならないように（念のため） */
+body:has(.product:target) .product{
+  padding-top: 18px; /* 0でもOK。重なるなら増やす */
 }
 
 .masthead__inner{
