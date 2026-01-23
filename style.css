@@ -1025,4 +1025,10 @@ body:has(.product:target) .hero{
   display:none !important;
 }
 
+/* 商品ページ時：mastheadを完全に消す */
+body:has(.product:target) .masthead{
+  display: none !important;
+  visibility: hidden !important;
+}
+
 
