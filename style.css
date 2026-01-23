@@ -104,7 +104,7 @@ body::after{
     calc(var(--gutter) + env(safe-area-inset-right, 0px))
     var(--topbar-pad-bot)
     calc(var(--gutter) + env(safe-area-inset-left, 0px));
-  background:#fff;
+  background: transparent;
 }
 
 .toplink{
