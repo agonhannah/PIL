@@ -997,9 +997,9 @@ body.is-locked .masthead{
 
 
 
-/* 商品ページが表示されている時は隠す */
-body:has(.product:target) .masthead{
-  display: none;
+/* 商品ページ表示中は top hero を隠す */
+body:has(.product:target) .hero{
+  display: none !important;
 }
 
 
