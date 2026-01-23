@@ -1006,6 +1006,8 @@ body.is-locked .masthead{
   width: 100%;
   height: auto;
   display: block;
+  filter: blur(6px);
+  transform: scale(1.05);
 }
 
 .hero-copy{
