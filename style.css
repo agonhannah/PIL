@@ -995,16 +995,11 @@ body.is-locked .masthead{
   display: block;
 }
 
-body:has(.product:target) .hero{
-  display: none;
-}
+
 
 /* 商品ページが表示されている時は隠す */
 body:has(.product:target) .masthead{
   display: none;
 }
 
-/* 商品ページ時：商品ブロックを上に詰める */
-.product:target{
-  padding-top: 0 !important;
-}
+
