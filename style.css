@@ -1007,6 +1007,45 @@ body.is-locked .masthead{
   display: block;
 }
 
+.hero-copy{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  z-index: 2;
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+
+  pointer-events: auto;
+}
+
+
+.hero-title{
+  font-size: 14px;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: #111;
+}
+
+.hero-more{
+  font-size: 11px;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  opacity: .75;
+
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(17,17,17,.4);
+}
+
+.hero-more:hover{
+  opacity: 1;
+}
 
 
 body:has(.product:target){
