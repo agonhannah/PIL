@@ -16,17 +16,13 @@ export function addToCart(item) {
   const idx = cart.findIndex(x => x.priceId === item.priceId);
 
   if (idx >= 0) {
-    cart[idx].qty += item.qty;
+    cart[idx].qty += (item.qty || 1);
     // 念のため最新メタも同期
     cart[idx].name = item.name ?? cart[idx].name;
     cart[idx].kind = item.kind ?? cart[idx].kind;
     cart[idx].unitAmount = item.unitAmount ?? cart[idx].unitAmount;
     cart[idx].img = item.img ?? cart[idx].img;
     cart[idx].slug = item.slug ?? cart[idx].slug;
-  } else {
-    cart.push(item);
-  }
-  saveCart(cart);
   } else {
     cart.push(item);
   }
