@@ -13,10 +13,23 @@ const PRICE_MAP = {
   "price_1SsGhkKIaoBhTWZC4ID0xUnI": 2750, // SOUNDPACK
 };
 
-// priceId -> product hash
+// priceId -> product hash（旧カート救済用。基本は slug を優先）
 const PRODUCT_HASH_MAP = {
-  "price_1SlmMwKIaoBhTWZC50foHo6u": "#session-collection",
-  "price_1SpMR2KIaoBhTWZChWLVHw3b": "#pil-soundpack-vol1",
+  "price_1SsGhoKIaoBhTWZCtnxZMP9m": "#session-collection",   // CD (new)
+  "price_1SsGhkKIaoBhTWZC4ID0xUnI": "#pil-soundpack-vol1",    // SOUNDPACK (new)
+
+  // もし「過去のカート」が残ってるなら旧IDも残してOK（任意）
+  "price_1SlmMwKIaoBhTWZC50foHo6u": "#session-collection",   // CD (old)
+  "price_1SpMR2KIaoBhTWZChWLVHw3b": "#pil-soundpack-vol1",    // SOUNDPACK (old)
+};
+
+const SLUG_MAP = {
+  "price_1SsGhoKIaoBhTWZCtnxZMP9m": "session-collection",
+  "price_1SsGhkKIaoBhTWZC4ID0xUnI": "pil-soundpack-vol1",
+
+  // 任意：旧IDも救済するなら
+  "price_1SlmMwKIaoBhTWZC50foHo6u": "session-collection",
+  "price_1SpMR2KIaoBhTWZChWLVHw3b": "pil-soundpack-vol1",
 };
 
 function scrollTopHard() {
@@ -32,11 +45,22 @@ function migrateCartPrices() {
   if (!cart.length) return;
 
   let changed = false;
+
   for (const item of cart) {
+    // unitAmount 救済（表示用）
     if (!item.unitAmount || item.unitAmount === 0) {
       const v = PRICE_MAP[item.priceId];
       if (v) {
         item.unitAmount = v;
+        changed = true;
+      }
+    }
+
+    // ✅ slug 救済（カート→商品ページジャンプ用）
+    if (!item.slug) {
+      const s = SLUG_MAP[item.priceId];
+      if (s) {
+        item.slug = s;
         changed = true;
       }
     }
@@ -99,7 +123,7 @@ function render() {
 
     const row = document.createElement("div");
     row.className = "cart-row";
-    const productHash = item.slug ? `#${item.slug}` : "#";
+    const productHash = item.slug ? `#${item.slug}` : (PRODUCT_HASH_MAP[item.priceId] || "#");
 
 row.innerHTML = `
   <a class="cart-left cart-jump" href="${productHash}" data-cart-jump="${productHash}">
