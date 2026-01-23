@@ -2,6 +2,7 @@
   --bg:#ffffff;
   --ink:#111;
   --muted:rgba(17,17,17,.58);
+  --masthead-h: 84px;
   --line:rgba(17,17,17,.18);
   --panel:#ffffff;
 
@@ -72,7 +73,7 @@ body{
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   overflow-x:hidden;
-  padding-top: var(--topbar-h);
+  padding-top: calc(var(--topbar-h) + var(--masthead-h));
 }
 
 /* noise */
@@ -115,6 +116,46 @@ body::after{
   display:inline-flex;
   align-items:center;
 }
+
+.masthead{
+  position: fixed;
+  top: var(--topbar-h);
+  left: 0;
+  right: 0;
+  height: var(--masthead-h);
+  z-index: 8000; /* topbar(9000)より下、modalより上 */
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* クリック邪魔しない */
+}
+
+.masthead__inner{
+  text-align: center;
+  line-height: 1.4;
+}
+
+.masthead__brand{
+  font-size: 14px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+}
+
+.masthead__archive{
+  margin-top: 2px;
+  font-size: 11px;
+  letter-spacing: .22em;
+  opacity: .6;
+}
+
+.masthead__author{
+  margin-top: 2px;
+  font-size: 11px;
+  letter-spacing: .18em;
+  opacity: .6;
+}
+
 
 /* Bag button (topbar) */
 .bag-btn{
