@@ -9,9 +9,9 @@
   --gutter:20px;
 
   /* topbar tuning */
-  --topbar-pad-top: 24px;   /* 18→24 */
-  --topbar-pad-bot: 18px;   /* 14→18 */
-  --topbar-btn: 52px;       /* 44→52 */
+  --topbar-pad-top: 10px;   /* 18→24 */
+  --topbar-pad-bot: 10px;   /* 14→18 */
+  --topbar-btn: 44px;       /* 44→52 */
   --topbar-h: calc((var(--topbar-pad-top) + env(safe-area-inset-top, 0px)) + var(--topbar-btn) + var(--topbar-pad-bot));
 
   /* Pointer scale */
@@ -107,10 +107,10 @@ body::after{
 }
 
 .toplink{
-  font-size:15px;
-  letter-spacing:.30em;
+  font-size:14px;
+  letter-spacing:.22em;
   text-transform:uppercase;
-  opacity:.80;
+  opacity:.85;
   height: var(--topbar-btn);
   display:inline-flex;
   align-items:center;
@@ -123,13 +123,13 @@ body::after{
   align-items:center;
   justify-content:center;
   margin-left:auto;
+  width: var(--topbar-btn);
+  height: var(--topbar-btn);
   margin-right:6px;
-  width:32px;
-  height:32px;
 }
 .bag-btn img{
-  width:22px;
-  height:22px;
+  width:18px;
+  height:18px;
   display:block;
 }
 .bag-count{
