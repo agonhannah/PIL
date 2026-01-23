@@ -9,8 +9,8 @@ function yen(n) {
 
 // priceId -> unitAmount（表示用の円）
 const PRICE_MAP = {
-  "price_1SlmMwKIaoBhTWZC50foHo6u": 2750, // CD
-  "price_1SpMR2KIaoBhTWZChWLVHw3b": 2750, // SOUNDPACK
+  "price_1SsGhoKIaoBhTWZCtnxZMP9m": 2750, // CD
+  "price_1SsGhkKIaoBhTWZC4ID0xUnI": 2750, // SOUNDPACK
 };
 
 // priceId -> product hash
@@ -221,7 +221,7 @@ function setupAddToCart(openBag) {
     );
 
     const slug = btn.dataset.productSlug || "";
-    addToCart({ priceId, name, kind, img, unitAmount, qty: 1 });
+addToCart({ priceId, name, kind, img, unitAmount, qty: 1, slug });
     openBag?.();
   });
 }
