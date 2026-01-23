@@ -50,6 +50,7 @@ export function getCart() {
 }
 
 // Workerに投げてCheckout Session作成→URLへ遷移
+// assets/cart.js（checkoutだけ差し替え）
 export async function checkout() {
   const cart = loadCart();
   if (!cart.length) {
@@ -57,30 +58,44 @@ export async function checkout() {
     return;
   }
 
-  // 住所が必要か（physicalが1つでもあればtrue）
   const needsShipping = cart.some(x => x.kind === "physical");
 
-  const res = await  fetch("https://paradiceloner-checkout.xqsmie888888.workers.dev/create-checkout", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      items: cart.map(x => ({ priceId: x.priceId, quantity: x.qty })),
-      needsShipping
-    })
-  });
+  try {
+    const res = await fetch(
+      "https://paradiceloner-checkout.xqsmie888888.workers.dev/create-checkout",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: cart.map(x => ({ priceId: x.priceId, quantity: x.qty })),
+          needsShipping,
+        }),
+      }
+    );
 
-  if (!res.ok) {
-    const txt = await res.text();
-    alert("Checkout作成に失敗: " + txt);
-    return;
+    const text = await res.text(); // 先に生で取る（JSONじゃないエラーも拾う）
+    if (!res.ok) {
+      alert("Checkout作成に失敗: " + text);
+      return;
+    }
+
+    let data;
+    try { data = JSON.parse(text); }
+    catch {
+      alert("Checkout応答がJSONじゃない: " + text);
+      return;
+    }
+
+    if (!data.url) {
+      alert("Checkout URLが返ってきませんでした: " + text);
+      return;
+    }
+
+    window.location.href = data.url;
+
+  } catch (err) {
+    // CORS / ネットワーク / DNS / Safariブロック はここに来る
+    alert("決済へ進めません: " + (err?.message || err));
+    console.error("[checkout] fetch failed:", err);
   }
-
-  const data = await res.json();
-  if (!data.url) {
-    alert("Checkout URLが返ってきませんでした");
-    return;
-  }
-
-  // Stripeへ飛ぶ
-  window.location.href = data.url;
 }
