@@ -981,3 +981,17 @@ body.is-locked .masthead{
 
 [hidden] { display: none !important; }
 
+/* ===============================
+   TOP Hero
+================================ */
+.hero{
+  width: 100%;
+  position: relative;
+}
+
+.hero img{
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
