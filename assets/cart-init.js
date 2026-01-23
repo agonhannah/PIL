@@ -19,12 +19,11 @@ const PRICE_MAP = {
 
 // priceId -> product hash（旧カート救済用。基本は slug を優先）
 const PRODUCT_HASH_MAP = {
-  "price_1SsGhoKIaoBhTWZCtnxZMP9m": "#session-collection", // CD (new)
-  "price_1SsGhkKIaoBhTWZC4ID0xUnI": "#pil-soundpack-vol1",  // SOUNDPACK (new)
+  "price_1SsGhoKIaoBhTWZCtnxZMP9m": "#session-collection",
+  "price_1SsGhkKIaoBhTWZC4ID0xUnI": "#pil-soundpack-vol1",
 
-  // 任意：旧IDも救済するなら
-  "price_1SlmMwKIaoBhTWZC50foHo6u": "#session-collection", // CD (old)
-  "price_1SpMR2KIaoBhTWZChWLVHw3b": "#pil-soundpack-vol1",  // SOUNDPACK (old)
+  "price_1SlmMwKIaoBhTWZC50foHo6u": "#session-collection",
+  "price_1SpMR2KIaoBhTWZChWLVHw3b": "#pil-soundpack-vol1",
 };
 
 // priceId -> slug（旧カート救済用）
@@ -32,7 +31,6 @@ const SLUG_MAP = {
   "price_1SsGhoKIaoBhTWZCtnxZMP9m": "session-collection",
   "price_1SsGhkKIaoBhTWZC4ID0xUnI": "pil-soundpack-vol1",
 
-  // 任意：旧IDも救済するなら
   "price_1SlmMwKIaoBhTWZC50foHo6u": "session-collection",
   "price_1SpMR2KIaoBhTWZChWLVHw3b": "pil-soundpack-vol1",
 };
@@ -57,7 +55,6 @@ function migrateCart() {
   let changed = false;
 
   for (const item of cart) {
-    // unitAmount 救済（表示用）
     const curUnit = Number(item.unitAmount || 0);
     if (!curUnit) {
       const v = PRICE_MAP[item.priceId];
@@ -67,7 +64,6 @@ function migrateCart() {
       }
     }
 
-    // slug 救済（カート→商品ページジャンプ用）
     const curSlug = String(item.slug || "").trim();
     if (!curSlug) {
       const s = SLUG_MAP[item.priceId];
@@ -104,7 +100,6 @@ function render() {
 
   const isEmpty = !cart || cart.length === 0;
 
-  // 空/通常の表示切り替え
   if (emptyEl) emptyEl.hidden = !isEmpty;
   if (summaryEl) summaryEl.hidden = isEmpty;
   if (noteEl) noteEl.hidden = isEmpty;
@@ -120,7 +115,6 @@ function render() {
     return;
   }
 
-  // ===== 通常描画 =====
   let subtotal = 0;
   let count = 0;
   listEl.innerHTML = "";
@@ -182,7 +176,7 @@ function render() {
   });
 }
 
-// ===== Bag modal（hash変えない / 安定版）=====
+// ===== Bag modal（hash変えない）=====
 function setupBagModal() {
   const overlay = document.getElementById("bagOverlay");
   const modal = document.getElementById("bagModal");
@@ -206,6 +200,10 @@ function setupBagModal() {
 
     overlay.hidden = false;
     modal.hidden = false;
+
+    // ★ overlay も is-open にする（視覚/クリックの整合）
+    overlay.classList.add("is-open");
+
     modal.setAttribute("aria-hidden", "false");
     modal.classList.add("is-open");
     openFlag = true;
@@ -216,10 +214,14 @@ function setupBagModal() {
   function closeBag() {
     overlay.hidden = true;
     modal.hidden = true;
+
+    overlay.classList.remove("is-open");
+
     modal.setAttribute("aria-hidden", "true");
     modal.classList.remove("is-open");
     openFlag = false;
     document.body.classList.remove("is-locked");
+
     if (prevHash !== (location.hash || "")) {
       location.hash = prevHash || "";
     }
@@ -264,7 +266,6 @@ function setupAddToCart(openBag) {
         btn.dataset.unitAmount || btn.dataset.price || PRICE_MAP[priceId] || 0
       );
 
-      // HTML: data-product-slug="session-collection" を想定（dataset.productSlug）
       const slug = String(btn.dataset.productSlug || "").trim();
 
       addToCart({ priceId, name, kind, img, unitAmount, qty: 1, slug });
@@ -274,7 +275,7 @@ function setupAddToCart(openBag) {
   );
 }
 
-// ===== Cart: jump to product hash =====
+// ===== Cart jump (thumb/title) =====
 function setupCartJump(bag) {
   const list = document.getElementById("cart-list");
   if (!list) return;
@@ -285,7 +286,6 @@ function setupCartJump(bag) {
       const a = e.target.closest?.("[data-cart-jump]");
       if (!a) return;
 
-      // 数量/削除周りのクリックは無視（誤爆防止）
       if (e.target.closest(".cart-qtybox")) return;
 
       e.preventDefault();
@@ -294,7 +294,6 @@ function setupCartJump(bag) {
       const hash = a.getAttribute("data-cart-jump");
       if (!hash || hash === "#") return;
 
-      // hash guard 対策（script.js と同じ）
       sessionStorage.setItem("pc_allow_product_hash", "1");
 
       bag.closeBag();
@@ -307,41 +306,54 @@ function setupCartJump(bag) {
   );
 }
 
-// ===== Checkout button (BUY) =====
-function setupCartUIButtons() {
-  const btn = document.getElementById("cart-checkout");
-  if (!btn) return;
-
+// ===== BUY（最強版）：document capture で強制発火 =====
+function setupCheckoutHard() {
   let busy = false;
 
-  // iOS対策：clickだけに頼らない
-  const handler = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
+  const tryCheckout = async (btn) => {
     if (busy) return;
     busy = true;
 
-    // button でも a でも効くロック
-    btn.setAttribute("aria-busy", "true");
-    btn.style.pointerEvents = "none";
+    if (btn) {
+      btn.setAttribute("aria-busy", "true");
+      btn.style.pointerEvents = "none";
+    }
 
     try {
-      await checkout(); // Stripeへ遷移する想定
+      await checkout();
     } catch (err) {
       console.error("[cart-init] checkout failed:", err);
       alert("決済へ進めませんでした。Console を確認してください。");
     } finally {
       busy = false;
-      btn.setAttribute("aria-busy", "false");
-      btn.style.pointerEvents = "";
+      if (btn) {
+        btn.setAttribute("aria-busy", "false");
+        btn.style.pointerEvents = "";
+      }
     }
   };
 
-  // captureで先に拾う（他JSのstopPropagationに負けない）
-  btn.addEventListener("pointerdown", handler, { capture: true });
-  btn.addEventListener("click", handler, { capture: true });
-  btn.addEventListener("touchend", handler, { capture: true });
+  const handler = (e) => {
+    const btn = e.target.closest?.("#cart-checkout");
+    if (!btn) return;
+
+    // ★ここで必ず奪う（他JS/レイヤーに負けない）
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation?.();
+
+    // もし summary が hidden(空カート)なら無視
+    const summary = document.getElementById("cart-summary");
+    if (summary && summary.hidden) return;
+
+    // 実行
+    tryCheckout(btn);
+  };
+
+  // click だけじゃなく全部拾う
+  document.addEventListener("pointerdown", handler, { capture: true });
+  document.addEventListener("touchend", handler, { capture: true });
+  document.addEventListener("click", handler, { capture: true });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -350,14 +362,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const bag = setupBagModal();
     setupAddToCart(bag.openBag);
-    setupCartUIButtons();
     setupCartJump(bag);
+
+    // ★BUY強制
+    setupCheckoutHard();
 
     render();
     window.addEventListener("cart:updated", render);
-
-    // デバッグ：買いボタン存在確認（不要なら消してOK）
-    // console.log("[cart-init] cart-checkout:", !!document.getElementById("cart-checkout"));
   } catch (err) {
     console.error("[cart-init] fatal:", err);
     alert("cart-init.js が途中で死んでます。Console を見てください。");
