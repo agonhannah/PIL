@@ -654,9 +654,13 @@ body.is-locked .masthead{
   pointer-events:none;
 }
 
-/* 上ラベル（TEASER / 試聴） */
-.sc-lockbox .lockbox__rect::before{
-  content:"TEASER / 試聴";
+/* ===========================
+   Trial labels (per link)
+=========================== */
+
+/* 上ラベル（デフォは空） */
+.product .product__trialLink::before{
+  content:"";
   position:absolute;
   left:50%;
   top:-22px;
@@ -666,22 +670,14 @@ body.is-locked .masthead{
   color:rgba(17,17,17,.55);
   white-space:nowrap;
   pointer-events:none;
+  z-index:3;
 }
 
-
-.product .product__trialLink.is-cash .lockbox__rect::before{
-  content:"CASH / 現金購入";
-}
-
-/* SOUNDPACK：SoundCloud だけ DEMO 表記 */
-#pil-soundpack-vol1 .product__trialLink.is-soundcloud .lockbox__rect::before{
-  content:"DEMO / 試聴";
-}
-
-/* CASH は共通ルールでOK（念のためSOUNDPACKでも明示しても良い） */
-#pil-soundpack-vol1 .product__trialLink.is-cash .lockbox__rect::before{
-  content:"CASH / 現金購入";
-}
+/* 各種ラベル */
+.product .product__trialLink.is-soundcloud::before{ content:"TEASER / 試聴"; } /* Session Collection用 */
+#pil-soundpack-vol1 .product .product__trialLink.is-soundcloud::before{ content:"DEMO / 試聴"; } /* Soundpackだけ */
+.product .product__trialLink.is-cash::before{ content:"CASH / 現金購入"; }
+.product .product__trialLink.is-overseas::before{ content:"FOR OVERSEAS"; }
 
 
 /* Trial UI unify */
@@ -695,7 +691,8 @@ body.is-locked .masthead{
 }
 
 /* 2つ並び */
-.product .product__trial--2col{
+.product .product__trial--2col,
+.product .product__trial--3col{
   display:flex;
   gap:18px;
 }
@@ -761,6 +758,21 @@ body.is-locked .masthead{
   z-index:1;
   pointer-events:none;
 }
+
+/* FOR OVERSEAS（とりあえずSoundCloud流用） */
+.product .product__trialLink.is-overseas::after{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width: var(--trial-size);
+  height: var(--trial-size);
+  background: url("images/bandcamp.png") center / contain no-repeat;
+  opacity:.75;
+  z-index:1;
+  pointer-events:none;
+}
+
 
 /* trial テキストは使わない */
 .product .product__trialText,
