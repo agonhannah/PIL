@@ -673,8 +673,14 @@ body.is-locked .masthead{
   content:"CASH / 現金購入";
 }
 
-#pil-soundpack-vol1 .sc-lockbox .lockbox__rect::before{
+/* SOUNDPACK：SoundCloud だけ DEMO 表記 */
+#pil-soundpack-vol1 .product__trialLink.is-soundcloud .lockbox__rect::before{
   content:"DEMO / 試聴";
+}
+
+/* CASH は共通ルールでOK（念のためSOUNDPACKでも明示しても良い） */
+#pil-soundpack-vol1 .product__trialLink.is-cash .lockbox__rect::before{
+  content:"CASH / 現金購入";
 }
 
 
