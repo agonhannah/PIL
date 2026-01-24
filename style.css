@@ -1098,3 +1098,16 @@ body:has(.product:target) .masthead{
   color: #fff;
   opacity: .85;
 }
+
+
+/* Session Collection hero only */
+.hero--session .hero-title,
+.hero--session .hero-sub,
+.hero--session .hero-more{
+  color: #111;
+}
+
+/* underline も黒に */
+.hero--session .hero-more{
+  border-bottom-color: #111;
+}
