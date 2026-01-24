@@ -734,7 +734,8 @@ body.is-locked .masthead{
 }
 
 /* SoundCloud ロゴを背面（枠の“下”に重ねる） */
-.product .product__trialLink::after{
+/* SoundCloud only */
+.product .product__trialLink.is-soundcloud::after{
   content:"";
   position:absolute;
   left:0;
@@ -743,6 +744,20 @@ body.is-locked .masthead{
   height: var(--trial-size);
   background: url("images/soundcloud.PNG") center / contain no-repeat;
   opacity:.75;
+  z-index:1;
+  pointer-events:none;
+}
+
+/* CASH / 現金購入 */
+.product .product__trialLink.is-cash::after{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width: var(--trial-size);
+  height: var(--trial-size);
+  background: url("images/cash.jpg") center / contain no-repeat;
+  opacity:.85;          /* 少しだけ主張してもOK */
   z-index:1;
   pointer-events:none;
 }
