@@ -630,6 +630,17 @@ body.is-locked .masthead{
   box-sizing:border-box;
 }
 
+/* CASH lockbox 用 */
+.is-cash .lockbox__rect::before{
+  content:"CASH / 現金購入";
+}
+
+/* 見た目を少しだけ控えめにしたい場合（任意） */
+.is-cash{
+  opacity:.85;
+}
+
+
 /* 試聴は十字を消す */
 .sc-lockbox .lockbox__cross{ display:none; }
 
