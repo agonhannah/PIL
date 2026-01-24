@@ -58,7 +58,9 @@ export async function checkout() {
     return;
   }
 
-  const needsShipping = cart.some(x => x.kind === "physical");
+  // 物理が1つでもあれば配送を要求
+  const hasPhysical = cart.some(x => x.kind === "physical");
+  const hasDigital  = cart.some(x => x.kind === "digital");
 
   try {
     const res = await fetch(
@@ -67,13 +69,23 @@ export async function checkout() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: cart.map(x => ({ priceId: x.priceId, quantity: x.qty })),
-          needsShipping,
+          items: cart.map(x => ({
+            priceId: x.priceId,
+            quantity: x.qty,
+            kind: x.kind || "digital",   // ★追加：Workerがmixed判定できる
+            name: x.name || "",          // 任意：デバッグしやすい
+          })),
+          // 後方互換で残す（Workerが既にこれを見てるはず）
+          needsShipping: hasPhysical,
+
+          // ★追加：mixed 判定用
+          hasPhysical,
+          hasDigital,
         }),
       }
     );
 
-    const text = await res.text(); // 先に生で取る（JSONじゃないエラーも拾う）
+    const text = await res.text();
     if (!res.ok) {
       alert("Checkout作成に失敗: " + text);
       return;
@@ -94,7 +106,6 @@ export async function checkout() {
     window.location.href = data.url;
 
   } catch (err) {
-    // CORS / ネットワーク / DNS / Safariブロック はここに来る
     alert("決済へ進めません: " + (err?.message || err));
     console.error("[checkout] fetch failed:", err);
   }
