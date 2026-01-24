@@ -827,11 +827,9 @@ body.is-locked .masthead{
 /* =========================================================
    Legal page
 ========================================================= */
-.legal{ display:none; }
-.legal:target{
-  display:block;
-  padding: 96px 20px 80px;
-}
+/* legal はモーダルで見るので :target 表示は使わない */
+.legal{ display:none !important; }
+.legal:target{ display:none !important; }
 .legal__inner{ max-width:640px; margin:0 auto; }
 .legal__title{ font-size:14px; letter-spacing:.18em; margin:0 0 28px; }
 .legal__h{ font-size:12px; letter-spacing:.16em; margin:22px 0 10px; }
