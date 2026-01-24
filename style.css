@@ -1090,4 +1090,11 @@ body:has(.product:target) .masthead{
   }
 }
 
-
+.hero-sub{
+  margin-top: 6px;
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: .85;
+}
