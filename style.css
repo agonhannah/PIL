@@ -568,18 +568,25 @@ body.is-locked .masthead{
   opacity: .65;
   margin-bottom: 14px;
 }
+
 .product__cta{
   display:block;
   width:100%;
   padding:14px 14px;
-  border:1px solid rgba(17,17,17,.28);
+
+  background:#111;          /* ← 黒 */
+  color:#fff;               /* ← 白文字 */
+  border:1px solid #111;    /* 枠も黒 */
+
   border-radius:14px;
   font-size:12px;
   letter-spacing:.32em;
   text-transform:uppercase;
   text-align:center;
+
   margin:10px 0 18px;
 }
+
 .product__cta.is-disabled{
   border-color: rgba(17,17,17,.12);
   background: rgba(17,17,17,.06);
