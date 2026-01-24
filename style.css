@@ -1181,3 +1181,19 @@ body:has(.product:target) .masthead{
 .hero--session .hero-more{
   border-bottom-color: #111;
 }
+
+
+/* Coming soon (center) */
+.shopview--soon .soon{
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.shopview--soon .soon__text{
+  font-size: 12px;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  opacity: .75;
+}
