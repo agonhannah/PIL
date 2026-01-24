@@ -74,8 +74,8 @@
 
         <div class="acc__panel" data-acc-panel="archive" hidden>
           <nav class="acc__list" aria-label="Archive list">
-            <a class="acc__link" href="#" data-close>Design</a>
-            <a class="acc__link" href="#" data-close>Beat Live</a>
+            <a class="acc__link" href="#" data-close data-open-modal="coming-soon">Design</a>
+<a class="acc__link" href="#" data-close data-open-modal="coming-soon">Beat Live</a>
           </nav>
         </div>
       </div>
@@ -157,6 +157,13 @@
 
   <section class="modal" id="shopModal" aria-hidden="true" aria-label="Shop">
     <div class="modal__body">
+      
+      <!-- ===== COMING SOON ===== -->
+<div class="shopview shopview--soon" data-modal-view="coming-soon" hidden>
+  <div class="soon">
+    <div class="soon__text">COMING SOON</div>
+  </div>
+</div>
 
  <!-- ===== SHOP: ALL ===== -->
 <div class="shopview" data-modal-view="shop-all" hidden>
