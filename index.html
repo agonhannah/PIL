@@ -539,8 +539,27 @@ List
 
       <!-- DEMO / 試聴（UIは同じ） -->
 <div class="product__block">
-  <div class="product__trial">
-    <a class="product__trialLink" href="https://on.soundcloud.com/haREk5yHbSbKlgnBgF" target="_blank" rel="noopener">
+  <div class="product__trial product__trial--2col">
+    <!-- DEMO / 試聴 -->
+    <a class="product__trialLink is-soundcloud"
+       href="https://on.soundcloud.com/haREk5yHbSbKlgnBgF"
+       target="_blank" rel="noopener" aria-label="demo">
+      <span class="sc-lockbox" aria-hidden="true">
+        <span class="lockbox__rect">
+          <span class="lockbox__cross lockbox__cross--h"></span>
+          <span class="lockbox__cross lockbox__cross--v"></span>
+          <span class="lockbox__tick lockbox__tick--t"></span>
+          <span class="lockbox__tick lockbox__tick--b"></span>
+          <span class="lockbox__tick lockbox__tick--l"></span>
+          <span class="lockbox__tick lockbox__tick--r"></span>
+        </span>
+      </span>
+    </a>
+
+    <!-- CASH / 現金購入（BASEへ） -->
+    <a class="product__trialLink is-cash"
+       href="YOUR-BASE-LINK-SOUNDPACK"
+       target="_blank" rel="noopener" aria-label="cash purchase">
       <span class="sc-lockbox" aria-hidden="true">
         <span class="lockbox__rect">
           <span class="lockbox__cross lockbox__cross--h"></span>
