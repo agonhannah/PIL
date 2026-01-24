@@ -154,6 +154,25 @@ if (isProductHash(location.hash) && !sessionStorage.getItem(HASH_FLAG)) {
     const drawerOpen = drawer && drawer.classList.contains("is-open");
     if (!drawerOpen) document.body.classList.remove("is-locked");
   };
+  
+  
+    /* ----------------------------
+     LEGAL BACK -> drawerへ戻す
+  ---------------------------- */
+    document.addEventListener("click", (e) => {
+    const back = e.target.closest && e.target.closest("[data-back-to-drawer]");
+    if (!back) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    closeModal();
+
+    // 次フレームで drawer を開く（チラつき防止）
+    requestAnimationFrame(() => {
+      openDrawer();
+    });
+  }, { capture: true });
 
   const openModal = (viewName) => {
     if (!modal) return;
