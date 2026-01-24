@@ -95,6 +95,8 @@ if (isProductHash(location.hash) && !sessionStorage.getItem(HASH_FLAG)) {
 
   const openDrawer  = () => setOpen(true);
   const closeDrawer = () => setOpen(false);
+  
+  let ignoreNextOverlayClick = false;
 
   if (menuBtn) {
   menuBtn.addEventListener(
@@ -115,8 +117,14 @@ if (isProductHash(location.hash) && !sessionStorage.getItem(HASH_FLAG)) {
   );
 }
 
-  if (overlay) {
+   if (overlay) {
     overlay.addEventListener("click", (e) => {
+      if (ignoreNextOverlayClick) {
+        ignoreNextOverlayClick = false;
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       e.preventDefault();
       e.stopPropagation();
       closeDrawer();
@@ -159,20 +167,28 @@ if (isProductHash(location.hash) && !sessionStorage.getItem(HASH_FLAG)) {
     /* ----------------------------
      LEGAL BACK -> drawerへ戻す
   ---------------------------- */
-    document.addEventListener("click", (e) => {
-    const back = e.target.closest && e.target.closest("[data-back-to-drawer]");
-    if (!back) return;
+      document.addEventListener(
+    "click",
+    (e) => {
+      const back = e.target.closest && e.target.closest("[data-back-to-drawer]");
+      if (!back) return;
 
-    e.preventDefault();
-    e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
 
-    closeModal();
+      // 先に閉じる
+      closeModal();
 
-    // 次フレームで drawer を開く（チラつき防止）
-    requestAnimationFrame(() => {
-      openDrawer();
-    });
-  }, { capture: true });
+      // ここがポイント：直後の overlay click を無視
+      ignoreNextOverlayClick = true;
+
+      // 同一クリックの “click-through” を避けるため、少し遅らせて開く
+      setTimeout(() => {
+        openDrawer();
+      }, 0);
+    },
+    { capture: true }
+  );
 
   const openModal = (viewName) => {
     if (!modal) return;
