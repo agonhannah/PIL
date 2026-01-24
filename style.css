@@ -129,7 +129,7 @@ body::after{
   display: grid;
   place-items: center;
   text-align: center;
-  background: #transparent;        /* ← これで「最初は白」になる */
+  background: transparent;        /* ← これで「最初は白」になる */
   pointer-events: none;    /* 触れなくてOKなら。必要なら消してOK */
 }
 
@@ -630,10 +630,6 @@ body.is-locked .masthead{
   box-sizing:border-box;
 }
 
-/* CASH lockbox 用 */
-.is-cash .lockbox__rect::before{
-  content:"CASH / 現金購入";
-}
 
 /* 見た目を少しだけ控えめにしたい場合（任意） */
 .is-cash{
@@ -672,6 +668,16 @@ body.is-locked .masthead{
   pointer-events:none;
 }
 
+
+.product .product__trialLink.is-cash .lockbox__rect::before{
+  content:"CASH / 現金購入";
+}
+
+#pil-soundpack-vol1 .sc-lockbox .lockbox__rect::before{
+  content:"DEMO / 試聴";
+}
+
+
 /* Trial UI unify */
 .product .product__trial{
   margin-top: calc(18px + var(--trial-group-offset-y));
@@ -682,6 +688,15 @@ body.is-locked .masthead{
   gap:18px;
 }
 
+/* 2つ並び */
+.product .product__trial--2col{
+  display:flex;
+  gap:18px;
+}
+
+
+
+
 /* クリック領域（lock + logo のみ） */
 .product .product__trialLink{
   position:relative;
@@ -691,6 +706,14 @@ body.is-locked .masthead{
   display:block;
   flex-shrink:0;
 }
+
+
+
+
+
+
+
+
 
 /* ロック(枠)を前面固定 */
 .product .product__trialLink .sc-lockbox{
@@ -730,10 +753,6 @@ body.is-locked .masthead{
   padding-top: 14px;
 }
 
-/* SOUNDPACK only : change TEASER -> DEMO */
-#pil-soundpack-vol1 .sc-lockbox .lockbox__rect::before{
-  content:"DEMO / 試聴";
-}
 
 /* Description + Demo table */
 .product__includes{
