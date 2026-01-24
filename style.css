@@ -767,7 +767,7 @@ body.is-locked .masthead{
   top:0;
   width: var(--trial-size);
   height: var(--trial-size);
-  background: url("images/bandcamp.png") center / 60% no-repeat;
+  background: url("images/bandcamp.png") center / 55% no-repeat;
   opacity:.75;
   z-index:1;
   pointer-events:none;
