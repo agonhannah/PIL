@@ -7,21 +7,20 @@ function clearCartOnStripeSuccess() {
   try {
     const u = new URL(location.href);
 
-    // success_url に ?stripe=success を付ける想定
-    if (u.searchParams.get("stripe") === "success") {
-      // カート本体を消す（あなたの保存キーはこれ）
+    // ✅ /success に来たら「購入完了」とみなす
+    const isSuccessRoute = u.pathname === "/success" || u.pathname.startsWith("/success/");
+
+    if (isSuccessRoute) {
+      // カート消す
       localStorage.removeItem(CART_KEY);
-
-      // 念のため旧キーも消したいなら追加（不要なら消してOK）
-      // localStorage.removeItem("paradiceloner_cart");
-      // localStorage.removeItem("paradiceloner_cart_v0");
-
-      // URLを綺麗にしておく（リロードで再消去が走らない）
-      u.searchParams.delete("stripe");
-      history.replaceState(null, "", u.pathname + u.search + u.hash);
-
-      // UIにも反映
       window.dispatchEvent(new Event("cart:updated"));
+
+      // session_id を残したいなら一時保存（任意）
+      const sid = u.searchParams.get("session_id");
+      if (sid) sessionStorage.setItem("stripe_last_session_id", sid);
+
+      // URLをトップに戻す（queryも消して綺麗に）
+      location.replace("/"); // ← hashを残したいなら "/#session-collection" みたいにしてもOK
     }
   } catch (e) {
     console.warn("[cart-init] clearCartOnStripeSuccess failed:", e);
