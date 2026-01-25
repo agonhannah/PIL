@@ -3,6 +3,31 @@ import { addToCart, getCart, removeFromCart, setQty, checkout } from "./cart.js"
 
 const CART_KEY = "paradiceloner_cart_v1";
 
+function clearCartOnStripeSuccess() {
+  try {
+    const u = new URL(location.href);
+
+    // success_url に ?stripe=success を付ける想定
+    if (u.searchParams.get("stripe") === "success") {
+      // カート本体を消す（あなたの保存キーはこれ）
+      localStorage.removeItem(CART_KEY);
+
+      // 念のため旧キーも消したいなら追加（不要なら消してOK）
+      // localStorage.removeItem("paradiceloner_cart");
+      // localStorage.removeItem("paradiceloner_cart_v0");
+
+      // URLを綺麗にしておく（リロードで再消去が走らない）
+      u.searchParams.delete("stripe");
+      history.replaceState(null, "", u.pathname + u.search + u.hash);
+
+      // UIにも反映
+      window.dispatchEvent(new Event("cart:updated"));
+    }
+  } catch (e) {
+    console.warn("[cart-init] clearCartOnStripeSuccess failed:", e);
+  }
+}
+
 function yen(n) {
   return "¥" + Number(n || 0).toLocaleString("ja-JP");
 }
@@ -358,6 +383,9 @@ function setupCheckoutHard() {
 
 document.addEventListener("DOMContentLoaded", () => {
   try {
+    // ✅ ここが一番重要：最初に成功判定して消す
+    clearCartOnStripeSuccess();
+
     migrateCart();
 
     const bag = setupBagModal();
