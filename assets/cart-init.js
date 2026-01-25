@@ -7,8 +7,10 @@ function clearCartOnStripeSuccess() {
   try {
     const u = new URL(location.href);
 
-    // ✅ /success に来たら「購入完了」とみなす（successページは絶対に維持）
-    const isSuccessRoute = u.pathname === "/success" || u.pathname.startsWith("/success/");
+    // ✅ /success と /thanks を「購入完了」とみなす（ページ遷移は一切しない）
+    const isSuccessRoute =
+      u.pathname === "/success" || u.pathname.startsWith("/success/") ||
+      u.pathname === "/thanks"  || u.pathname.startsWith("/thanks/");
 
     if (!isSuccessRoute) return;
 
@@ -16,15 +18,18 @@ function clearCartOnStripeSuccess() {
     localStorage.removeItem(CART_KEY);
     window.dispatchEvent(new Event("cart:updated"));
 
-    // session_id は保存（任意だけど便利）
+    // 任意：session_id / token を控える（デバッグ用）
     const sid = u.searchParams.get("session_id");
     if (sid) sessionStorage.setItem("stripe_last_session_id", sid);
 
-    // ✅ successページは維持したまま、URLだけ綺麗にする（任意）
-    // - session_id を消したいなら ON
-    // - 残したいならこのブロック丸ごと削除
-    if (u.searchParams.has("session_id")) {
+    const token = u.searchParams.get("token");
+    if (token) sessionStorage.setItem("stripe_last_token", token);
+
+    // ✅ URLだけ綺麗にする（遷移しない）
+    // token をURLに残したいなら、このブロック自体を削除
+    if (u.searchParams.has("session_id") || u.searchParams.has("token")) {
       u.searchParams.delete("session_id");
+      u.searchParams.delete("token");
       history.replaceState(null, "", u.pathname + u.search + u.hash);
     }
 
