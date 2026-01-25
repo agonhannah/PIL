@@ -7,21 +7,27 @@ function clearCartOnStripeSuccess() {
   try {
     const u = new URL(location.href);
 
-    // ✅ /success に来たら「購入完了」とみなす
+    // ✅ /success に来たら「購入完了」とみなす（successページは絶対に維持）
     const isSuccessRoute = u.pathname === "/success" || u.pathname.startsWith("/success/");
 
-    if (isSuccessRoute) {
-      // カート消す
-      localStorage.removeItem(CART_KEY);
-      window.dispatchEvent(new Event("cart:updated"));
+    if (!isSuccessRoute) return;
 
-      // session_id を残したいなら一時保存（任意）
-      const sid = u.searchParams.get("session_id");
-      if (sid) sessionStorage.setItem("stripe_last_session_id", sid);
+    // カート消す
+    localStorage.removeItem(CART_KEY);
+    window.dispatchEvent(new Event("cart:updated"));
 
-      // URLをトップに戻す（queryも消して綺麗に）
-      location.replace("/"); // ← hashを残したいなら "/#session-collection" みたいにしてもOK
+    // session_id は保存（任意だけど便利）
+    const sid = u.searchParams.get("session_id");
+    if (sid) sessionStorage.setItem("stripe_last_session_id", sid);
+
+    // ✅ successページは維持したまま、URLだけ綺麗にする（任意）
+    // - session_id を消したいなら ON
+    // - 残したいならこのブロック丸ごと削除
+    if (u.searchParams.has("session_id")) {
+      u.searchParams.delete("session_id");
+      history.replaceState(null, "", u.pathname + u.search + u.hash);
     }
+
   } catch (e) {
     console.warn("[cart-init] clearCartOnStripeSuccess failed:", e);
   }
@@ -334,28 +340,70 @@ function setupCartJump(bag) {
 function setupCheckoutHard() {
   let busy = false;
 
-  const tryCheckout = async (btn) => {
-    if (busy) return;
-    busy = true;
+function ensureSpinner(btn) {
+  if (!btn) return null;
 
+  // 既にあるならそれを使う
+  let sp = btn.querySelector(".btn-spinner");
+  if (sp) return sp;
+
+  // 右横に出す
+  sp = document.createElement("span");
+  sp.className = "btn-spinner";
+  sp.setAttribute("aria-hidden", "true");
+  sp.style.display = "none";           // 最初は隠す
+  sp.style.marginLeft = "10px";
+  sp.style.width = "14px";
+  sp.style.height = "14px";
+  sp.style.border = "2px solid rgba(255,255,255,.55)";
+  sp.style.borderTopColor = "rgba(255,255,255,1)";
+  sp.style.borderRadius = "999px";
+  sp.style.verticalAlign = "middle";
+  sp.style.animation = "pcSpin .8s linear infinite";
+
+  // ボタンが flex じゃない可能性があるので、ちょい安全に
+  btn.style.display = btn.style.display || "inline-flex";
+  btn.style.alignItems = "center";
+  btn.appendChild(sp);
+
+  // keyframes を1回だけ注入
+  if (!document.getElementById("pc-spin-style")) {
+    const st = document.createElement("style");
+    st.id = "pc-spin-style";
+    st.textContent = `@keyframes pcSpin { to { transform: rotate(360deg); } }`;
+    document.head.appendChild(st);
+  }
+
+  return sp;
+}
+
+const tryCheckout = async (btn) => {
+  if (busy) return;
+  busy = true;
+
+  const sp = ensureSpinner(btn);
+
+  if (btn) {
+    btn.setAttribute("aria-busy", "true");
+    btn.style.pointerEvents = "none";
+    if (sp) sp.style.display = "inline-block"; // ← ON
+  }
+
+  try {
+    await checkout(); // ここからStripeへ遷移するまで表示される
+  } catch (err) {
+    console.error("[cart-init] checkout failed:", err);
+    alert("決済へ進めませんでした。Console を確認してください。");
+  } finally {
+    busy = false;
     if (btn) {
-      btn.setAttribute("aria-busy", "true");
-      btn.style.pointerEvents = "none";
+      btn.setAttribute("aria-busy", "false");
+      btn.style.pointerEvents = "";
+      if (sp) sp.style.display = "none"; // ← OFF（エラー時のみ見える想定）
     }
-
-    try {
-      await checkout();
-    } catch (err) {
-      console.error("[cart-init] checkout failed:", err);
-      alert("決済へ進めませんでした。Console を確認してください。");
-    } finally {
-      busy = false;
-      if (btn) {
-        btn.setAttribute("aria-busy", "false");
-        btn.style.pointerEvents = "";
-      }
-    }
-  };
+  }
+};
+  
 
   const handler = (e) => {
     const btn = e.target.closest?.("#cart-checkout");
