@@ -1195,3 +1195,12 @@ body:has(.product:target) .masthead{
   text-transform: uppercase;
   opacity: .75;
 }
+
+
+/* BUY loading state : invert only while loading */
+.cart-buy.is-loading,
+.cart-buy[aria-busy="true"] {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
