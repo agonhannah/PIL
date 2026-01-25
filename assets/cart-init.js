@@ -345,89 +345,46 @@ function setupCartJump(bag) {
 function setupCheckoutHard() {
   let busy = false;
 
-function ensureSpinner(btn) {
-  if (!btn) return null;
+  const setLoading = (btn, on) => {
+    if (!btn) return;
+    btn.setAttribute("aria-busy", on ? "true" : "false");
+    btn.classList.toggle("is-loading", !!on);
+    btn.style.pointerEvents = on ? "none" : "";
+  };
 
-  // 既にあるならそれを使う
-  let sp = btn.querySelector(".btn-spinner");
-  if (sp) return sp;
+  const tryCheckout = async (btn) => {
+    if (busy) return;
+    busy = true;
 
-  // 右横に出す
-  sp = document.createElement("span");
-  sp.className = "btn-spinner";
-  sp.setAttribute("aria-hidden", "true");
-  sp.style.display = "none";           // 最初は隠す
-  sp.style.marginLeft = "10px";
-  sp.style.width = "14px";
-  sp.style.height = "14px";
-  sp.style.border = "2px solid rgba(255,255,255,.55)";
-  sp.style.borderTopColor = "rgba(255,255,255,1)";
-  sp.style.borderRadius = "999px";
-  sp.style.verticalAlign = "middle";
-  sp.style.animation = "pcSpin .8s linear infinite";
+    // ★ 押した瞬間に反転
+    setLoading(btn, true);
 
-  // ボタンが flex じゃない可能性があるので、ちょい安全に
-  btn.style.display = btn.style.display || "inline-flex";
-  btn.style.alignItems = "center";
-  btn.appendChild(sp);
+    try {
+      await checkout(); // Stripeへ遷移するまでこの状態
+    } catch (err) {
+      console.error("[cart-init] checkout failed:", err);
+      alert("決済へ進めませんでした。Console を確認してください。");
 
-  // keyframes を1回だけ注入
-  if (!document.getElementById("pc-spin-style")) {
-    const st = document.createElement("style");
-    st.id = "pc-spin-style";
-    st.textContent = `@keyframes pcSpin { to { transform: rotate(360deg); } }`;
-    document.head.appendChild(st);
-  }
-
-  return sp;
-}
-
-const tryCheckout = async (btn) => {
-  if (busy) return;
-  busy = true;
-
-  const sp = ensureSpinner(btn);
-
-  if (btn) {
-    btn.setAttribute("aria-busy", "true");
-    btn.style.pointerEvents = "none";
-    if (sp) sp.style.display = "inline-block"; // ← ON
-  }
-
-  try {
-    await checkout(); // ここからStripeへ遷移するまで表示される
-  } catch (err) {
-    console.error("[cart-init] checkout failed:", err);
-    alert("決済へ進めませんでした。Console を確認してください。");
-  } finally {
-    busy = false;
-    if (btn) {
-      btn.setAttribute("aria-busy", "false");
-      btn.style.pointerEvents = "";
-      if (sp) sp.style.display = "none"; // ← OFF（エラー時のみ見える想定）
+      // エラー時だけ元に戻す
+      setLoading(btn, false);
+      busy = false;
     }
-  }
-};
-  
+  };
 
   const handler = (e) => {
     const btn = e.target.closest?.("#cart-checkout");
     if (!btn) return;
 
-    // ★ここで必ず奪う（他JS/レイヤーに負けない）
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation?.();
 
-    // もし summary が hidden(空カート)なら無視
     const summary = document.getElementById("cart-summary");
     if (summary && summary.hidden) return;
 
-    // 実行
     tryCheckout(btn);
   };
 
-  // click だけじゃなく全部拾う
   document.addEventListener("pointerdown", handler, { capture: true });
   document.addEventListener("touchend", handler, { capture: true });
   document.addEventListener("click", handler, { capture: true });
